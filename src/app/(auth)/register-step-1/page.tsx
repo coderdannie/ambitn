@@ -22,7 +22,7 @@ const RegisterPage = () => {
     resolver: zodResolver(registerStepOneSchema),
     defaultValues: {
       email: '',
-      // password: '',
+      password: '',
     },
     mode: 'onTouched',
   });
@@ -56,7 +56,7 @@ const RegisterPage = () => {
               placeholder="Enter your email address"
               error={errors.email?.message}
             />
-            {/* <CustomFormField
+            <CustomFormField
               label="password"
               name="password"
               control={control}
@@ -64,7 +64,7 @@ const RegisterPage = () => {
               error={errors.password?.message}
               showPasswordToggle
               isPassword
-            /> */}
+            />
           </div>
 
           {/* Submit Button */}
