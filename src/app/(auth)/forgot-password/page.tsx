@@ -58,9 +58,9 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="pb-12">
+    <div className=" pb-[60px]  md:pb-12">
       <div className="text-center">
-        <h2 className="text-primary text-lg md:text-2xl font-medium pt-8">
+        <h2 className="text-primary text-xl md:text-2xl font-medium pt-8">
           Password Reset
         </h2>
         <p>Enter the Email address you used to register</p>
