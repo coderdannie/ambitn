@@ -256,7 +256,7 @@ const VerifyEmail = () => {
           )}
         </p>
       </div>
-      <p className="text-center pt-10 text-[#979797] pb-4">
+      <p className="text-center pt-10 text-[#979797] text-sm md:text-base pb-4">
         Having difficulties with Code?{' '}
         <Link
           href="/contact-support"
