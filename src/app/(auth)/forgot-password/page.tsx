@@ -60,7 +60,7 @@ const ResetPassword = () => {
   return (
     <div className=" pb-[60px]  md:pb-12">
       <div className="text-center">
-        <h2 className="text-primary text-xl md:text-2xl font-medium pt-8">
+        <h2 className="text-primary text-xl md:text-2xl font-medium pt-8 pb-2">
           Password Reset
         </h2>
         <p className="text-sm md:text-base">
