@@ -63,7 +63,9 @@ const ResetPassword = () => {
         <h2 className="text-primary text-xl md:text-2xl font-medium pt-8">
           Password Reset
         </h2>
-        <p>Enter the Email address you used to register</p>
+        <p className="text-sm md:text-base">
+          Enter the Email address you used to register
+        </p>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className=" pt-8">
