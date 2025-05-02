@@ -21,7 +21,7 @@ const Page = () => {
   const { isMobile } = useWindowSize();
 
   const email =
-    typeof window !== 'undefined' ? sessionStorage.getItem('email') : null;
+    typeof window !== 'undefined' ? sessionStorage.getItem('email') : undefined;
 
   const form = useForm<ResetPasswordSchemaType>({
     resolver: zodResolver(resetPasswordSchema),

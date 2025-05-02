@@ -4,12 +4,13 @@ import { CustomFormField } from '@/components/common/CustomFormField';
 import { Form } from '@/components/ui/form';
 import { useGetCountries } from '@/hooks/location/useCountries';
 import {
+  RegisterStepOneSchemaType,
   registerStepTwoSchema,
   RegisterStepTwoSchemaType,
 } from '@/utils/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Select, { StylesConfig } from 'react-select';
 import Calendar from 'react-calendar';
@@ -25,11 +26,16 @@ const RegisterStep2 = () => {
   const router = useRouter();
 
   const { addToast } = useToast();
+  const [formValues, setFormValues] =
+    useState<RegisterStepOneSchemaType | null>(null);
 
   const { isMobile } = useWindowSize();
 
-  const storedValues = sessionStorage.getItem('registerDetails');
-  const formValues = storedValues ? JSON.parse(storedValues) : null;
+  useEffect(() => {
+    // Client-side only code
+    const storedValues = sessionStorage.getItem('registerDetails');
+    setFormValues(storedValues ? JSON.parse(storedValues) : null);
+  }, []);
 
   const [showCalendar, setShowCalendar] = useState(false);
   const [date_of_birth, setDateOfBirth] = useState<Date | null>(null);
@@ -61,8 +67,10 @@ const RegisterStep2 = () => {
   const { mutate, isPending: isLoading } = useSignUp({
     onSuccess: (res: RegisterResponse) => {
       addToast(res?.message, 'success');
-      sessionStorage.setItem('email', formValues?.email);
-      sessionStorage.setItem('type', 'email');
+      if (formValues?.email) {
+        sessionStorage.setItem('email', formValues.email);
+        sessionStorage.setItem('type', 'email');
+      }
       router.push('/verify-email');
       sessionStorage.removeItem('registerDetails');
     },
@@ -88,7 +96,7 @@ const RegisterStep2 = () => {
       firstName: values.firstName,
       lastName: values.lastName,
       country: values.country,
-      ...(date_of_birth && { dateOfBirth: date_of_birth }),
+      ...(date_of_birth && { dateOfBirth: date_of_birth.toISOString() }),
     };
     mutate(payload);
   }

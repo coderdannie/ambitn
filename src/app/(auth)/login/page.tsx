@@ -90,10 +90,7 @@ const LoginPage = () => {
             Forgot Password?
           </Link>
           {/* Submit Button */}
-          <LoaderButton
-            isLoading={isPending}
-            isMobile={window.innerWidth < 768}
-          />
+          <LoaderButton isLoading={isPending} isMobile={isMobile} />
         </form>
 
         {isMobile && (
