@@ -23,7 +23,7 @@ const Layout = ({ children }: PropsWithChildren) => {
         } scrollbar-hide`}
       >
         <p className="text-center text-primary font-bold text-2xl pb-12 pt-6">
-          Forlio
+          Ambitn
         </p>
         <ToastProvider>{children}</ToastProvider>
       </div>
