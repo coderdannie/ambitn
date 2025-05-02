@@ -60,8 +60,10 @@ const LoginPage = () => {
 
   return (
     <div className="text-primary">
-      <h1 className="font-medium md:text-2xl">Welcome Back</h1>
-      <p>Join us now and start your job hunt journey with us.</p>
+      <h1 className="font-medium text-xl md:text-2xl">Welcome Back</h1>
+      <p className="text-sm md:text-base">
+        Join us now and start your job hunt journey with us.
+      </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className=" pt-8">
           {/* Email Field */}

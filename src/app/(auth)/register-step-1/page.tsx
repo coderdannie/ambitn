@@ -50,10 +50,12 @@ const RegisterPage = () => {
         Step 1 of 3
       </span>
       <div>
-        <h2 className="text-primary text-lg md:text-2xl font-medium pt-8">
+        <h2 className="text-primary text-xl md:text-2xl font-medium pt-8">
           Create an account
         </h2>
-        <p>Join us now and start your job hunt journey with us.</p>
+        <p className="text-sm md:text-base">
+          Join us now and start your job hunt journey with us.
+        </p>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className=" pt-8">
