@@ -9,16 +9,21 @@ import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useWindowSize } from '@/hooks/useWindowSize';
+import Link from 'next/link';
+import { useToast } from '@/context/ToastContext';
+import { useLogin } from '@/service/query/auth.service';
+import { LoaderButton } from '@/components/common/LoaderButton';
 
 const LoginPage = () => {
   const router = useRouter();
-
+  const { addToast } = useToast();
   const { isMobile } = useWindowSize();
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
+      password: '',
     },
     mode: 'onBlur',
   });
@@ -26,9 +31,31 @@ const LoginPage = () => {
   const { control, formState } = form;
   const { errors } = formState;
 
+  const { mutate, isPending } = useLogin({
+    onSuccess: (res: LoginResponse) => {
+      sessionStorage.setItem('user', JSON.stringify(res));
+      addToast(res.message, 'success');
+      setTimeout(() => {
+        if (!res?.data?.hasSelectedTopics) {
+          router.push('/account-setup');
+        } else {
+          router.push('/discover');
+        }
+      }, 200);
+    },
+    onError: (error: {
+      response?: { data?: { message?: string } };
+      message?: string;
+    }) => {
+      addToast(
+        error?.response?.data?.message || error?.message || 'An Error Occurred',
+        'error'
+      );
+    },
+  });
+
   function onSubmit(values: LoginSchemaType) {
-    router.push('/discover');
-    console.log(values);
+    mutate(values);
   }
 
   return (
@@ -39,24 +66,34 @@ const LoginPage = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className=" pt-8">
           {/* Email Field */}
           <div className="flex flex-col space-y-6">
-            <div>
-              <CustomFormField
-                label="email address"
-                name="email"
-                control={control}
-                placeholder="Valid email required"
-                error={errors.email?.message}
-              />
-            </div>
+            <CustomFormField
+              label="email address"
+              name="email"
+              control={control}
+              placeholder="Valid email required"
+              error={errors.email?.message}
+            />
+            <CustomFormField
+              label="password"
+              name="password"
+              control={control}
+              placeholder="Enter your password"
+              error={errors.password?.message}
+              showPasswordToggle
+              isPassword
+            />
           </div>
-
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            className={`secondary-btn mt-6 ${!isMobile && 'mb-4'}`}
+          <Link
+            className="flex justify-end w-fit ml-auto mt-3 hover:underline font-medium"
+            href="/forgot-password"
           >
-            Continue
-          </Button>
+            Forgot Password?
+          </Link>
+          {/* Submit Button */}
+          <LoaderButton
+            isLoading={isPending}
+            isMobile={window.innerWidth < 768}
+          />
         </form>
 
         {isMobile && (

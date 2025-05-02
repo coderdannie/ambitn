@@ -1,6 +1,7 @@
 'use client';
 
 import { CustomFormField } from '@/components/common/CustomFormField';
+import { LoaderButton } from '@/components/common/LoaderButton';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { useWindowSize } from '@/hooks/useWindowSize';
@@ -11,12 +12,14 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 const RegisterPage = () => {
   const router = useRouter();
 
   const { isMobile } = useWindowSize();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<RegisterStepOneSchemaType>({
     resolver: zodResolver(registerStepOneSchema),
@@ -31,8 +34,14 @@ const RegisterPage = () => {
   const { errors } = formState;
 
   function onSubmit(values: RegisterStepOneSchemaType) {
-    router.push('/register-step-2');
-    console.log(values);
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      // Store the complete registration data
+      sessionStorage.setItem('registerDetails', JSON.stringify(values));
+
+      router.push('/register-step-2');
+    }, 2000);
   }
 
   return (
@@ -68,12 +77,11 @@ const RegisterPage = () => {
           </div>
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            className={`secondary-btn mt-6 ${!isMobile && 'mb-4'}`}
-          >
-            Continue
-          </Button>
+          <LoaderButton
+            isLoading={isLoading}
+            isMobile={isMobile}
+            className="w-full"
+          />
         </form>
 
         {isMobile && (

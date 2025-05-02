@@ -1,10 +1,8 @@
 'use client';
 
 import { CustomFormField } from '@/components/common/CustomFormField';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { useGetCountries } from '@/hooks/location/useCountries';
-import { useWindowSize } from '@/hooks/useWindowSize';
 import {
   registerStepTwoSchema,
   RegisterStepTwoSchemaType,
@@ -18,11 +16,21 @@ import Calendar from 'react-calendar';
 import { formatDate } from '@/utils/helper';
 import { CiCalendarDate } from 'react-icons/ci';
 import Link from 'next/link';
+import { useSignUp } from '@/service/query/auth.service';
+import { useToast } from '@/context/ToastContext';
+import { LoaderButton } from '@/components/common/LoaderButton';
+import { useWindowSize } from '@/hooks/useWindowSize';
 
 const RegisterStep2 = () => {
   const router = useRouter();
 
+  const { addToast } = useToast();
+
   const { isMobile } = useWindowSize();
+
+  const storedValues = sessionStorage.getItem('registerDetails');
+  const formValues = storedValues ? JSON.parse(storedValues) : null;
+
   const [showCalendar, setShowCalendar] = useState(false);
   const [date_of_birth, setDateOfBirth] = useState<Date | null>(null);
 
@@ -41,18 +49,48 @@ const RegisterStep2 = () => {
     defaultValues: {
       firstName: '',
       lastName: '',
-      dob: '',
+      dateOfBirth: '',
       country: '',
     },
-    mode: 'onTouched',
+    mode: 'onBlur',
   });
 
   const { control, formState } = form;
   const { errors } = formState;
 
+  const { mutate, isPending: isLoading } = useSignUp({
+    onSuccess: (res: RegisterResponse) => {
+      addToast(res?.message, 'success');
+      sessionStorage.setItem('email', formValues?.email);
+      sessionStorage.setItem('type', 'email');
+      router.push('/verify-email');
+      sessionStorage.removeItem('registerDetails');
+    },
+    onError: (error: {
+      response?: { data?: { message?: string } };
+      message?: string;
+    }) => {
+      addToast(
+        error?.response?.data?.message || error?.message || 'An Error Occurred',
+        'error'
+      );
+    },
+  });
+
   function onSubmit(values: RegisterStepTwoSchemaType) {
-    console.log(values);
-    router.push('/verify-email');
+    if (!formValues) {
+      addToast('Missing registration details. Please start over.', 'error');
+      return;
+    }
+
+    const payload = {
+      ...formValues,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      country: values.country,
+      ...(date_of_birth && { dateOfBirth: date_of_birth }),
+    };
+    mutate(payload);
   }
 
   const handleCountryChange = (selectedOption: SingleValue | null) => {
@@ -140,7 +178,7 @@ const RegisterStep2 = () => {
                 name="lastName"
                 control={control}
                 placeholder="Enter last name"
-                error={errors.firstName?.message}
+                error={errors.lastName?.message}
               />
             </div>
             <div className="w-full ">
@@ -211,12 +249,12 @@ const RegisterStep2 = () => {
                 </Link>
               </p>
             </div>
-            <Button
-              type="submit"
-              className={`secondary-btn mt-6 mb-2 ${!isMobile && 'mb-4'}`}
-            >
-              Continue
-            </Button>
+
+            <LoaderButton
+              isLoading={isLoading}
+              isMobile={isMobile}
+              className="w-full"
+            />
           </div>
         </form>
       </Form>

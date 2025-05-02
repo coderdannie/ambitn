@@ -73,3 +73,18 @@ export const sidebarData = [
     hover: <SubscriptionIcon fill="#1A202C" />,
   },
 ];
+
+export const topics = [
+  'UI/UX',
+  'Graphics Design',
+  'Photography',
+  'Illustration',
+  'Product Design',
+  'Motion Design',
+  'Game Design',
+  '3D Art',
+  'Architecture',
+  'Art',
+  'Fashion',
+  'Advertising',
+];
