@@ -28,7 +28,6 @@ const Page = () => {
     defaultValues: {
       confirmPassword: '',
       password: '',
-      email: '',
     },
     mode: 'onTouched',
   });
@@ -53,7 +52,7 @@ const Page = () => {
     },
   });
 
-  function onSubmit(values: ChangePasswordBody) {
+  function onSubmit(values: any) {
     mutate({
       email: email,
       password: values?.password,

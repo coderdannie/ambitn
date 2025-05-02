@@ -86,7 +86,7 @@ const LoginPage = () => {
             />
           </div>
           <Link
-            className="flex justify-end w-fit ml-auto mt-3 hover:underline font-medium"
+            className="flex justify-end w-fit text-sm  ml-auto mt-3 hover:underline font-medium"
             href="/forgot-password"
           >
             Forgot Password?

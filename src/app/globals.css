@@ -192,7 +192,7 @@ button {
   }
 }
 .secondary-btn {
-  background: linear-gradient(to left, #1a202c, #441c31);
+  background: linear-gradient(to bottom, #1a202c, #441c31);
   border-radius: 10px;
   width: 100%;
   color: white;

@@ -19,4 +19,5 @@ export interface VerifyPasswordChange {
 export interface ChangePasswordBody {
   email?: string | undefined | null;
   password: string;
+  confirmPassword?: string;
 }
