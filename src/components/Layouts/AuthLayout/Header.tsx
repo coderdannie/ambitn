@@ -5,14 +5,15 @@ import { HiOutlineBell } from 'react-icons/hi2';
 import { IoMenuSharp } from 'react-icons/io5';
 import { useWindowSize } from '@/hooks/useWindowSize';
 import SearchInput from '@/components/common/SearchInput';
+import MobileSidebar from './Sidedrawer';
 
 const Header = () => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { isMobile } = useWindowSize();
   const [searchTerm, setSearchTerm] = useState('');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
+  const toggleMobileSidebar = () => {
+    setIsMobileSidebarOpen(!isMobileSidebarOpen);
   };
 
   return (
@@ -21,7 +22,7 @@ const Header = () => {
     >
       <button
         className={`${isMobile ? 'block' : 'hidden'} `}
-        onClick={toggleDrawer}
+        onClick={toggleMobileSidebar}
       >
         <IoMenuSharp className="text-primary text-3xl" />
       </button>
@@ -57,12 +58,15 @@ const Header = () => {
         </div>
       </div>
 
-      {/* <SideDrawer isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} /> */}
       {/* Notification Modal */}
       {/* <NotificationsPanel
         isOpen={isNotificationOpen}
         onClose={() => setIsNotificationOpen(false)}
       /> */}
+      <MobileSidebar
+        isOpen={isMobileSidebarOpen}
+        onClose={toggleMobileSidebar}
+      />
     </header>
   );
 };
