@@ -9,3 +9,4 @@ export const CHANGE_PASS = 'auth/change-password';
 export const RESEND_PASS_OTP = 'auth/resend-password-reset-otp';
 export const RESEND_ACCOUNT_CREATION_OTP = `${BASE_URL}auth/resend-account-setup-otp`;
 export const ACCOUNT_SETUP = `users/add-topics`;
+export const GET_PROFILE = 'users/get-profile';

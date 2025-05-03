@@ -135,7 +135,7 @@ const VerifyEmail = () => {
         });
       }
     },
-    [mutate, addToast, email]
+    [mutate, addToast, email, mutateVerifyPasswordOtp]
   );
 
   const handleResendOtp = () => {

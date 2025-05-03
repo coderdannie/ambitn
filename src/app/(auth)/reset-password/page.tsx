@@ -14,7 +14,7 @@ import { useState } from 'react';
 import PasswordResetSuccess from '@/components/modals/PasswordResetSuccess';
 import { useChangePassword } from '@/service/query/auth.service';
 import { useToast } from '@/context/ToastContext';
-import { ChangePasswordBody } from '@/types/auth';
+// import { ChangePasswordBody } from '@/types/auth';
 import { LoaderButton } from '@/components/common/LoaderButton';
 
 const Page = () => {

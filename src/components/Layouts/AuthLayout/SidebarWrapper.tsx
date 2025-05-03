@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import { cn } from '@/lib/utils';
+import { useWindowSize } from '@/hooks/useWindowSize';
 
 export default function SidebarWrapper() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -13,22 +14,27 @@ export default function SidebarWrapper() {
     setIsMounted(true);
   }, []);
 
+  const { isMobile } = useWindowSize();
   return (
-    <div
-      className={cn(
-        'h-full flex-shrink-0 overflow-y-auto transition-all duration-300',
-        '', // Just for visibility
-        isCollapsed ? 'w-28' : 'w-68'
+    <>
+      {!isMobile && (
+        <div
+          className={cn(
+            'h-full relative z-20 flex-shrink-0 overflow-y-auto transition-all duration-300',
+            '', // Just for visibility
+            isCollapsed ? 'w-28' : 'w-68'
+          )}
+          style={{
+            // Only apply the width transition after mounting to avoid flash
+            transition: isMounted ? 'width 300ms ease-in-out' : 'none',
+          }}
+        >
+          <Sidebar
+            isCollapsed={isCollapsed}
+            onToggle={() => setIsCollapsed(!isCollapsed)}
+          />
+        </div>
       )}
-      style={{
-        // Only apply the width transition after mounting to avoid flash
-        transition: isMounted ? 'width 300ms ease-in-out' : 'none',
-      }}
-    >
-      <Sidebar
-        isCollapsed={isCollapsed}
-        onToggle={() => setIsCollapsed(!isCollapsed)}
-      />
-    </div>
+    </>
   );
 }
