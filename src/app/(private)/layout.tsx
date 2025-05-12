@@ -19,8 +19,8 @@ export default function RootLayout({
           <Header />
           <main
             className={cn(
-              'flex-1 pb-6 max-w-[1277px] relative w-full pt-24 ',
-              'px-6 pt-5 overflow-auto -z-10 '
+              'flex-1 pb-6 max-w-[1277px] relative w-full pt-24',
+              'px-6 pt-5 overflow-auto' // Removed -z-10
             )}
           >
             {children}

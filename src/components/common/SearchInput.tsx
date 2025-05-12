@@ -23,7 +23,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         placeholder={placeholder}
         value={value || ''} // Ensure value is never undefined
         onChange={(e) => setValue(e.target.value)}
-        className="ml-[8px] w-full bg-transparent text-[14px] text-[#333333] placeholder:text-[#667085] outline-none"
+        className="ml-[8px] w-full bg-transparent text-[14px] text-[#333333] placeholder:text-[#C7C7C7] outline-none"
       />
     </div>
   );

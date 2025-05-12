@@ -33,7 +33,11 @@ const Header = () => {
       >
         {!isMobile && (
           <div className="h-[36px] max-w-[550px] w-full">
-            <SearchInput value={searchTerm} setValue={setSearchTerm} />
+            <SearchInput
+              value={searchTerm}
+              setValue={setSearchTerm}
+              placeholder="Search projects of talented creators........"
+            />
           </div>
         )}
 

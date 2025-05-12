@@ -3,6 +3,7 @@
 import Slider from '@/components/Layouts/NonAuthLayout/Slider';
 import { ToastProvider } from '@/context/ToastContext';
 import { useWindowSize } from '@/hooks/useWindowSize';
+import Image from 'next/image';
 import { PropsWithChildren } from 'react';
 
 const Layout = ({ children }: PropsWithChildren) => {
@@ -22,9 +23,20 @@ const Layout = ({ children }: PropsWithChildren) => {
           isMobile ? 'pb-[1.4rem]' : 'pb-4'
         } scrollbar-hide`}
       >
-        <p className="text-center text-primary font-bold text-2xl pb-12 pt-6">
-          Ambitn
-        </p>
+        <div
+          className={`grid   place-items-center text-primary font-bold text-2xl  ${
+            isMobile ? 'pt-8 pb-8' : 'pt-6 pb-10'
+          } `}
+        >
+          <Image
+            src="/assets/logo.png"
+            alt="ambitn logo"
+            className="w-[140px]"
+            width={100}
+            height={100}
+          />
+        </div>
+
         <ToastProvider>{children}</ToastProvider>
       </div>
     </div>
