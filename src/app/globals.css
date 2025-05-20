@@ -304,3 +304,57 @@ abbr[title] {
   color: #d3d3d3; /* Gray out the text */
   pointer-events: none; /* Disable clicking */
 }
+
+/* styles/quil.css */
+/* .ql-toolbar.ql-snow {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.375rem 0.375rem 0 0 !important;
+}
+
+.ql-container.ql-snow {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0 0 0.375rem 0.375rem !important;
+  min-height: 100px;
+} */
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  border: none;
+  background: transparent;
+  overflow: auto;
+  outline: none;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+/* .caption-editor {
+  height: 120px;
+}
+.caption-editor .ql-toolbar {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  background-color: #f9fafb;
+  padding: 4px 8px;
+}
+.caption-editor .ql-container {
+  border: none;
+  font-size: 14px;
+}
+.caption-editor .ql-editor {
+  padding: 8px 12px;
+  min-height: 80px;
+} */

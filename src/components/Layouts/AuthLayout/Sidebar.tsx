@@ -8,6 +8,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useGetProfile } from '@/service/query/account.service';
+import { FaUserCircle } from 'react-icons/fa';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -62,6 +64,8 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
     }, 1000);
   };
 
+  const { data } = useGetProfile();
+
   return (
     <motion.div
       className="h-full flex flex-col justify-between p-4"
@@ -78,7 +82,13 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           }}
           transition={{ duration: 0.2 }}
         >
-          Folio
+          <Image
+            src="/assets/logo.png"
+            alt="ambitn logo"
+            className="w-[120px] h-auto"
+            width={140}
+            height={40}
+          />
         </motion.div>
 
         <motion.button
@@ -102,26 +112,18 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
       {/* Sidebar Menu */}
       <nav className="flex-1 mt-8 shadow-[0_2px_7px_rgba(0,0,0,0.1)] rounded-[16px] px-4 pt-4">
         {isCollapsed ? (
-          <Image
-            className="rounded-full"
-            src="/assets/profilepic.png"
-            alt="profile picture"
-            width={40}
-            height={40}
-          />
+          <FaUserCircle className="w-8 h-8 text-gray-400" />
         ) : (
           <div className="flex items-center gap-1 pl-2 pr-[2px] border-[#E5E7EB] border rounded-2xl py-3">
-            <Image
-              className="rounded-full"
-              src="/assets/profilepic.png"
-              alt="profile picture"
-              width={40}
-              height={40}
-            />
+            <FaUserCircle className="w-8 h-8 text-gray-400" />
 
-            <div className="">
-              <h4 className="text-sm text-[#14171F]">Independent Workspace</h4>
-              <p className="text-[#677084] text-xs">Kehinde Falodi</p>
+            <div>
+              <h4 className="text-xs font-medium text-[#14171F]">
+                Independent Workspace
+              </h4>
+              {/* <p className="text-[#677084] text-sm font-medium">
+                {data?.data?.firstName} {data?.data?.lastName}
+              </p> */}
             </div>
           </div>
         )}

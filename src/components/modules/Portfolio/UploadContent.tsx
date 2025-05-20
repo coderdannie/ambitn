@@ -2,8 +2,9 @@
 
 import Template from '@/components/common/Template';
 import { motion } from 'framer-motion';
-import { ArrowRight, Upload } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const tabs = [
@@ -12,12 +13,13 @@ const tabs = [
 ];
 
 const UploadContent = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('upload project');
 
   return (
     <>
       {/* Action Buttons */}
-      <div className="mt-6 flex items-center justify-between">
+      <div className="mt-6 mb-8 flex items-center justify-between">
         <div className="grid grid-cols-2  p-2  bg-[#F7F5F4] items-center rounded-lg">
           {tabs.map((tab, i) => (
             <button
@@ -38,13 +40,14 @@ const UploadContent = () => {
       {activeTab.includes('templates') ? (
         <Template />
       ) : (
-        <motion.div
-          className="mt-8 border-2 border-dashed w-fit mx-auto border-[#718096] rounded-lg p-12 flex flex-col items-center justify-center text-center"
-          whileHover={{ scale: 1.01, borderColor: '#805AD5' }}
+        <motion.button
+          className=" border-2 border-dashed w-fit cursor-pointer mx-auto border-[#718096] rounded-lg p-12 flex flex-col items-center justify-center text-center"
+          whileHover={{ scale: 1.01, borderColor: '#441C31' }}
           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={() => router.push('/portfolio-builder')}
         >
           <motion.div
             className="mb-4"
@@ -74,15 +77,15 @@ const UploadContent = () => {
             Show off your best projects and contribute to a growing community
           </p>
 
-          <motion.button
+          {/* <motion.button
             className="px-4 py-2 bg-purple-600 text-white rounded-md flex items-center space-x-2 hover:bg-purple-700 transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <span>Get Started</span>
             <ArrowRight size={16} />
-          </motion.button>
-        </motion.div>
+          </motion.button> */}
+        </motion.button>
       )}
     </>
   );

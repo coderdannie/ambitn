@@ -88,3 +88,7 @@ export const topics = [
   'Fashion',
   'Advertising',
 ];
+
+export const ItemTypes = {
+  PROJECT: 'PROJECT',
+};

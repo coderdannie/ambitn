@@ -3,7 +3,8 @@
 import { topics } from '@/components/common/constants';
 import { LoaderButton } from '@/components/common/LoaderButton';
 import { useToast } from '@/context/ToastContext';
-import { useAddTopics } from '@/service/query/account.service';
+import { useAddTopics, useGetProfile } from '@/service/query/account.service';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -16,6 +17,10 @@ const TopicSelection = () => {
   const { addToast } = useToast();
   const router = useRouter();
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+
+  const { data } = useGetProfile();
+
+  console.log(data);
 
   const { mutate, isPending } = useAddTopics({
     onSuccess: (res: AccountSetupResponse) => {
@@ -47,10 +52,39 @@ const TopicSelection = () => {
 
   return (
     <>
-      <header className="  pt-4 border-b border-black">
-        <div className="align-element flex justify-between pb-4">
-          <div>Folio</div>
-          <h1>Welcome, Gopregha</h1>
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="align-element flex items-center justify-between px-4 py-3 max-w-7xl mx-auto">
+          <Image
+            src="/assets/logo.png"
+            alt="ambitn logo"
+            className="w-[100px]  sm:w-[140px] h-auto"
+            width={140}
+            height={40}
+          />
+          <div className="flex items-center space-x-4">
+            <span className=" text-gray-600 font-medium ">
+              Welcome, {data?.data?.firstName || 'User'}
+            </span>
+            <button
+              onClick={() => router.push('/profile')}
+              className="hover:bg-gray-100 p-2 rounded-full transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </button>
+          </div>
         </div>
       </header>
       <div className="flex flex-col items-center max-w-xl mx-auto px-4 pb-8 pt-14">

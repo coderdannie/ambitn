@@ -31,6 +31,14 @@ const Header = () => {
           isMobile ? 'justify-end' : 'justify-between'
         } w-full`}
       >
+        {' '}
+        <Image
+          src="/assets/logo.png"
+          alt="ambitn logo"
+          className="w-[120px] h-auto"
+          width={140}
+          height={40}
+        />
         {!isMobile && (
           <div className="h-[36px] max-w-[550px] w-full">
             <SearchInput
@@ -40,7 +48,6 @@ const Header = () => {
             />
           </div>
         )}
-
         <div className="flex items-center gap-[20px] ">
           <div className="flex items-center gap-5">
             {/* Notification Bell */}

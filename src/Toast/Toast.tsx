@@ -6,6 +6,8 @@ import {
   Info,
   AlertTriangle,
 } from 'lucide-react';
+import { IoMdCloseCircle } from 'react-icons/io';
+import { IoCheckmarkCircleSharp } from 'react-icons/io5';
 
 export type ToastType = {
   id: string;
@@ -34,14 +36,16 @@ export const Toast: React.FC<ToastProps> = ({ toast, onClose }) => {
           bg: 'bg-emerald-50',
           text: 'text-emerald-800',
           border: 'border-emerald-200',
-          icon: <CheckCircle2 className="text-emerald-600" size={20} />,
+          icon: (
+            <IoCheckmarkCircleSharp className="text-emerald-600" size={20} />
+          ),
         };
       case 'error':
         return {
           bg: 'bg-red-50',
           text: 'text-red-800',
           border: 'border-red-200',
-          icon: <AlertCircle className="text-red-600" size={20} />,
+          icon: <IoMdCloseCircle className="text-red-600" size={20} />,
         };
       case 'warning':
         return {
@@ -71,7 +75,8 @@ export const Toast: React.FC<ToastProps> = ({ toast, onClose }) => {
 
   return (
     <div
-      className={`${styles.bg} ${styles.text} ${styles.border} border px-4 py-3 rounded-lg shadow-sm flex items-start gap-3 w-full max-w-md transition-all duration-300 ease-in-out`}
+      style={{ background: 'linear-gradient(to right, #1a202c, #441c31' }}
+      className={`${styles.bg}  ${styles.border} border px-4 text-white py-3 rounded-lg shadow-sm flex items-start gap-3 w-full max-w-md transition-all duration-300 ease-in-out`}
     >
       <div className="mt-0.5">{styles.icon}</div>
       <div className="flex-1">
@@ -79,7 +84,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onClose }) => {
       </div>
       <button
         onClick={() => onClose(toast.id)}
-        className="text-gray-400 hover:text-gray-500 transition-colors"
+        className="text-white hover:text-gray-500 transition-colors"
         aria-label="Close toast"
       >
         <X size={16} />

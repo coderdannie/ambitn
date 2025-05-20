@@ -25,7 +25,7 @@ const Layout = ({ children }: PropsWithChildren) => {
       >
         <div
           className={`grid   place-items-center text-primary font-bold text-2xl  ${
-            isMobile ? 'pt-8 pb-8' : 'pt-6 pb-10'
+            isMobile ? 'pt-6 pb-8' : 'pt-6 pb-10'
           } `}
         >
           <Image
