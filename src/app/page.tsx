@@ -1,5 +1,14 @@
-import { redirect } from 'next/navigation';
+import React from "react";
+import HomePage from "./(public)/page";
 
-export default function Home() {
-  redirect('/login');
-}
+const page = () => {
+  return (
+    <>
+      <HomePage />
+    </>
+  );
+};
+
+export default page;
+
+//Initially, he used next redirect here cause the initial landing page was not ready
