@@ -117,6 +117,51 @@
   display: none;
 }
 
+Chrome,
+Safari,
+and Opera ::-webkit-scrollbar {
+  width: 6px;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.05) c;
+}
+
+/* Firefox */
+/* For Firefox 64+ */
+* {
+  scrollbar-color: #1a202c rgba(0, 0, 0, 0.05);
+  scrollbar-width: thin;
+}
+
+/* For Firefox 63 and below */
+* {
+  scrollbar-color: #1a202c rgba(0, 0, 0, 0.05);
+}
+
+/* Microsoft Edge and IE */
+* {
+  -ms-overflow-style: none; /* Hide the scrollbar in IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -197,6 +242,9 @@ button {
   width: 100%;
   color: white;
   @apply h-[46px] md:h-[56px];
+}
+.secondary-btn-gradient {
+  background: linear-gradient(to bottom, #1a202c, #441c31);
 }
 .rs-picker-menu {
   z-index: 20000 !important;
@@ -305,6 +353,22 @@ abbr[title] {
   pointer-events: none; /* Disable clicking */
 }
 
+.editor-transition {
+  transition: all 0.3s ease;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* styles/quil.css */
 /* .ql-toolbar.ql-snow {
   border: 1px solid #e2e8f0 !important;
@@ -358,3 +422,63 @@ abbr[title] {
   padding: 8px 12px;
   min-height: 80px;
 } */
+
+.my-heading {
+  margin: 1rem 0;
+  font-weight: bold;
+}
+
+.my-heading.h1 {
+  font-size: 2em;
+}
+.my-heading.h2 {
+  font-size: 1.5em;
+}
+.my-heading.h3 {
+  font-size: 1.17em;
+}
+.my-heading.h4 {
+  font-size: 1em;
+}
+.my-heading.h5 {
+  font-size: 0.83em;
+}
+.my-heading.h6 {
+  font-size: 0.67em;
+}
+
+/* Add these styles to your global CSS */
+.ProseMirror h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0.67em 0;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0.83em 0;
+}
+
+.ProseMirror h3 {
+  font-size: 1.17em;
+  font-weight: bold;
+  margin: 1em 0;
+}
+
+.ProseMirror h4 {
+  font-weight: bold;
+  margin: 1.33em 0;
+}
+
+.ProseMirror h5 {
+  font-size: 0.83em;
+  font-weight: bold;
+  margin: 1.67em 0;
+}
+
+.ProseMirror h6 {
+  font-size: 0.67em;
+  font-weight: bold;
+  margin: 2.33em 0;
+}

@@ -1,21 +1,31 @@
 'use client';
 
 import FileInput from './FileInput';
-import { MdAudiotrack, MdCode, MdLink } from 'react-icons/md';
+import { MdCode, MdLink } from 'react-icons/md';
 import { RxText } from 'react-icons/rx';
+import { IoMusicalNotesOutline } from 'react-icons/io5';
 
 interface Props {
   setAddingText: (prop: boolean) => void;
   handleImageSelected: (prop: File) => void;
   handleVideoSelected: (prop: File) => void;
+  setTextContent?: (content: string) => void;
 }
+
 export default function AddContentPanel({
   handleImageSelected,
   setAddingText,
   handleVideoSelected,
+  setTextContent,
 }: Props) {
+  const handleTextClick = () => {
+    if (setTextContent) {
+      setTextContent(''); // Clear previous text content
+    }
+    setAddingText(true);
+  };
   return (
-    <div className="w-full rounded-xl border border-gray-200 shadow-sm bg-white h-fit">
+    <div className="w-full hidden md:block overflow-hidden rounded-xl border border-gray-200 shadow-sm bg-white h-fit">
       <h2 className="text-sm font-semibold bg-[#F7FAFCB2] px-2 py-4">
         Add Content
       </h2>
@@ -27,10 +37,11 @@ export default function AddContentPanel({
           onFileSelected={handleImageSelected}
           className="border border-gray-200"
         />
+
         {/* Text */}
         <button
           className="flex flex-col items-center justify-center gap-1 p-4 border border-gray-200 hover:bg-gray-50"
-          onClick={() => setAddingText(true)}
+          onClick={handleTextClick}
         >
           <RxText className="text-xl" />
           <span className="text-sm">Text</span>
@@ -38,7 +49,7 @@ export default function AddContentPanel({
 
         {/* Audio */}
         <div className="flex flex-col items-center justify-center gap-1 p-4 border border-gray-200 hover:bg-gray-50">
-          <MdAudiotrack className="text-xl" />
+          <IoMusicalNotesOutline className="text-xl" />
           <span className="text-sm">Audio</span>
         </div>
 

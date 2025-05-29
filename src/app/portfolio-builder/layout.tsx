@@ -1,6 +1,6 @@
 'use client';
 
-import Header from '@/components/Layouts/AuthLayout/Header';
+import Header from '@/components/Layouts/AuthLayout/SecondarHeader';
 import { ToastProvider } from '@/context/ToastContext';
 
 export default function RootLayout({
@@ -9,7 +9,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="align-element   px-4 py-3 max-w-[1500px] mx-auto">
+    <div className=" bg-[#fcfcfc] min-h-screen  h-auto  max-w-[1600px] mx-auto">
       <Header />
       <ToastProvider>{children}</ToastProvider>
     </div>

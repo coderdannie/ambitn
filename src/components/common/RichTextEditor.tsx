@@ -12,6 +12,7 @@ import {
   Link,
   Unlink,
   ChevronDown,
+  Check,
 } from 'lucide-react';
 
 // Import Shadcn components
@@ -30,6 +31,7 @@ const ReactQuill = dynamic(() => import('react-quill-new'), {
 
 // Import Quill CSS
 import 'react-quill/dist/quill.snow.css';
+import { fontSizes } from './constants';
 
 interface RichTextEditorProps {
   value: string;
@@ -37,6 +39,38 @@ interface RichTextEditorProps {
   placeholder?: string;
   autoFocus?: boolean;
 }
+
+// Extended font families
+const fontFamilies = [
+  { value: 'arial', label: 'Arial', className: 'font-sans' },
+  { value: 'helvetica', label: 'Helvetica', className: 'font-sans' },
+  {
+    value: 'times-new-roman',
+    label: 'Times New Roman',
+    className: 'font-serif',
+  },
+  { value: 'courier-new', label: 'Courier New', className: 'font-mono' },
+  { value: 'georgia', label: 'Georgia', className: 'font-serif' },
+  { value: 'trebuchet-ms', label: 'Trebuchet MS', className: 'font-sans' },
+  { value: 'verdana', label: 'Verdana', className: 'font-sans' },
+  { value: 'comic-sans-ms', label: 'Comic Sans MS', className: 'font-sans' },
+  { value: 'impact', label: 'Impact', className: 'font-sans' },
+  { value: 'palatino', label: 'Palatino', className: 'font-serif' },
+  { value: 'garamond', label: 'Garamond', className: 'font-serif' },
+  { value: 'bookman', label: 'Bookman', className: 'font-serif' },
+  { value: 'tahoma', label: 'Tahoma', className: 'font-sans' },
+  { value: 'lucida-console', label: 'Lucida Console', className: 'font-mono' },
+  { value: 'monaco', label: 'Monaco', className: 'font-mono' },
+];
+
+// Paragraph styles
+const paragraphStyles = [
+  { value: 'normal', label: 'Paragraph' },
+  { value: 'h1', label: 'Header' },
+  { value: 'h2', label: 'Subheader' },
+  { value: 'quote', label: 'Quote' },
+  { value: 'code', label: 'Code' },
+];
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
@@ -47,6 +81,15 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const quillRef = useRef<any>(null);
   const [mounted, setMounted] = useState(false);
   const [editorReady, setEditorReady] = useState(false);
+  const [currentSize, setCurrentSize] = useState('16px');
+  const [currentFont, setCurrentFont] = useState('Arial');
+  const [currentParagraphStyle, setCurrentParagraphStyle] = useState('normal');
+  const [formatStates, setFormatStates] = useState({
+    bold: false,
+    italic: false,
+    underline: false,
+    align: '',
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -55,6 +98,72 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }, 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Initialize custom sizes and fonts for Quill
+  useEffect(() => {
+    if (mounted && editorReady && typeof window !== 'undefined') {
+      const Quill = require('react-quill-new').Quill;
+
+      // Register font size
+      const Size = Quill.import('attributors/style/size');
+      Size.whitelist = fontSizes;
+      Quill.register(Size, true);
+
+      // Register font family
+      const Font = Quill.import('formats/font');
+      Font.whitelist = fontFamilies.map((font) => font.value);
+      Quill.register(Font, true);
+
+      // Set up listeners for format changes
+      const quill = getQuill();
+      if (quill) {
+        quill.on('editor-change', () => {
+          const selection = quill.getSelection();
+          if (selection) {
+            const formats = quill.getFormat(selection);
+
+            // Update current font
+            if (formats.font) {
+              const fontFamily = fontFamilies.find(
+                (f) => f.value === formats.font
+              );
+              setCurrentFont(fontFamily ? fontFamily.label : 'Arial');
+            } else {
+              setCurrentFont('Arial');
+            }
+
+            // Update current size
+            if (formats.size) {
+              setCurrentSize(formats.size);
+            } else {
+              setCurrentSize('16px');
+            }
+
+            // Update paragraph style
+            if (formats.header === 1) {
+              setCurrentParagraphStyle('h1');
+            } else if (formats.header === 2) {
+              setCurrentParagraphStyle('h2');
+            } else if (formats.blockquote) {
+              setCurrentParagraphStyle('quote');
+            } else if (formats['code-block']) {
+              setCurrentParagraphStyle('code');
+            } else {
+              setCurrentParagraphStyle('normal');
+            }
+
+            // Update format states
+            setFormatStates({
+              bold: !!formats.bold,
+              italic: !!formats.italic,
+              underline: !!formats.underline,
+              align: formats.align || 'left',
+            });
+          }
+        });
+      }
+    }
+  }, [mounted, editorReady]);
 
   // Function to get Quill instance
   const getQuill = () => {
@@ -70,12 +179,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     quill.focus();
     const selection = quill.getSelection();
     if (selection) {
-      // Special handling for size to set default
-      if (format === 'size' && value === undefined) {
-        quill.format('size', '20px');
-        return;
-      }
-
       if (value !== undefined) {
         quill.format(format, value);
       } else {
@@ -138,7 +241,30 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   // Set font family
   const setFontFamily = (font: string) => {
-    formatText('font', font);
+    const quill = getQuill();
+    if (!quill) return;
+
+    quill.format('font', font);
+    quill.focus();
+  };
+
+  // Set alignment
+  const setAlignment = (align: string) => {
+    const quill = getQuill();
+    if (!quill) return;
+
+    const selection = quill.getSelection();
+    if (selection) {
+      // For left alignment, we set it to false to remove alignment (default)
+      const alignValue = align === 'left' ? false : align;
+      quill.formatLine(
+        selection.index,
+        selection.length || 1,
+        'align',
+        alignValue
+      );
+      quill.focus();
+    }
   };
 
   // Set font size
@@ -146,13 +272,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     const quill = getQuill();
     if (!quill) return;
 
-    // Remove any existing size format first
-    quill.format('size', false);
-
-    // Apply the new size
     quill.format('size', size);
-
-    // Focus the editor
+    setCurrentSize(size);
     quill.focus();
   };
 
@@ -161,17 +282,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     clipboard: {
       matchVisual: false,
     },
-    size: [
-      '10px',
-      '12px',
-      '14px',
-      '16px',
-      '18px',
-      '20px',
-      '24px',
-      '28px',
-      '32px',
-    ],
     keyboard: {
       bindings: {
         list: {
@@ -213,182 +323,78 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         {/* Paragraph Style Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center px-3 py-1 hover:bg-gray-700 rounded">
-            <span className="mr-1 text-sm">Paragraph</span>
+            <span className="mr-1 text-sm">
+              {paragraphStyles.find((p) => p.value === currentParagraphStyle)
+                ?.label || 'Paragraph'}
+            </span>
             <ChevronDown size={16} />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-white text-black dropdown-menu-content">
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setParagraphStyle('normal');
-              }}
-            >
-              Paragraph
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setParagraphStyle('h1');
-              }}
-            >
-              Header
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setParagraphStyle('h2');
-              }}
-            >
-              Subheader
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setParagraphStyle('quote');
-              }}
-            >
-              Quote
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setParagraphStyle('code');
-              }}
-            >
-              Code
-            </DropdownMenuItem>
+            {paragraphStyles.map((style) => (
+              <DropdownMenuItem
+                key={style.value}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setParagraphStyle(style.value);
+                }}
+                className="flex items-center justify-between"
+              >
+                <span>{style.label}</span>
+                {currentParagraphStyle === style.value && (
+                  <Check size={16} className="text-blue-600" />
+                )}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
 
         {/* Font Family Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center px-3 py-1 hover:bg-gray-700 rounded ml-2">
-            <span className="mr-1 text-sm">Font</span>
+            <span className="mr-1 text-sm">{currentFont}</span>
             <ChevronDown size={16} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white text-black dropdown-menu-content">
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontFamily('Arial');
-              }}
-            >
-              Arial
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontFamily('Helvetica');
-              }}
-            >
-              Helvetica
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontFamily('Times New Roman');
-              }}
-            >
-              Times New Roman
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontFamily('Courier New');
-              }}
-            >
-              Courier New
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontFamily('Georgia');
-              }}
-            >
-              Georgia
-            </DropdownMenuItem>
+          <DropdownMenuContent className="bg-white text-black dropdown-menu-content max-h-80 overflow-y-auto">
+            {fontFamilies.map((font) => (
+              <DropdownMenuItem
+                key={font.value}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFontFamily(font.value);
+                }}
+                className={`flex items-center justify-between ${font.className}`}
+              >
+                <span>{font.label}</span>
+                {currentFont === font.label && (
+                  <Check size={16} className="text-blue-600" />
+                )}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
 
         {/* Font Size Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center px-3 py-1 hover:bg-gray-700 rounded ml-2">
-            <span className="mr-1 text-sm">Size</span>
+            <span className="mr-1 text-sm">{currentSize}</span>
             <ChevronDown size={16} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white text-black dropdown-menu-content">
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontSize('12px');
-              }}
-              className="text-xs"
-            >
-              12px
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontSize('14px');
-              }}
-              className="text-sm"
-            >
-              14px
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontSize('16px');
-              }}
-              className="text-base"
-            >
-              16px
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontSize('18px');
-              }}
-              className="text-lg"
-            >
-              18px
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontSize('20px');
-              }}
-              className="text-xl"
-            >
-              20px (Default)
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontSize('24px');
-              }}
-              className="text-2xl"
-            >
-              24px
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontSize('28px');
-              }}
-              className="text-3xl"
-            >
-              28px
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation();
-                setFontSize('32px');
-              }}
-              className="text-4xl"
-            >
-              32px
-            </DropdownMenuItem>
+          <DropdownMenuContent className="bg-white h-[400px] overflow-y-auto text-black dropdown-menu-content">
+            {fontSizes.map((size) => (
+              <DropdownMenuItem
+                key={size}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFontSize(size);
+                }}
+                className="flex items-center justify-between"
+              >
+                <span>{size}</span>
+                {currentSize === size && (
+                  <Check size={16} className="text-blue-600" />
+                )}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -397,19 +403,27 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
         {/* Text formatting */}
         <button
-          className="p-1 hover:bg-gray-700 rounded"
+          className={`p-1 rounded ${
+            formatStates.bold ? 'bg-blue-600 text-white' : 'hover:bg-gray-700'
+          }`}
           onClick={() => formatText('bold')}
         >
           <Bold size={18} />
         </button>
         <button
-          className="p-1 hover:bg-gray-700 rounded"
+          className={`p-1 rounded ${
+            formatStates.italic ? 'bg-blue-600 text-white' : 'hover:bg-gray-700'
+          }`}
           onClick={() => formatText('italic')}
         >
           <Italic size={18} />
         </button>
         <button
-          className="p-1 hover:bg-gray-700 rounded"
+          className={`p-1 rounded ${
+            formatStates.underline
+              ? 'bg-blue-600 text-white'
+              : 'hover:bg-gray-700'
+          }`}
           onClick={() => formatText('underline')}
         >
           <Underline size={18} />
@@ -420,20 +434,32 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
         {/* Alignment */}
         <button
-          className="p-1 hover:bg-gray-700 rounded"
-          onClick={() => formatText('align', '')}
+          className={`p-1 rounded ${
+            !formatStates.align || formatStates.align === 'left'
+              ? 'bg-blue-600 text-white'
+              : 'hover:bg-gray-700'
+          }`}
+          onClick={() => setAlignment('left')}
         >
           <AlignLeft size={18} />
         </button>
         <button
-          className="p-1 hover:bg-gray-700 rounded"
-          onClick={() => formatText('align', 'center')}
+          className={`p-1 rounded ${
+            formatStates.align === 'center'
+              ? 'bg-blue-600 text-white'
+              : 'hover:bg-gray-700'
+          }`}
+          onClick={() => setAlignment('center')}
         >
           <AlignCenter size={18} />
         </button>
         <button
-          className="p-1 hover:bg-gray-700 rounded"
-          onClick={() => formatText('align', 'right')}
+          className={`p-1 rounded ${
+            formatStates.align === 'right'
+              ? 'bg-blue-600 text-white'
+              : 'hover:bg-gray-700'
+          }`}
+          onClick={() => setAlignment('right')}
         >
           <AlignRight size={18} />
         </button>
@@ -529,6 +555,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           margin: 0 8px !important;
         }
 
+        /* Active state styles */
+        .rich-text-editor #toolbar button.bg-blue-600 {
+          background-color: #2563eb !important;
+        }
+
         /* Ensure Quill container styles */
         .rich-text-editor .ql-container.ql-snow {
           border: none !important;
@@ -541,44 +572,147 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           max-height: 400px !important;
           overflow-y: auto !important;
           padding: 12px 15px !important;
+          font-size: 16px !important;
         }
 
         /* Fix for dropdown menus */
         .rich-text-editor .dropdown-menu-content {
           z-index: 1000 !important;
         }
-        /* Set default font size for the editor */
-        .rich-text-editor .ql-editor {
-          font-size: 20px !important;
-        }
 
-        /* Style for different font sizes in the editor */
-        .rich-text-editor .ql-size-10px {
-          font-size: 10px !important;
+        /* Font size styles */
+        .ql-editor .ql-size-11px {
+          font-size: 11px !important;
         }
-        .rich-text-editor .ql-size-12px {
+        .ql-editor .ql-size-12px {
           font-size: 12px !important;
         }
-        .rich-text-editor .ql-size-14px {
+        .ql-editor .ql-size-14px {
           font-size: 14px !important;
         }
-        .rich-text-editor .ql-size-16px {
+        .ql-editor .ql-size-16px {
           font-size: 16px !important;
         }
-        .rich-text-editor .ql-size-18px {
+        .ql-editor .ql-size-18px {
           font-size: 18px !important;
         }
-        .rich-text-editor .ql-size-20px {
-          font-size: 20px !important;
-        }
-        .rich-text-editor .ql-size-24px {
+        .ql-editor .ql-size-24px {
           font-size: 24px !important;
         }
-        .rich-text-editor .ql-size-28px {
-          font-size: 28px !important;
+        .ql-editor .ql-size-30px {
+          font-size: 30px !important;
         }
-        .rich-text-editor .ql-size-32px {
-          font-size: 32px !important;
+        .ql-editor .ql-size-36px {
+          font-size: 36px !important;
+        }
+        .ql-editor .ql-size-48px {
+          font-size: 48px !important;
+        }
+        .ql-editor .ql-size-60px {
+          font-size: 60px !important;
+        }
+        .ql-editor .ql-size-72px {
+          font-size: 72px !important;
+        }
+
+        /* Font family styles */
+        .ql-editor .ql-font-arial {
+          font-family: Arial, sans-serif !important;
+        }
+        .ql-editor .ql-font-helvetica {
+          font-family: Helvetica, sans-serif !important;
+        }
+        .ql-editor .ql-font-times-new-roman {
+          font-family: 'Times New Roman', serif !important;
+        }
+        .ql-editor .ql-font-courier-new {
+          font-family: 'Courier New', monospace !important;
+        }
+        .ql-editor .ql-font-georgia {
+          font-family: Georgia, serif !important;
+        }
+        .ql-editor .ql-font-trebuchet-ms {
+          font-family: 'Trebuchet MS', sans-serif !important;
+        }
+        .ql-editor .ql-font-verdana {
+          font-family: Verdana, sans-serif !important;
+        }
+        .ql-editor .ql-font-comic-sans-ms {
+          font-family: 'Comic Sans MS', cursive !important;
+        }
+        .ql-editor .ql-font-impact {
+          font-family: Impact, sans-serif !important;
+        }
+        .ql-editor .ql-font-palatino {
+          font-family: Palatino, serif !important;
+        }
+        .ql-editor .ql-font-garamond {
+          font-family: Garamond, serif !important;
+        }
+        .ql-editor .ql-font-bookman {
+          font-family: Bookman, serif !important;
+        }
+        .ql-editor .ql-font-tahoma {
+          font-family: Tahoma, sans-serif !important;
+        }
+        .ql-editor .ql-font-lucida-console {
+          font-family: 'Lucida Console', monospace !important;
+        }
+        .ql-editor .ql-font-monaco {
+          font-family: Monaco, monospace !important;
+        }
+
+        /* Text Alignment Classes - Direct element targeting */
+        .ql-editor p[class*='ql-align-center'],
+        .ql-editor div[class*='ql-align-center'],
+        .ql-editor h1[class*='ql-align-center'],
+        .ql-editor h2[class*='ql-align-center'],
+        .ql-editor h3[class*='ql-align-center'],
+        .ql-editor blockquote[class*='ql-align-center'] {
+          text-align: center !important;
+        }
+
+        .ql-editor p[class*='ql-align-right'],
+        .ql-editor div[class*='ql-align-right'],
+        .ql-editor h1[class*='ql-align-right'],
+        .ql-editor h2[class*='ql-align-right'],
+        .ql-editor h3[class*='ql-align-right'],
+        .ql-editor blockquote[class*='ql-align-right'] {
+          text-align: right !important;
+        }
+
+        .ql-editor p[class*='ql-align-justify'],
+        .ql-editor div[class*='ql-align-justify'],
+        .ql-editor h1[class*='ql-align-justify'],
+        .ql-editor h2[class*='ql-align-justify'],
+        .ql-editor h3[class*='ql-align-justify'],
+        .ql-editor blockquote[class*='ql-align-justify'] {
+          text-align: justify !important;
+        }
+
+        /* More specific selectors */
+        .rich-text-editor .ql-editor p.ql-align-center {
+          text-align: center !important;
+        }
+        .rich-text-editor .ql-editor p.ql-align-right {
+          text-align: right !important;
+        }
+        .rich-text-editor .ql-editor p.ql-align-justify {
+          text-align: justify !important;
+        }
+        .rich-text-editor .ql-editor h1.ql-align-center,
+        .rich-text-editor .ql-editor h2.ql-align-center {
+          text-align: center !important;
+        }
+        .rich-text-editor .ql-editor h1.ql-align-right,
+        .rich-text-editor .ql-editor h2.ql-align-right {
+          text-align: right !important;
+        }
+        .rich-text-editor .ql-editor blockquote.ql-align-center {
+          text-align: center !important;
+        }
+        .rich-text-editor .ql-editor blockquote.ql-align-right {
+          text-align: right !important;
         }
       `}</style>
     </div>

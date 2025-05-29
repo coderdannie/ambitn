@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { ProjectItemProps, DropItem } from '@/types/portfolio';
@@ -10,8 +11,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import RichTextEditor from '@/components/common/RichTextEditor';
+import RichTextEditor from '@/components/editor/RichTextEditor';
 import EditAltTextModal from '@/components/modals/EditAltAndTags';
+import { Button } from '@/components/ui/button';
 
 const ProjectItem: React.FC<ProjectItemProps> = ({
   id,
@@ -21,9 +23,9 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   updateProject,
   removeProject,
   setShowRearrangeModal,
+  onTextClick,
   setTextContent,
   textContent,
-  onTextClick,
   className = 'relative p-4 bg-white rounded-lg transition-all',
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -32,44 +34,39 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   const [showAltTextEditor, setShowAltTextEditor] = useState(false);
   const [altText, setAltText] = useState(content.altText || '');
   const [tags, setTags] = useState(content.tags || []);
-
-  // Caption state
   const [caption, setCaption] = useState(content.caption || '');
   const [showCaptionEditor, setShowCaptionEditor] = useState(false);
-
-  // Text editor state
-  // const [textContent, setTextContent] = useState(content.data || '');
   const [showTextEditor, setShowTextEditor] = useState(false);
 
-  const [{ isDragging }, drag] = useDrag({
-    type: ItemTypes.PROJECT,
-    item: { id, index },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
+  // const [{ isDragging }, drag] = useDrag({
+  //   type: ItemTypes.PROJECT,
+  //   item: { id, index },
+  //   collect: (monitor) => ({
+  //     isDragging: monitor.isDragging(),
+  //   }),
+  // });
 
-  const [, drop] = useDrop({
-    accept: ItemTypes.PROJECT,
-    hover(item: DropItem, monitor) {
-      if (!ref.current) return;
-      const dragIndex = item.index;
-      const hoverIndex = index;
-      if (dragIndex === hoverIndex) return;
+  // const [, drop] = useDrop({
+  //   accept: ItemTypes.PROJECT,
+  //   hover(item: DropItem, monitor) {
+  //     if (!ref.current) return;
+  //     const dragIndex = item.index;
+  //     const hoverIndex = index;
+  //     if (dragIndex === hoverIndex) return;
 
-      const hoverBoundingRect = ref.current.getBoundingClientRect();
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      const clientOffset = monitor.getClientOffset();
-      const hoverClientY = clientOffset!.y - hoverBoundingRect.top;
+  //     const hoverBoundingRect = ref.current.getBoundingClientRect();
+  //     const hoverMiddleY =
+  //       (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+  //     const clientOffset = monitor.getClientOffset();
+  //     const hoverClientY = clientOffset!.y - hoverBoundingRect.top;
 
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
+  //     if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
+  //     if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
 
-      moveProject(dragIndex, hoverIndex);
-      item.index = hoverIndex;
-    },
-  });
+  //     moveProject(dragIndex, hoverIndex);
+  //     item.index = hoverIndex;
+  //   },
+  // });
 
   const handleReplaceFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -120,7 +117,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     setShowTextEditor(false);
   };
 
-  drag(drop(ref));
+  // drag(drop(ref));
 
   const renderContent = () => {
     switch (content.type) {
@@ -196,7 +193,6 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
               )}
             </div>
 
-            {/* Caption display (when exists and not editing) */}
             {content.caption && !showCaptionEditor && (
               <div
                 className="text-sm italic text-gray-600 mt-2 px-3 border-l-2 border-gray-200"
@@ -204,33 +200,24 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
               />
             )}
 
-            {/* Caption editor */}
             {showCaptionEditor && (
-              <div className="mt-3 border border-gray-200 rounded-md overflow-hidden">
-                <div className="bg-gray-50 px-3 py-2 border-b flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-700">
-                    Image Caption
-                  </span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setShowCaptionEditor(false)}
-                      className="px-2 py-1 text-xs text-gray-600 hover:bg-gray-200 rounded"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={saveCaption}
-                      className="px-2 py-1 text-xs bg-blue-500 text-white hover:bg-blue-600 rounded"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
+              <div className="mt-3 bg-white rounded-lg p-4 border">
                 <RichTextEditor
                   value={caption}
                   onChange={setCaption}
                   placeholder="Add a caption for this image..."
+                  autoFocus
+                  className="max-w-none"
                 />
+                <div className="flex justify-end mt-4 gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCaptionEditor(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={saveCaption}>Save Caption</Button>
+                </div>
               </div>
             )}
           </div>
@@ -238,16 +225,16 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
       case 'video':
         return (
           <div
-            className={`max-h-[400px] ${
+            className={`w-full ${
               isHovered ? 'ring-1 ring-[#B5D1E3] rounded-lg p-1' : ''
             }`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            <div className="relative pt-[56.25%] group">
+            <div className="relative w-full h-0 pb-[56.25%] group overflow-hidden rounded-lg">
               <iframe
                 src={content.data}
-                className="absolute top-0 left-0 w-full h-full rounded-lg"
+                className="absolute inset-0 w-full h-full rounded-lg"
                 allowFullScreen
                 title={content.altText || content.title || 'Project video'}
               />
@@ -259,9 +246,9 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 className="hidden"
               />
               {isHovered && (
-                <div className="absolute top-2 left-2">
+                <div className="absolute top-2 left-2 z-10">
                   <Popover>
-                    <PopoverTrigger className="w-8 h-8 grid place-items-center bg-[#718096] text-white rounded-full shadow-sm transition-all">
+                    <PopoverTrigger className="w-8 h-8 grid place-items-center bg-[#718096] text-white rounded-[12px] shadow-sm transition-all">
                       <MdEdit size={18} />
                     </PopoverTrigger>
                     <PopoverContent className="w-50 p-2" align="start">
@@ -305,7 +292,6 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
               )}
             </div>
 
-            {/* Caption display (when exists and not editing) */}
             {content.caption && !showCaptionEditor && (
               <div
                 className="text-sm italic text-gray-600 mt-2 px-3 border-l-2 border-gray-200"
@@ -313,33 +299,24 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
               />
             )}
 
-            {/* Caption editor */}
             {showCaptionEditor && (
-              <div className="mt-3 border border-gray-200 rounded-md overflow-hidden">
-                <div className="bg-gray-50 px-3 py-2 border-b flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-700">
-                    Video Caption
-                  </span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setShowCaptionEditor(false)}
-                      className="px-2 py-1 text-xs text-gray-600 hover:bg-gray-200 rounded"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={saveCaption}
-                      className="px-2 py-1 text-xs bg-blue-500 text-white hover:bg-blue-600 rounded"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
+              <div className="mt-3 bg-white rounded-lg p-4 border">
                 <RichTextEditor
                   value={caption}
                   onChange={setCaption}
                   placeholder="Add a caption for this video..."
+                  autoFocus
+                  className="max-w-none"
                 />
+                <div className="flex justify-end mt-4 gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCaptionEditor(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={saveCaption}>Save Caption</Button>
+                </div>
               </div>
             )}
           </div>
@@ -353,43 +330,47 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            {/* Display text content when not editing */}
             {!showTextEditor && (
-              <div dangerouslySetInnerHTML={{ __html: content.data }} />
+              <div
+                dangerouslySetInnerHTML={{ __html: content.data }}
+                onClick={() => {
+                  setTextContent(content.data);
+                  setShowTextEditor(true);
+                }}
+                className="cursor-pointer break-words"
+              />
             )}
 
-            {/* Text editor */}
             {showTextEditor && (
-              <div className="mt-3 border border-gray-200 rounded-md overflow-hidden">
-                <div className="bg-gray-50 px-3 py-2 border-b flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-700">
-                    Edit Text
-                  </span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setShowTextEditor(false)}
-                      className="px-2 py-1 text-xs text-gray-600 hover:bg-gray-200 rounded"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={saveText}
-                      className="px-2 py-1 text-xs bg-blue-500 text-white hover:bg-blue-600 rounded"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
+              <div className="bg-white rounded-lg p-4 border">
                 <RichTextEditor
                   value={textContent}
                   onChange={setTextContent}
                   placeholder="Write your content here..."
                   autoFocus
+                  className="max-w-none"
                 />
+                <div className="flex justify-end mt-4 gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowTextEditor(false);
+                      setTextContent(content.data);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={saveText}
+                    disabled={!textContent.trim() || textContent === '<p></p>'}
+                  >
+                    Save
+                  </Button>
+                </div>
               </div>
             )}
 
-            {isHovered && (
+            {isHovered && !showTextEditor && (
               <div className="absolute top-1 left-1">
                 <Popover>
                   <PopoverTrigger className="w-8 h-8 grid place-items-center bg-[#718096] text-white rounded-[12px] shadow-sm transition-all">
@@ -433,7 +414,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   return (
     <div
       ref={ref}
-      className={`${className} ${isDragging ? 'opacity-50' : 'opacity-100'}`}
+      // className={`${className} ${isDragging ? 'opacity-50' : 'opacity-100'}`}
     >
       {renderContent()}
       <EditAltTextModal
