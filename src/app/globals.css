@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -76,7 +76,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --font-primary: 'Inter', sans-serif;
+  --font-primary: "Inter", sans-serif;
 }
 
 .dark {
@@ -169,7 +169,7 @@ button {
     @apply backdrop-blur-2xl;
   }
   .auth-layout {
-    background-image: url('/assets/slide1.jpg');
+    background-image: url("/assets/slide1.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     padding-inline: 1.4rem;
@@ -197,6 +197,25 @@ button {
   width: 100%;
   color: white;
   @apply h-[46px] md:h-[56px];
+}
+.sign-up-gradient {
+  box-shadow: 0 4px 6px rgba(16, 24, 40, 0.08);
+}
+.btn-gradient {
+  background: linear-gradient(to bottom, #1a202c, #441c31);
+}
+.font-text {
+  font-size: clamp(0.5rem, 0.5vw + 1rem, 2rem);
+}
+.frameCards {
+  display: grid;
+  --min-column-size: 225px;
+  gap: clamp(1.5rem, 5vmax, 2.5rem);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, var(--min-column-size)), 1fr)
+  );
+  place-items: center;
 }
 .rs-picker-menu {
   z-index: 20000 !important;
@@ -339,6 +358,11 @@ abbr[title] {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
+}
+.wrapper {
+  padding: 1.2rem;
+  margin: 0 auto;
+  max-width: 1100px;
 }
 /* .caption-editor {
   height: 120px;

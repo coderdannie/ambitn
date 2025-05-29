@@ -1,45 +1,50 @@
-'use client';
+"use client";
 
-import { CustomFormField } from '@/components/common/CustomFormField';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { loginSchema, LoginSchemaType } from '@/utils/validation';
-import { useRouter } from 'next/navigation';
-import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { useWindowSize } from '@/hooks/useWindowSize';
-import Link from 'next/link';
-import { useToast } from '@/context/ToastContext';
-import { useLogin } from '@/service/query/auth.service';
-import { LoaderButton } from '@/components/common/LoaderButton';
+import { CustomFormField } from "@/components/common/CustomFormField";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { loginSchema, LoginSchemaType } from "@/utils/validation";
+import { useRouter } from "next/navigation";
+import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { useWindowSize } from "@/hooks/useWindowSize";
+import Link from "next/link";
+import { useToast } from "@/context/ToastContext";
+import { useLogin } from "@/service/query/auth.service";
+import { LoaderButton } from "@/components/common/LoaderButton";
+import VerifyEmailAlert from "@/components/modals/VerifyEmailAlert";
+import { useState } from "react";
 
 const LoginPage = () => {
   const router = useRouter();
   const { addToast } = useToast();
   const { isMobile } = useWindowSize();
+  const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
-    mode: 'onBlur',
+    mode: "onBlur",
   });
 
-  const { control, formState } = form;
+  const { control, formState, getValues } = form;
   const { errors } = formState;
+  const email = getValues("email");
+  console.log(email);
 
   const { mutate, isPending } = useLogin({
     onSuccess: (res: LoginResponse) => {
-      sessionStorage.setItem('user', JSON.stringify(res));
-      addToast(res.message, 'success');
+      sessionStorage.setItem("user", JSON.stringify(res));
+      addToast(res.message, "success");
       setTimeout(() => {
         if (!res?.data?.hasSelectedTopics) {
-          router.push('/account-setup');
+          router.push("/account-setup");
         } else {
-          router.push('/discover');
+          router.push("/discover");
         }
       }, 200);
     },
@@ -48,9 +53,13 @@ const LoginPage = () => {
       message?: string;
     }) => {
       addToast(
-        error?.response?.data?.message || error?.message || 'An Error Occurred',
-        'error'
+        error?.response?.data?.message || error?.message || "An Error Occurred",
+        "error"
       );
+      if (error?.response?.data?.message?.includes("Email not verified")) {
+        sessionStorage.setItem("email", email);
+        setIsOpen(true);
+      }
     },
   });
 
@@ -106,20 +115,20 @@ const LoginPage = () => {
         )}
         <div
           className={`flex justify-center  gap-2 ${
-            isMobile ? 'flex-row' : 'flex-col'
+            isMobile ? "flex-row" : "flex-col"
           }`}
         >
           <div
             className={`flex items-center gap-2 justify-center border border-[#E8E8E8] border-dashed py-4 ${
-              isMobile ? 'border-0' : 'border'
+              isMobile ? "border-0" : "border"
             }`}
           >
             <Button
               variant="outline"
               className={`flex items-center gap-2 ${
                 isMobile
-                  ? 'border[#E8E8E8] border p-4 w-[54px] h-[42px]'
-                  : 'border-0 '
+                  ? "border[#E8E8E8] border p-4 w-[54px] h-[42px]"
+                  : "border-0 "
               }`}
             >
               <Image
@@ -133,15 +142,15 @@ const LoginPage = () => {
           </div>
           <div
             className={`flex items-center gap-2 justify-center border border-[#E8E8E8] border-dashed py-4 ${
-              isMobile ? 'border-0' : 'border'
+              isMobile ? "border-0" : "border"
             }`}
           >
             <Button
               variant="outline"
               className={`flex items-center gap-2 ${
                 isMobile
-                  ? 'border[#E8E8E8] border p-4 w-[54px] h-[42px]'
-                  : 'border-0 '
+                  ? "border[#E8E8E8] border p-4 w-[54px] h-[42px]"
+                  : "border-0 "
               }`}
             >
               <Image
@@ -158,12 +167,13 @@ const LoginPage = () => {
           <p className="text-[#828282] ">Don’t have an account?</p>
           <button
             className="hover:underline hover:bg-transparent px-0 bg-transparent text-primary font-semibold"
-            onClick={() => router.push('/register-step-1')}
+            onClick={() => router.push("/register-step-1")}
           >
             Sign up
           </button>
         </div>
       </Form>
+      <VerifyEmailAlert isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </div>
   );
 };
