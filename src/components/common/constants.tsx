@@ -278,3 +278,12 @@ export const topics = [
 export const ItemTypes = {
   PROJECT: 'PROJECT',
 };
+
+export const socialIcons = [
+  '/assets/twitter.svg',
+  '/assets/facebook.svg',
+  '/assets/linkedin.svg',
+  '/assets/reeddit.svg',
+  '/assets/social-icon5.svg',
+  '/assets/social-icon6.svg',
+];
