@@ -16,6 +16,9 @@ import FontSize from '@tiptap/extension-font-size';
 import ListItem from '@tiptap/extension-list-item';
 import Underline from '@tiptap/extension-underline';
 import Heading from '@tiptap/extension-heading';
+import { BulletList } from '@tiptap/extension-bullet-list';
+import { OrderedList } from '@tiptap/extension-ordered-list';
+
 import {
   AlignmentOption,
   FormattingButton,
@@ -39,6 +42,10 @@ import {
 export const extensions = [
   StarterKit.configure({
     heading: false,
+    // Disable the built-in list extensions to avoid conflicts
+    bulletList: false,
+    orderedList: false,
+    listItem: false,
   }),
   Heading.configure({
     levels: [1, 2, 3, 4, 5, 6],
@@ -49,8 +56,25 @@ export const extensions = [
   Underline,
   FontFamily,
   TextStyle,
-  Color,
-  ListItem,
+  Color.configure({
+    types: ['textStyle'],
+  }),
+  BulletList.configure({
+    HTMLAttributes: {
+      class: 'list-disc pl-6',
+    },
+  }),
+  OrderedList.configure({
+    HTMLAttributes: {
+      class: 'list-decimal pl-6',
+    },
+  }),
+  ListItem.configure({
+    HTMLAttributes: {
+      class: 'mb-1',
+    },
+  }),
+
   FontSize.configure({
     types: ['textStyle'],
   }),
@@ -70,80 +94,12 @@ export const extensions = [
   TableCell,
   Placeholder.configure({ placeholder: 'Start writing your document...' }),
 ];
-
 export const editorProps = {
   attributes: {
     class:
       'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[400px] p-6 max-w-none [&_ul]:list-disc [&_ol]:list-decimal',
   },
 };
-
-export const TEXT_COLORS: string[] = [
-  '#000000',
-  '#444444',
-  '#666666',
-  '#999999',
-  '#cccccc',
-  '#eeeeee',
-  '#f3f3f3',
-  '#ffffff',
-  '#ff0000',
-  '#ff9900',
-  '#ffff00',
-  '#00ff00',
-  '#00ffff',
-  '#0000ff',
-  '#9900ff',
-  '#ff00ff',
-  '#f4cccc',
-  '#fce5cd',
-  '#fff2cc',
-  '#d9ead3',
-  '#d0e0e3',
-  '#cfe2f3',
-  '#d9d2e9',
-  '#ead1dc',
-  '#ea9999',
-  '#f9cb9c',
-  '#ffe599',
-  '#b6d7a8',
-  '#a2c4c9',
-  '#9fc5e8',
-  '#b4a7d6',
-  '#d5a6bd',
-  '#e06666',
-  '#f6b26b',
-  '#ffd966',
-  '#93c47d',
-  '#76a5af',
-  '#6fa8dc',
-  '#8e7cc3',
-  '#c27ba0',
-  '#cc0000',
-  '#e69138',
-  '#f1c232',
-  '#6aa84f',
-  '#45818e',
-  '#3d85c6',
-  '#674ea7',
-  '#a64d79',
-  '#990000',
-  '#b45f06',
-  '#bf9000',
-  '#38761d',
-  '#134f5c',
-  '#0b5394',
-  '#351c75',
-  '#741b47',
-  '#660000',
-  '#783f04',
-  '#7f6000',
-  '#274e13',
-  '#0c343d',
-  '#073763',
-  '#20124d',
-  '#4c1130',
-];
 
 export const FONT_FAMILIES: SingleValue[] = [
   { value: 'Arial, sans-serif', label: 'Arial' },
@@ -180,33 +136,39 @@ export const PARAGRAPH_STYLES: StyleOption[] = [
     action: (editor) => editor.chain().focus().setParagraph().run(),
   },
   {
-    label: 'Heading 1',
+    label: 'H1',
     value: 'h1',
+    level: 1,
     action: (editor) => editor.chain().focus().setHeading({ level: 1 }).run(),
   },
   {
-    label: 'Heading 2',
+    label: 'H2',
     value: 'h2',
+    level: 2,
     action: (editor) => editor.chain().focus().setHeading({ level: 2 }).run(),
   },
   {
-    label: 'Heading 3',
+    label: 'H3',
     value: 'h3',
+    level: 3,
     action: (editor) => editor.chain().focus().setHeading({ level: 3 }).run(),
   },
   {
-    label: 'Heading 4',
+    label: 'H4',
     value: 'h4',
+    level: 4,
     action: (editor) => editor.chain().focus().setHeading({ level: 4 }).run(),
   },
   {
-    label: 'Heading 5',
+    label: 'H5',
     value: 'h5',
+    level: 5,
     action: (editor) => editor.chain().focus().setHeading({ level: 5 }).run(),
   },
   {
-    label: 'Heading 6',
+    label: 'H6',
     value: 'h6',
+    level: 6,
     action: (editor) => editor.chain().focus().setHeading({ level: 6 }).run(),
   },
 ];

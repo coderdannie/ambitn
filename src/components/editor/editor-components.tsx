@@ -15,7 +15,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Type } from 'lucide-react';
-import { TEXT_COLORS } from './editor-config';
+import { useEffect, useRef, useState } from 'react';
+import { HexColorPicker } from 'react-colorful';
 
 export const Divider = () => <div className="w-px h-6 bg-gray-300 mx-1" />;
 
@@ -85,11 +86,47 @@ export const SelectDropdown = ({
 
 export const ColorPicker = ({ editor }: { editor: Editor }) => {
   const currentColor = editor.getAttributes('textStyle').color || '#000000';
+  const [color, setColor] = useState(currentColor);
+  const [isOpen, setIsOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setColor(editor.getAttributes('textStyle').color || '#000000');
+  }, [editor.getAttributes('textStyle').color]);
+
+  // Handle clicks outside the entire popover
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    // Add event listener with a slight delay to avoid immediate closing
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={() => {}}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded"
+          onClick={() => setIsOpen(!isOpen)}
+        >
           <div className="flex flex-col items-center">
             <Type className="w-4 h-4" />
             <div
@@ -99,34 +136,36 @@ export const ColorPicker = ({ editor }: { editor: Editor }) => {
           </div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-2">
-        <div className="grid grid-cols-8 gap-1 mb-2">
-          {TEXT_COLORS.map((color) => (
-            <button
-              key={color}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                editor.chain().focus().setColor(color).run();
-              }}
-              className="w-6 h-6 rounded border border-gray-300 hover:scale-110 transition-transform"
-              style={{ backgroundColor: color }}
-              title={color}
-            />
-          ))}
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            editor.chain().focus().unsetColor().run();
+      <PopoverContent
+        ref={popoverRef}
+        className="p-3 w-[220px]"
+        align="start"
+        onPointerDownOutside={(e) => {
+          // Prevent all automatic closing
+          e.preventDefault();
+        }}
+      >
+        <HexColorPicker
+          color={color}
+          onChange={(newColor) => {
+            setColor(newColor);
+            editor.chain().focus().setColor(newColor).run();
           }}
-        >
-          Remove Color
-        </Button>
+          style={{ width: '100%' }}
+        />
+        <div className="flex justify-between mt-3">
+          <span className="text-xs text-gray-500">{color}</span>
+          <button
+            onClick={() => {
+              editor.chain().focus().unsetColor().run();
+              setColor('#000000');
+              setIsOpen(false);
+            }}
+            className="text-xs text-blue-500 hover:text-blue-700"
+          >
+            Reset
+          </button>
+        </div>
       </PopoverContent>
     </Popover>
   );

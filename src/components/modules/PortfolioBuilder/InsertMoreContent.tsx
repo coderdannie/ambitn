@@ -112,7 +112,7 @@ const InsertMoreContent: React.FC<InsertMoreContentProps> = ({
   ];
 
   return (
-    <div className="relative flex justify-center py-8">
+    <div className="relative z-50 flex justify-center py-8">
       {/* Hidden file inputs */}
       <input
         ref={imageInputRef}

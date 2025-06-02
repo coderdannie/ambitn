@@ -54,4 +54,9 @@ export interface ProjectItemProps {
   onTextClick?: () => void;
   textContent: string;
   setTextContent: (value: string) => void;
+  onTextDoubleClick?: () => void;
+  onCancelEditing?: () => void;
+  onSaveEditing?: () => void;
+  onEditClick?: () => void;
+  isEditing?: boolean;
 }

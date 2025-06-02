@@ -1,7 +1,13 @@
 import { useEditor, EditorContent } from '@tiptap/react';
-import { useState, useEffect, useRef } from 'react';
-import { Link2, Image as ImageIcon, Undo, Redo } from 'lucide-react';
-import { useDebouncedCallback } from 'use-debounce';
+import { useState, useRef } from 'react';
+import {
+  Link2,
+  Image as ImageIcon,
+  Undo,
+  Redo,
+  List,
+  ListOrdered as ListOrderedIcon,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -21,9 +27,8 @@ import {
   FONT_SIZES,
   FORMATTING_BUTTONS,
   ALIGNMENT_OPTIONS,
-  LIST_BUTTONS,
 } from './editor-config';
-import { FormattingButton, ListButton, StyleOption } from '@/types/editor';
+import { FormattingButton, StyleOption } from '@/types/editor';
 
 interface RichTextEditorProps {
   value?: string;
@@ -41,12 +46,9 @@ export default function RichTextEditor({
   placeholder = 'Start typing...',
   autoFocus = false,
   className = '',
-  minHeight = '50px',
-  maxHeight,
 }: RichTextEditorProps) {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
-  const [editorHeight, setEditorHeight] = useState(minHeight);
 
   const editor = useEditor({
     extensions,
@@ -59,44 +61,13 @@ export default function RichTextEditor({
         'data-placeholder': placeholder,
       },
     },
+
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onChange?.(html);
     },
     autofocus: autoFocus,
   });
-
-  // Debounced height update for better performance
-  const updateEditorHeight = useDebouncedCallback(() => {
-    if (editorRef.current) {
-      const contentHeight = editorRef.current.scrollHeight;
-      let newHeight = Math.max(contentHeight, parseInt(minHeight));
-
-      if (maxHeight) {
-        newHeight = Math.min(newHeight, parseInt(maxHeight));
-      }
-
-      setEditorHeight(`${newHeight}px`);
-    }
-  }, 100);
-
-  // Update height when content changes
-  useEffect(() => {
-    if (editor) {
-      editor.on('update', updateEditorHeight);
-      return () => {
-        editor.off('update', updateEditorHeight);
-      };
-    }
-  }, [editor, updateEditorHeight]);
-
-  // Initial height setup and prop updates
-  useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value || '<p></p>');
-    }
-    updateEditorHeight();
-  }, [value, editor, updateEditorHeight]);
 
   if (!editor) return null;
 
@@ -128,12 +99,12 @@ export default function RichTextEditor({
 
   return (
     <div
-      className={`w-full max-w-5xl mx-auto bg-white border border-gray-300 overflow-hidden rounded-lg shadow-lg flex flex-col ${className}`}
+      className={`w-full max-w-5xl mx-auto bg-white  border-gray-300 overflow-hidden rounded-lg shadow-lg flex flex-col ${className}`}
       data-editor-container="true"
     >
       {/* Fixed Toolbar */}
       <div
-        className="border-b border-gray-200 bg-gray-50 flex-shrink-0"
+        className="border-b border-gray-200 !text-gray-300 bg-[#191919] flex-shrink-0"
         data-editor-toolbar="true"
       >
         <div className="flex items-center gap-1 p-2 flex-wrap">
@@ -146,7 +117,7 @@ export default function RichTextEditor({
                 const style = PARAGRAPH_STYLES.find((s) => s.value === value);
                 if (style) style.action(editor);
               }}
-              width="w-32"
+              width="w-22"
             />
 
             <Divider />
@@ -157,7 +128,7 @@ export default function RichTextEditor({
               onSelect={(value) =>
                 editor.chain().focus().setFontFamily(value).run()
               }
-              width="w-36"
+              width="w-22"
               showFontPreview
             />
 
@@ -225,21 +196,18 @@ export default function RichTextEditor({
 
           {/* Lists */}
           <ToolbarSection className="flex">
-            {(LIST_BUTTONS as ListButton[]).map((button) => (
-              <ToolbarButton
-                key={button.mark}
-                onClick={() =>
-                  editor
-                    .chain()
-                    .focus()
-                    .toggleList(button.mark, 'listItem')
-                    .run()
-                }
-                active={editor.isActive(button.mark)}
-                title={button.title}
-                icon={button.icon}
-              />
-            ))}
+            <ToolbarButton
+              onClick={() => editor.chain().focus().toggleBulletList().run()}
+              active={editor.isActive('bulletList')}
+              title="Bullet List"
+              icon={List} // Replace with your bullet list icon
+            />
+            <ToolbarButton
+              onClick={() => editor.chain().focus().toggleOrderedList().run()}
+              active={editor.isActive('orderedList')}
+              title="Numbered List"
+              icon={ListOrderedIcon} // Replace with your numbered list icon
+            />
           </ToolbarSection>
 
           <Divider />
@@ -299,16 +267,12 @@ export default function RichTextEditor({
       {/* Auto-growing Content Area */}
       <div
         ref={editorRef}
-        className="bg-white overflow-hidden transition-[height] duration-200 ease-in-out"
+        className="bg-white  duration-200 ease-in-out"
         data-editor-content="true"
-        style={{
-          minHeight: minHeight,
-          height: editorHeight,
-        }}
       >
         <EditorContent
           editor={editor}
-          className="focus-within:outline-none prose max-w-none p-4"
+          className="focus-within:outline-none prose max-w-none p-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:list-disc [&_ul]:pl-6 [&_li]:list-item"
         />
       </div>
 

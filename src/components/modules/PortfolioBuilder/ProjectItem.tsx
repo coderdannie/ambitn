@@ -23,9 +23,13 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   updateProject,
   removeProject,
   setShowRearrangeModal,
-  onTextClick,
+  onTextDoubleClick,
+  onEditClick,
+  onCancelEditing,
+  onSaveEditing,
   setTextContent,
   textContent,
+  isEditing,
   className = 'relative p-4 bg-white rounded-lg transition-all',
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -36,37 +40,6 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   const [tags, setTags] = useState(content.tags || []);
   const [caption, setCaption] = useState(content.caption || '');
   const [showCaptionEditor, setShowCaptionEditor] = useState(false);
-  const [showTextEditor, setShowTextEditor] = useState(false);
-
-  // const [{ isDragging }, drag] = useDrag({
-  //   type: ItemTypes.PROJECT,
-  //   item: { id, index },
-  //   collect: (monitor) => ({
-  //     isDragging: monitor.isDragging(),
-  //   }),
-  // });
-
-  // const [, drop] = useDrop({
-  //   accept: ItemTypes.PROJECT,
-  //   hover(item: DropItem, monitor) {
-  //     if (!ref.current) return;
-  //     const dragIndex = item.index;
-  //     const hoverIndex = index;
-  //     if (dragIndex === hoverIndex) return;
-
-  //     const hoverBoundingRect = ref.current.getBoundingClientRect();
-  //     const hoverMiddleY =
-  //       (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-  //     const clientOffset = monitor.getClientOffset();
-  //     const hoverClientY = clientOffset!.y - hoverBoundingRect.top;
-
-  //     if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
-  //     if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
-
-  //     moveProject(dragIndex, hoverIndex);
-  //     item.index = hoverIndex;
-  //   },
-  // });
 
   const handleReplaceFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -108,16 +81,6 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     });
     setShowCaptionEditor(false);
   };
-
-  const saveText = () => {
-    updateProject(id, {
-      ...content,
-      data: textContent,
-    });
-    setShowTextEditor(false);
-  };
-
-  // drag(drop(ref));
 
   const renderContent = () => {
     switch (content.type) {
@@ -325,83 +288,51 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         return (
           <div
             className={`relative group ${
-              isHovered ? 'ring-1 ring-[#B5D1E3] rounded-lg p-2' : ''
+              isHovered && !isEditing
+                ? 'ring-1 ring-[#B5D1E3] rounded-lg p-2'
+                : ''
             }`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            {!showTextEditor && (
+            {!isEditing ? (
               <div
                 dangerouslySetInnerHTML={{ __html: content.data }}
-                onClick={() => {
-                  setTextContent(content.data);
-                  setShowTextEditor(true);
-                }}
-                className="cursor-pointer break-words"
+                onDoubleClick={onTextDoubleClick}
+                className="cursor-pointer break-words  transition-colors p-2 rounded"
               />
-            )}
-
-            {showTextEditor && (
-              <div className="bg-white rounded-lg p-4 border">
+            ) : (
+              <div className="bg-white rounded-lg p-4 border shadow-sm">
                 <RichTextEditor
                   value={textContent}
                   onChange={setTextContent}
-                  placeholder="Write your content here..."
+                  placeholder="Edit your content here..."
                   autoFocus
                   className="max-w-none"
                 />
                 <div className="flex justify-end mt-4 gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowTextEditor(false);
-                      setTextContent(content.data);
-                    }}
-                  >
+                  <Button variant="outline" onClick={onCancelEditing}>
                     Cancel
                   </Button>
                   <Button
-                    onClick={saveText}
+                    onClick={onSaveEditing}
                     disabled={!textContent.trim() || textContent === '<p></p>'}
                   >
-                    Save
+                    Save Changes
                   </Button>
                 </div>
               </div>
             )}
 
-            {isHovered && !showTextEditor && (
+            {isHovered && !isEditing && (
               <div className="absolute top-1 left-1">
-                <Popover>
-                  <PopoverTrigger className="w-8 h-8 grid place-items-center bg-[#718096] text-white rounded-[12px] shadow-sm transition-all">
-                    <MdEdit size={18} />
-                  </PopoverTrigger>
-                  <PopoverContent className="w-50 p-2" align="start">
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => setShowRearrangeModal(true)}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
-                      >
-                        Rearrange Order
-                      </button>
-                      <button
-                        onClick={() => {
-                          setTextContent(content.data);
-                          setShowTextEditor(true);
-                        }}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
-                      >
-                        Edit Text
-                      </button>
-                      <button
-                        onClick={() => removeProject(id)}
-                        className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-100 rounded"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                <button
+                  onClick={onEditClick}
+                  className="w-8 h-8 grid place-items-center bg-[#718096] text-white rounded-[12px] shadow-sm transition-all hover:bg-[#5a67a8]"
+                  data-edit-button
+                >
+                  <MdEdit size={18} />
+                </button>
               </div>
             )}
           </div>
@@ -412,10 +343,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   };
 
   return (
-    <div
-      ref={ref}
-      // className={`${className} ${isDragging ? 'opacity-50' : 'opacity-100'}`}
-    >
+    <div ref={ref} className={className}>
       {renderContent()}
       <EditAltTextModal
         isOpen={showAltTextEditor}

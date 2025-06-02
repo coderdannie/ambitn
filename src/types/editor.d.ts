@@ -3,6 +3,7 @@ import { Editor } from '@tiptap/react';
 export interface StyleOption {
   label: string;
   value: string;
+  level?: number;
   action: (editor: Editor) => void;
 }
 

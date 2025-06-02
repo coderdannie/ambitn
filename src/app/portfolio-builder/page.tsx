@@ -19,6 +19,8 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { PublishProjectModal } from '@/components/modals/PublishProjectModal';
 import { CoverPhotoModal } from '@/components/modals/CoverPhotoModal';
+import { Plus } from 'lucide-react';
+import HoverInsert from '@/components/modules/PortfolioBuilder/HoverInsert';
 
 const PortfolioBuilder = () => {
   const [projects, setProjects] = useState<ProjectItem[]>([]);
@@ -28,6 +30,7 @@ const PortfolioBuilder = () => {
   const [showRearrangeModal, setShowRearrangeModal] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
   const [projectTitle, setProjectTitle] = useState('');
+  const [insertPosition, setInsertPosition] = useState<number | null>(null);
 
   const { isMobile } = useWindowSize();
   const router = useRouter();
@@ -155,14 +158,32 @@ const PortfolioBuilder = () => {
     setProjects((prevProjects) => [...prevProjects, { id: uuidv4(), content }]);
   }, []);
 
+  const addProjectAtPosition = useCallback(
+    (content: ProjectContent, position: number) => {
+      setProjects((prevProjects) => {
+        const newProjects = [...prevProjects];
+        newProjects.splice(position, 0, { id: uuidv4(), content });
+        return newProjects;
+      });
+    },
+    []
+  );
+
   const handleImageSelected = (file: File) => {
     const reader = new FileReader();
     reader.onload = () => {
-      addProject({
+      const content: ProjectContent = {
         type: 'image',
         data: reader.result as string,
         title: file.name.replace(/\.[^/.]+$/, ''),
-      });
+      };
+
+      if (insertPosition !== null) {
+        addProjectAtPosition(content, insertPosition);
+        setInsertPosition(null);
+      } else {
+        addProject(content);
+      }
     };
     reader.readAsDataURL(file);
   };
@@ -170,11 +191,18 @@ const PortfolioBuilder = () => {
   const handleVideoSelected = (file: File) => {
     const reader = new FileReader();
     reader.onload = () => {
-      addProject({
+      const content: ProjectContent = {
         type: 'video',
         data: URL.createObjectURL(file),
         title: file.name.replace(/\.[^/.]+$/, ''),
-      });
+      };
+
+      if (insertPosition !== null) {
+        addProjectAtPosition(content, insertPosition);
+        setInsertPosition(null);
+      } else {
+        addProject(content);
+      }
     };
     reader.readAsDataURL(file);
   };
@@ -189,11 +217,18 @@ const PortfolioBuilder = () => {
           title: 'Text Block',
         });
       } else {
-        addProject({
+        const content: ProjectContent = {
           type: 'text',
           data: textContent,
           title: 'Text Block',
-        });
+        };
+
+        if (insertPosition !== null) {
+          addProjectAtPosition(content, insertPosition);
+          setInsertPosition(null);
+        } else {
+          addProject(content);
+        }
       }
       setTextContent('');
     }
@@ -216,10 +251,9 @@ const PortfolioBuilder = () => {
     handleAddText();
   };
 
-  const handleInsertText = () => {
-    setTextContent('');
-    setAddingText(true);
-    setEditingTextId(null);
+  const handleInsertAtPosition = (position: number) => {
+    setInsertPosition(position);
+    setIsDrawerOpen(true);
   };
 
   const projectImages = projects
@@ -294,28 +328,71 @@ const PortfolioBuilder = () => {
         <div className="bg-white px-8 py-6 md:px-14 md:py-9 shadow ">
           <div className="max-w-5xl mx-auto ">
             <DndProvider backend={HTML5Backend}>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {projects.map((project, index) => (
-                  <ProjectItems
+                  <HoverInsert
                     key={project.id}
-                    id={project.id}
-                    index={index}
-                    content={project.content}
-                    moveProject={moveProject}
-                    updateProject={updateProject}
-                    removeProject={removeProject}
-                    setShowRearrangeModal={setShowRearrangeModal}
-                    setTextContent={setTextContent}
-                    textContent={textContent}
-                    className="relative p-4 bg-white rounded-lg transition-all"
-                    onTextClick={() => {
-                      if (project.content.type === 'text') {
-                        handleEditText(project.id, project.content.data);
-                      }
-                    }}
-                  />
+                    onInsertAbove={() => handleInsertAtPosition(index)}
+                    onInsertBelow={() => handleInsertAtPosition(index + 1)}
+                  >
+                    <ProjectItems
+                      id={project.id}
+                      index={index}
+                      content={project.content}
+                      moveProject={moveProject}
+                      updateProject={updateProject}
+                      removeProject={removeProject}
+                      setShowRearrangeModal={setShowRearrangeModal}
+                      setTextContent={setTextContent}
+                      textContent={textContent}
+                      className="relative p-4 bg-white rounded-lg transition-all "
+                      isEditing={editingTextId === project.id}
+                      onTextDoubleClick={() => {
+                        if (project.content.type === 'text') {
+                          setTextContent(project.content.data);
+                          setEditingTextId(project.id);
+                        }
+                      }}
+                      onEditClick={() => {
+                        if (project.content.type === 'text') {
+                          setTextContent(project.content.data);
+                          setEditingTextId(project.id);
+                        }
+                      }}
+                      onCancelEditing={() => {
+                        setEditingTextId(null);
+                      }}
+                      onSaveEditing={() => {
+                        if (textContent.trim() && textContent !== '<p></p>') {
+                          updateProject(project.id, {
+                            type: 'text',
+                            data: textContent,
+                            title: 'Text Block',
+                          });
+                        }
+                        setEditingTextId(null);
+                      }}
+                    />
+                  </HoverInsert>
                 ))}
 
+                {/* Insert zone at the end */}
+                {projects.length > 0 && (
+                  <div className="relative h-8 group">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <button
+                        onClick={() => handleInsertAtPosition(projects.length)}
+                        className="bg-gray-300 hover:bg-blue-500 hover:text-white text-gray-600 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110 opacity-0 group-hover:opacity-100"
+                        title="Add content"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 group-hover:bg-blue-500 transition-colors duration-200" />
+                  </div>
+                )}
+
+                {/* Only for adding new text */}
                 {addingText && (
                   <div
                     ref={editorRef}
@@ -324,7 +401,7 @@ const PortfolioBuilder = () => {
                     <RichTextEditor
                       value={textContent}
                       onChange={setTextContent}
-                      placeholder="Write your content here..."
+                      placeholder="Write your new content here..."
                       autoFocus
                       className="max-w-none"
                     />
@@ -333,30 +410,22 @@ const PortfolioBuilder = () => {
                         variant="outline"
                         onClick={() => {
                           setAddingText(false);
-                          setEditingTextId(null);
                           setTextContent('');
+                          setInsertPosition(null);
                         }}
                       >
                         Cancel
                       </Button>
                       <Button
-                        onClick={handleEditorSave}
+                        onClick={handleAddText}
                         disabled={
                           !textContent.trim() || textContent === '<p></p>'
                         }
                       >
-                        {editingTextId ? 'Update' : 'Add'} Text
+                        Add Text
                       </Button>
                     </div>
                   </div>
-                )}
-
-                {projects.length > 0 && (
-                  <InsertMoreContent
-                    onImageSelected={handleImageSelected}
-                    onVideoSelected={handleVideoSelected}
-                    onTextAdd={handleInsertText}
-                  />
                 )}
               </div>
             </DndProvider>
@@ -369,6 +438,7 @@ const PortfolioBuilder = () => {
         setAddingText={(adding) => {
           if (adding) {
             setTextContent('');
+            setInsertPosition(null); // Reset insert position when adding normally
           }
           setAddingText(adding);
         }}
@@ -384,8 +454,16 @@ const PortfolioBuilder = () => {
       />
       <AddContentDrawer
         isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        setAddingText={setAddingText}
+        onClose={() => {
+          setIsDrawerOpen(false);
+          setInsertPosition(null); // Reset insert position when drawer closes
+        }}
+        setAddingText={(adding) => {
+          if (adding) {
+            setTextContent('');
+          }
+          setAddingText(adding);
+        }}
         handleImageSelected={handleImageSelected}
         handleVideoSelected={handleVideoSelected}
         setTextContent={setTextContent}
