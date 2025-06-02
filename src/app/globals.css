@@ -158,6 +158,14 @@ button {
   min-width: 0;
   position: relative;
 }
+@media (max-width: 760px) {
+  .mobile-margin-top {
+    margin-top: 1rem;
+  }
+  .mobi-center {
+    justify-content: center;
+  }
+}
 @media (max-width: 999px) {
   .hide {
     display: none;
@@ -190,6 +198,9 @@ button {
   .hide-logo {
     display: none;
   }
+  .desktop-width {
+    width: 80%;
+  }
 }
 .secondary-btn {
   background: linear-gradient(to bottom, #1a202c, #441c31);
@@ -204,9 +215,15 @@ button {
 .btn-gradient {
   background: linear-gradient(to bottom, #1a202c, #441c31);
 }
-.font-text {
-  font-size: clamp(0.5rem, 0.5vw + 1rem, 2rem);
+.btn-text-gradient {
+  background: linear-gradient(to bottom, #1a202c, #441c31);
+  background-clip: text;
+  color: transparent;
 }
+.font-text {
+  font-size: clamp(4rem, 3vw + 1rem, 2rem);
+}
+
 .frameCards {
   display: grid;
   --min-column-size: 225px;
@@ -323,6 +340,79 @@ abbr[title] {
   color: #d3d3d3; /* Gray out the text */
   pointer-events: none; /* Disable clicking */
 }
+/* Hero animation */
+/* styles.css or globals.css */
+/* styles.css or globals.css */
+
+/* styles.css or globals.css */
+/* styles.css or globals.css */
+
+/* Subtle fade + motion without full disappearance */
+
+@keyframes fadeFloatUp {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fadeFloatLeft {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-10px);
+  }
+}
+
+@keyframes fadeFloatRight {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(10px);
+  }
+}
+
+@keyframes softZoom {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* Animation classes */
+.fade-in-up {
+  animation: fadeFloatUp 5s ease-in-out infinite;
+}
+
+.slide-in-left {
+  animation: fadeFloatLeft 5s ease-in-out infinite;
+}
+
+.slide-in-right {
+  animation: fadeFloatRight 5s ease-in-out infinite;
+}
+
+.zoom-in {
+  animation: softZoom 2.5s ease-in-out infinite;
+}
 
 /* styles/quil.css */
 /* .ql-toolbar.ql-snow {
@@ -361,7 +451,7 @@ abbr[title] {
 }
 .wrapper {
   padding: 1.2rem;
-  margin: 0 auto;
+  margin-inline: auto;
   max-width: 1100px;
 }
 /* .caption-editor {

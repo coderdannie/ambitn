@@ -1,12 +1,16 @@
 import React from "react";
 import { navLinks } from "@/components/common/constants";
+import { GiHamburgerMenu } from "react-icons/gi";
 
-const Nav = () => {
+const Nav = ({ handleClickOpen }) => {
   return (
     <div className="wrapper">
       <div className="flex items-center justify-between">
+        <div className="hide-logo" onClick={handleClickOpen}>
+          <GiHamburgerMenu />
+        </div>
         <div className="font-bold text-[1.5rem]">Forlio</div>
-        <ul className="flex gap-[20px]">
+        <ul className="flex hide gap-[20px] nav-list">
           {navLinks.map((link) => {
             const { name } = link;
             return (
