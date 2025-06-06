@@ -9,7 +9,7 @@ import Image from 'next/image';
 interface CoverPhotoModalProps {
   open: boolean;
   onClose: () => void;
-  images: string[];
+  images: string[] | undefined;
   currentCover: string;
   onSelect: (imageUrl: string, cropData?: CropData) => void;
   onUpload: (file: File) => Promise<string>;

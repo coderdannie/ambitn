@@ -2,12 +2,13 @@ import React, { useRef } from 'react';
 import { FileInputProps } from '@/types/portfolio';
 import { FaRegImage } from 'react-icons/fa6';
 import { MdPlayCircle } from 'react-icons/md';
+import { IoMusicalNotesOutline } from 'react-icons/io5';
 
 const FileInput: React.FC<FileInputProps> = ({
   accept,
   onFileSelected,
   className = 'grid place-items-center',
-  buttonClassName = 'w-full h-full hover:bg-gray-100 text-left flex items-center',
+  buttonClassName = 'w-full h-full hover:bg-gray-100 text-left flex items-center p-4',
   inputClassName = 'hidden',
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -28,10 +29,28 @@ const FileInput: React.FC<FileInputProps> = ({
   };
 
   const getIconAndLabel = () => {
-    const isImage = accept.includes('image');
+    if (accept.includes('image')) {
+      return {
+        icon: <FaRegImage />,
+        label: 'Image',
+      };
+    }
+    if (accept.includes('audio')) {
+      return {
+        icon: <IoMusicalNotesOutline />,
+        label: 'Audio',
+      };
+    }
+    if (accept.includes('video')) {
+      return {
+        icon: <MdPlayCircle />,
+        label: 'Video',
+      };
+    }
+    // Default fallback
     return {
-      icon: isImage ? <FaRegImage /> : <MdPlayCircle />,
-      label: isImage ? 'Image' : 'Video',
+      icon: <FaRegImage />,
+      label: 'File',
     };
   };
 

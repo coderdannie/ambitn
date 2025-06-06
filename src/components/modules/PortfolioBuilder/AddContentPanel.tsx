@@ -3,12 +3,12 @@
 import FileInput from './FileInput';
 import { MdCode, MdLink } from 'react-icons/md';
 import { RxText } from 'react-icons/rx';
-import { IoMusicalNotesOutline } from 'react-icons/io5';
 
 interface Props {
   setAddingText: (prop: boolean) => void;
   handleImageSelected: (prop: File) => void;
   handleVideoSelected: (prop: File) => void;
+  handleAudioSelected: (prop: File) => void; // Add this prop
   setTextContent?: (content: string) => void;
 }
 
@@ -16,6 +16,7 @@ export default function AddContentPanel({
   handleImageSelected,
   setAddingText,
   handleVideoSelected,
+  handleAudioSelected, // Add this parameter
   setTextContent,
 }: Props) {
   const handleTextClick = () => {
@@ -24,6 +25,7 @@ export default function AddContentPanel({
     }
     setAddingText(true);
   };
+
   return (
     <div className="w-full hidden md:block overflow-hidden rounded-xl border border-gray-200 shadow-sm bg-white h-fit">
       <h2 className="text-sm font-semibold bg-[#F7FAFCB2] px-2 py-4">
@@ -48,15 +50,18 @@ export default function AddContentPanel({
         </button>
 
         {/* Audio */}
-        <div className="flex flex-col items-center justify-center gap-1 p-4 border border-gray-200 hover:bg-gray-50">
-          <IoMusicalNotesOutline className="text-xl" />
-          <span className="text-sm">Audio</span>
-        </div>
+        <FileInput
+          accept="audio/*"
+          onFileSelected={handleAudioSelected}
+          className="border border-gray-200"
+        />
 
         {/* Video */}
-        <div className="flex flex-col items-center justify-center gap-1 p-4 border border-gray-200 hover:bg-gray-50">
-          <FileInput accept="video/*" onFileSelected={handleVideoSelected} />
-        </div>
+        <FileInput
+          accept="video/*"
+          onFileSelected={handleVideoSelected}
+          className="border border-gray-200"
+        />
 
         {/* Embed with badge */}
         <button className="relative flex flex-col items-center justify-center gap-1 p-4 border border-gray-200 hover:bg-gray-50">

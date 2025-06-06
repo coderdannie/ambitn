@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    domains: ['https://res.cloudinary.com'],
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;
