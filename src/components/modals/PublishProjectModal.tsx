@@ -9,7 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import Image from 'next/image';
-import Select, { StylesConfig, ActionMeta, MultiValue } from 'react-select';
+import CreatableSelect from 'react-select/creatable';
+import { StylesConfig, ActionMeta, MultiValue } from 'react-select';
 import { MdModeEditOutline } from 'react-icons/md';
 import { FaHeart } from 'react-icons/fa6';
 import { IoEyeSharp } from 'react-icons/io5';
@@ -420,7 +421,7 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
                       <label className="block text-sm font-medium text-[#1A202C] mb-2">
                         Tags <span className="text-gray-500">(Max 10)</span>
                       </label>
-                      <Select
+                      <CreatableSelect
                         isMulti
                         options={predefinedTags}
                         value={selectedTags}

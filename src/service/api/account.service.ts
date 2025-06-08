@@ -2,7 +2,7 @@ import * as API from '../url';
 import axiosInstance from '../axiosInstance';
 import { ProfileResponse } from '@/types/account';
 
-export const addTopics = async (body: string[]) => {
+export const addTopics = async (body: { topics: string[] }) => {
   const res = await axiosInstance.post(API.ACCOUNT_SETUP, body);
   return res.data;
 };

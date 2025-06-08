@@ -218,19 +218,15 @@ const AddContentDrawer = ({
                               onClose();
                             }}
                             className={`
-                              w-full h-24 flex flex-col items-center justify-center gap-2 
-                              border-2 border-dashed border-gray-300 rounded-lg 
-                              transition-all duration-200 cursor-pointer
-                              ${option.bgColor} hover:border-gray-400
-                            `}
-                          >
-                            <option.icon
-                              className={`text-2xl ${option.color}`}
-                            />
-                            <span className="text-sm font-medium text-gray-700">
-                              {option.label}
-                            </span>
-                          </FileInput>
+      w-full h-24 border-2 border-dashed border-gray-300 rounded-lg 
+      transition-all duration-200 cursor-pointer
+      ${option.bgColor} hover:border-gray-400
+    `}
+                            buttonClassName="w-full h-full hover:bg-transparent text-center flex flex-col items-center justify-center gap-2"
+                            customIcon={<option.icon />}
+                            customLabel={option.label}
+                            iconColor={option.color}
+                          />
                         ) : (
                           <button
                             onClick={option.onClick}

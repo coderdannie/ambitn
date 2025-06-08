@@ -68,10 +68,8 @@ const PortfolioBuilder = () => {
     useUploadImage();
   const { mutate: uploadVideo, uploadProgress: videoUploadProgress } =
     useUploadVideo();
-  const { mutate: deleteUploadedImage, isPending: isDeletingImage } =
-    useDeleteUploadedImage();
-  const { mutate: deleteUploadedVideo, isPending: isDeletingVideo } =
-    useDeleteUploadedVideo();
+  const { mutate: deleteUploadedImage } = useDeleteUploadedImage();
+  const { mutate: deleteUploadedVideo } = useDeleteUploadedVideo();
 
   useEffect(() => {
     const html = document.documentElement;
@@ -90,12 +88,12 @@ const PortfolioBuilder = () => {
 
   useEffect(() => {
     const firstImage = projects.find((p) => p.content.type === 'image');
-    const coverImage = firstImage ? firstImage.content.data : '';
+    const coverImage = firstImage?.content.data || '';
 
     setProjectData((prev) => ({
       ...prev,
       title: projectTitle || 'Untitled Project',
-      coverImage,
+      coverImage, // Now guaranteed to be string
     }));
   }, [projectTitle, projects]);
 
@@ -205,7 +203,7 @@ const PortfolioBuilder = () => {
       if (needsApiDeletion) {
         setDeletingProjects((prev) => new Set(prev).add(id));
 
-        const publicId = projectToRemove.content.publicUrl;
+        const publicId = projectToRemove?.content?.publicUrl || '';
 
         const deleteFunction =
           projectToRemove.content.type === 'image'
@@ -548,8 +546,8 @@ const PortfolioBuilder = () => {
   };
 
   const projectImages = projects
-    .filter((p) => p.content.type === 'image')
-    .map((p) => p.content.data);
+    .filter((p) => p.content.type === 'image' && p.content.data)
+    .map((p) => p.content.data as string);
 
   const handleUploadCover = async (file: File): Promise<string> => {
     return new Promise((resolve) => {
@@ -644,7 +642,7 @@ const PortfolioBuilder = () => {
                         setShowRearrangeModal={setShowRearrangeModal}
                         setTextContent={setTextContent}
                         textContent={textContent}
-                        isDeleting={deletingProjects.has(project.id)} 
+                        isDeleting={deletingProjects.has(project.id)}
                         isUploadingImg={
                           uploadingProjects.has(project.id) &&
                           project.content.type === 'image'
@@ -659,13 +657,13 @@ const PortfolioBuilder = () => {
                         isEditing={editingTextId === project.id}
                         onTextDoubleClick={() => {
                           if (project.content.type === 'text') {
-                            setTextContent(project.content.data);
+                            setTextContent(project.content.data || '');
                             setEditingTextId(project.id);
                           }
                         }}
                         onEditClick={() => {
                           if (project.content.type === 'text') {
-                            setTextContent(project.content.data);
+                            setTextContent(project.content.data || '');
                             setEditingTextId(project.id);
                           }
                         }}

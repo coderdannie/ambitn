@@ -117,7 +117,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
       baseActions.push({
         label: 'Edit Text',
         onClick: () => {
-          setTextContent(content.data);
+          setTextContent(content.data || '');
           onEditClick?.();
         },
       });
