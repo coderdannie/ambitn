@@ -1,0 +1,95 @@
+import * as API from '../url';
+import axiosInstance, { uploadInstance } from '../axiosInstance';
+import { CreateProjectPayload, UploadBody } from '@/types/portfolio';
+
+export const uploadImage = async (
+  body: UploadBody,
+  onProgress?: (progress: number) => void
+): Promise<any> => {
+  // Convert base64 to File if needed
+  let fileToUpload: File;
+
+  if (typeof body.file === 'string') {
+    // Handle base64 string
+    const response = await fetch(body.file);
+    const blob = await response.blob();
+    fileToUpload = new File([blob], 'image.jpg', { type: blob.type });
+  } else {
+    fileToUpload = body.file;
+  }
+
+  // Create FormData for file upload
+  const formData = new FormData();
+  formData.append('file', fileToUpload);
+
+  // Use your existing uploadInstance with progress tracking
+  const res = await uploadInstance.post(API.UPLOAD_IMAGE, formData, {
+    onUploadProgress: (progressEvent: any) => {
+      if (progressEvent.total) {
+        const progress = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        onProgress?.(progress);
+      }
+    },
+  });
+
+  return res.data;
+};
+
+export const uploadVideo = async (
+  body: UploadBody,
+  onProgress?: (progress: number) => void
+): Promise<any> => {
+  let fileToUpload: File;
+
+  if (typeof body.file === 'string') {
+    // Handle base64 string
+    const response = await fetch(body.file);
+    const blob = await response.blob();
+    fileToUpload = new File([blob], 'video.mp4', { type: blob.type });
+  } else {
+    fileToUpload = body.file;
+  }
+
+  // Create FormData for file upload
+  const formData = new FormData();
+  formData.append('file', fileToUpload);
+
+  // Upload with progress tracking
+  const res = await uploadInstance.post(API.UPLOAD_VIDEO, formData, {
+    onUploadProgress: (progressEvent: any) => {
+      if (progressEvent.total) {
+        const progress = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        onProgress?.(progress);
+      }
+    },
+  });
+
+  return res.data;
+};
+
+export const deleteUploadedVideo = async (body: {
+  publicId: string | undefined;
+}) => {
+  const res = await axiosInstance.delete(API.DELETE_UPLOADED_VIDEO, {
+    data: body,
+  });
+  return res.data;
+};
+
+export const deleteUploadedImage = async (body: { publicId: string }) => {
+  const res = await axiosInstance.delete(API.DELETE_UPLOADED_IMAGE, {
+    data: body,
+  });
+  return res.data;
+};
+
+export const createProject = async (
+  payload: CreateProjectPayload
+): Promise<any> => {
+  const res = await axiosInstance.post(API.CREATE_PROJECT, payload);
+  return res.data;
+};

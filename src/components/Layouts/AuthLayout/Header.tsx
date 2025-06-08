@@ -31,14 +31,6 @@ const Header = () => {
           isMobile ? 'justify-end' : 'justify-between'
         } w-full`}
       >
-        {' '}
-        <Image
-          src="/assets/logo.png"
-          alt="ambitn logo"
-          className="w-[120px] h-auto"
-          width={140}
-          height={40}
-        />
         {!isMobile && (
           <div className="h-[36px] max-w-[550px] w-full">
             <SearchInput

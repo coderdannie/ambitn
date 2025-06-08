@@ -1,10 +1,10 @@
 import {
   RegisterStepOneSchemaType,
   RegisterStepTwoSchemaType,
-} from '@/utils/validation';
+} from "@/utils/validation";
 
 export interface ResendOtpBody {
-  email: string;
+  email: string | null;
 }
 
 export interface RegisterValues

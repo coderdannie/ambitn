@@ -13,11 +13,14 @@ import Link from 'next/link';
 import { useToast } from '@/context/ToastContext';
 import { useLogin } from '@/service/query/auth.service';
 import { LoaderButton } from '@/components/common/LoaderButton';
+import VerifyEmailAlert from '@/components/modals/VerifyEmailAlert';
+import { useState } from 'react';
 
 const LoginPage = () => {
   const router = useRouter();
   const { addToast } = useToast();
   const { isMobile } = useWindowSize();
+  const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -25,11 +28,13 @@ const LoginPage = () => {
       email: '',
       password: '',
     },
-    mode: 'onBlur',
+    mode: 'onTouched',
   });
 
-  const { control, formState } = form;
+  const { control, formState, getValues } = form;
   const { errors } = formState;
+  const email = getValues('email');
+  console.log(email);
 
   const { mutate, isPending } = useLogin({
     onSuccess: (res: LoginResponse) => {
@@ -51,6 +56,10 @@ const LoginPage = () => {
         error?.response?.data?.message || error?.message || 'An Error Occurred',
         'error'
       );
+      if (error?.response?.data?.message?.includes('Email not verified')) {
+        sessionStorage.setItem('email', email);
+        setIsOpen(true);
+      }
     },
   });
 
@@ -164,6 +173,7 @@ const LoginPage = () => {
           </button>
         </div>
       </Form>
+      <VerifyEmailAlert isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </div>
   );
 };

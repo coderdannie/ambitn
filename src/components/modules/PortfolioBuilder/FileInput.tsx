@@ -2,13 +2,23 @@ import React, { useRef } from 'react';
 import { FileInputProps } from '@/types/portfolio';
 import { FaRegImage } from 'react-icons/fa6';
 import { MdPlayCircle } from 'react-icons/md';
+import { IoMusicalNotesOutline } from 'react-icons/io5';
 
-const FileInput: React.FC<FileInputProps> = ({
+interface EnhancedFileInputProps extends FileInputProps {
+  customIcon?: React.ReactNode;
+  customLabel?: string;
+  iconColor?: string;
+}
+
+const FileInput: React.FC<EnhancedFileInputProps> = ({
   accept,
   onFileSelected,
   className = 'grid place-items-center',
-  buttonClassName = 'w-full h-full hover:bg-gray-100 text-left flex items-center',
+  buttonClassName = 'w-full h-full hover:bg-gray-100 text-left flex items-center p-4',
   inputClassName = 'hidden',
+  customIcon,
+  customLabel,
+  iconColor = 'text-gray-600',
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,10 +38,37 @@ const FileInput: React.FC<FileInputProps> = ({
   };
 
   const getIconAndLabel = () => {
-    const isImage = accept.includes('image');
+    // Use custom icon/label if provided
+    if (customIcon && customLabel) {
+      return {
+        icon: customIcon,
+        label: customLabel,
+      };
+    }
+
+    // Default logic
+    if (accept.includes('image')) {
+      return {
+        icon: <FaRegImage />,
+        label: 'Image',
+      };
+    }
+    if (accept.includes('audio')) {
+      return {
+        icon: <IoMusicalNotesOutline />,
+        label: 'Audio',
+      };
+    }
+    if (accept.includes('video')) {
+      return {
+        icon: <MdPlayCircle />,
+        label: 'Video',
+      };
+    }
+    // Default fallback
     return {
-      icon: isImage ? <FaRegImage /> : <MdPlayCircle />,
-      label: isImage ? 'Image' : 'Video',
+      icon: <FaRegImage />,
+      label: 'File',
     };
   };
 
@@ -46,8 +83,8 @@ const FileInput: React.FC<FileInputProps> = ({
         aria-label={label}
       >
         <div className="grid place-items-center mx-auto gap-2">
-          <span className="text-xl">{icon}</span>
-          <span className="text-sm">{label}</span>
+          <span className={`text-2xl ${iconColor}`}>{icon}</span>
+          <span className="text-sm font-medium text-gray-700">{label}</span>
         </div>
       </button>
       <input

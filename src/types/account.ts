@@ -21,3 +21,7 @@ export interface ProfileResponse {
     selectedTopics: string[];
   };
 }
+
+export interface AddTopicsPayload {
+  topics: string[];
+}
