@@ -1,7 +1,10 @@
+'use client';
+
 import { cn } from '@/lib/utils';
 import SidebarWrapper from '../../components/Layouts/AuthLayout/SidebarWrapper';
 import Header from '@/components/Layouts/AuthLayout/Header';
 import GlobalProvider from '@/context/appContext';
+import { ToastProvider } from '@/context/ToastContext';
 
 export default function RootLayout({
   children,
@@ -23,7 +26,7 @@ export default function RootLayout({
               'px-6 pt-5 overflow-auto' // Removed -z-10
             )}
           >
-            {children}
+            <ToastProvider>{children}</ToastProvider>
           </main>
         </div>
       </div>

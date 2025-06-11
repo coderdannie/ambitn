@@ -1,3 +1,5 @@
+import { STORAGE_KEYS } from '@/components/common/constants';
+
 export const formatDate = (
   date: Date | string | number | null | undefined,
   fallback: string = ''
@@ -108,5 +110,40 @@ export const formatTimeAgo = (date: string | Date): string => {
       month: 'short',
       day: 'numeric',
     });
+  }
+};
+
+export const saveToStorage = (key: string, value: any) => {
+  try {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+  } catch (error) {
+    console.error('Error saving to localStorage:', error);
+  }
+};
+
+export const loadFromStorage = <T>(key: string, defaultValue: T): T => {
+  try {
+    if (typeof window !== 'undefined') {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : defaultValue;
+    }
+    return defaultValue;
+  } catch (error) {
+    console.error('Error loading from localStorage:', error);
+    return defaultValue;
+  }
+};
+
+export const clearStorage = () => {
+  try {
+    if (typeof window !== 'undefined') {
+      Object.values(STORAGE_KEYS).forEach((key) => {
+        localStorage.removeItem(key);
+      });
+    }
+  } catch (error) {
+    console.error('Error clearing localStorage:', error);
   }
 };

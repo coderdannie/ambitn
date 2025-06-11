@@ -5,7 +5,9 @@ import {
   deleteUploadedImage,
   uploadImage,
   uploadVideo,
+  uploadAudio,
   createProject,
+  deleteUploadedAudio,
 } from '../api/portfolio.service';
 import { useState } from 'react';
 import { UploadData, UploadOptions } from '@/types/portfolio';
@@ -95,6 +97,49 @@ export const useDeleteUploadedImage = (options = {}) => {
     ...options,
   });
   return { mutate, isPending };
+};
+
+export const useDeleteUploadedAudio = (options = {}) => {
+  const { mutate, isPending } = useMutation({
+    mutationFn: deleteUploadedAudio,
+    mutationKey: [QUERY_KEYS.DELETE_UPLOADED_AUDIO],
+    ...options,
+  });
+  return { mutate, isPending };
+};
+
+export const useUploadAudio = (options: UploadOptions = {}) => {
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (data: UploadData) => uploadAudio(data, setUploadProgress),
+    mutationKey: [QUERY_KEYS.UPLOAD_AUDIO],
+    onMutate: () => {
+      setIsUploading(true);
+      setUploadProgress(0);
+      options.onMutate?.();
+    },
+    onSuccess: (data) => {
+      setIsUploading(false);
+      setUploadProgress(100);
+      setTimeout(() => setUploadProgress(0), 1000);
+      options.onSuccess?.(data);
+    },
+    onError: (error) => {
+      setIsUploading(false);
+      setUploadProgress(0);
+      options.onError?.(error);
+    },
+    onSettled: options.onSettled,
+  });
+
+  return {
+    mutate,
+    isPending,
+    isUploading,
+    uploadProgress,
+  };
 };
 
 export const useCreateProject = (options = {}) => {

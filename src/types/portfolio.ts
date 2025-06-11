@@ -63,13 +63,16 @@ export interface ProjectItemProps {
   onEditClick?: () => void;
   isEditing?: boolean;
   isUploadingImg?: boolean;
+  isUploadingAudio?: boolean;
   uploadImgProgress?: number;
   selectedImg?: string;
   onReplaceImage: (file: File) => void;
   isUploadingVideo?: boolean;
   uploadVideoProgress?: number;
   onReplaceVideo?: (file: File) => void;
+  onReplaceAudio?: (file: File) => void;
   isDeleting: boolean;
+  getUploadProgress: (value: string) => void;
 }
 
 export interface UploadOptions {
@@ -87,7 +90,7 @@ export interface UploadBody {
   file: string | File;
 }
 
-export type MediaType = 'image' | 'video';
+export type MediaType = 'image' | 'video' | 'audio';
 
 export interface EditMenuAction {
   label: string;
@@ -147,4 +150,18 @@ export interface CreateProjectPayload {
   tags: string[]; // array of strings
   categories: string[]; // array of strings
   contents: ContentItem[];
+}
+
+export interface ProjectData {
+  title: string;
+  description: string;
+  tags: string[];
+  categories: string[];
+  coverImage: string;
+  needsFeedback: boolean;
+}
+
+export interface UploadingState {
+  uploadingProjects: Set<string>;
+  deletingProjects: Set<string>;
 }

@@ -84,3 +84,17 @@ export const resetPasswordSchema = z
     message: 'Passwords do not match',
   });
 export type ResetPasswordSchemaType = z.infer<typeof resetPasswordSchema>;
+
+export const projectSchema = z.object({
+  title: z.string().min(1, 'Project title is required'),
+  description: z.string().min(1, 'Description is required'),
+  tags: z
+    .array(z.string())
+    .min(1, 'At least one tag is required')
+    .max(10, 'Maximum 10 tags allowed'),
+  categories: z.array(z.string()).min(1, 'At least one category is required'),
+  coverImage: z.string().min(1, 'Cover image is required'),
+  needsFeedback: z.boolean(),
+});
+
+export type ProjectFormData = z.infer<typeof projectSchema>;

@@ -71,6 +71,42 @@ export const uploadVideo = async (
   return res.data;
 };
 
+export const uploadAudio = async (
+  body: UploadBody,
+  onProgress?: (progress: number) => void
+): Promise<any> => {
+  let fileToUpload: File;
+
+  if (typeof body.file === 'string') {
+    // Handle base64 string
+    const response = await fetch(body.file);
+    const blob = await response.blob();
+    fileToUpload = new File([blob], 'audio.mp3', {
+      type: blob.type || 'audio/mpeg',
+    });
+  } else {
+    fileToUpload = body.file;
+  }
+
+  // Create FormData for file upload
+  const formData = new FormData();
+  formData.append('file', fileToUpload);
+
+  // Upload with progress tracking
+  const res = await uploadInstance.post(API.UPLOAD_AUDIO, formData, {
+    onUploadProgress: (progressEvent: any) => {
+      if (progressEvent.total) {
+        const progress = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        onProgress?.(progress);
+      }
+    },
+  });
+
+  return res.data;
+};
+
 export const deleteUploadedVideo = async (body: {
   publicId: string | undefined;
 }) => {
@@ -87,6 +123,12 @@ export const deleteUploadedImage = async (body: { publicId: string }) => {
   return res.data;
 };
 
+export const deleteUploadedAudio = async (body: { publicId: string }) => {
+  const res = await axiosInstance.delete(API.DELETE_UPLOADED_AUDIO, {
+    data: body,
+  });
+  return res.data;
+};
 export const createProject = async (
   payload: CreateProjectPayload
 ): Promise<any> => {

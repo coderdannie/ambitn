@@ -287,3 +287,14 @@ export const socialIcons = [
   '/assets/social-icon5.svg',
   '/assets/social-icon6.svg',
 ];
+
+// Storage keys
+export const STORAGE_KEYS = {
+  PROJECTS: 'portfolio_projects',
+  PROJECT_DATA: 'portfolio_project_data',
+  PROJECT_TITLE: 'portfolio_project_title',
+  TEXT_CONTENT: 'portfolio_text_content',
+  ADDING_TEXT: 'portfolio_adding_text',
+  EDITING_TEXT_ID: 'portfolio_editing_text_id',
+  INSERT_POSITION: 'portfolio_insert_position',
+} as const;

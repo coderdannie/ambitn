@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,36 +14,26 @@ import { StylesConfig, ActionMeta, MultiValue } from 'react-select';
 import { MdModeEditOutline } from 'react-icons/md';
 import { FaHeart } from 'react-icons/fa6';
 import { IoEyeSharp } from 'react-icons/io5';
+import { useForm, Controller } from 'react-hook-form';
+import { ProjectFormData, projectSchema } from '@/utils/validation';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 
-interface ProjectData {
-  title: string;
-  description: string;
-  tags: string[];
-  categories: string[];
-  coverImage?: string;
-  needsFeedback: boolean;
-}
+// Validation Schema
 
 interface PublishProjectModalProps {
   open: boolean;
   onClose: () => void;
-  projectData?: ProjectData;
-  onPublish?: (data: ProjectData) => void;
-  onSaveDraft?: (data: ProjectData) => void;
+  defaultValues?: Partial<ProjectFormData>;
+  onPublish?: (data: ProjectFormData) => void;
+  onSaveDraft?: (data: ProjectFormData) => void;
   setShowCoverModal: (value: boolean) => void;
+  onFormChange?: (data: ProjectFormData) => void; // Callback to parent for state management
 }
 
 interface TagOption {
   value: string;
   label: string;
-}
-
-interface ValidationErrors {
-  title: boolean;
-  description: boolean;
-  tags: boolean;
-  categories: boolean;
-  coverImage: boolean;
 }
 
 const availableCategories = [
@@ -80,7 +70,7 @@ const customStyles: StylesConfig<TagOption, true> = {
     border: state.hasValue ? '1px solid #000' : '1px solid #E2E4EA',
     paddingRight: '16px',
     background: state.hasValue ? '#FFFF' : 'unset',
-    boxShadow: 'none', // Removes the blue glow
+    boxShadow: 'none',
     '&:hover': {
       borderColor: state.hasValue ? '#000' : '#E2E4EA',
     },
@@ -135,28 +125,45 @@ const customStylesError: StylesConfig<TagOption, true> = {
 export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
   open,
   onClose,
-  projectData,
+  defaultValues,
   onPublish,
   onSaveDraft,
   setShowCoverModal,
+  onFormChange,
 }) => {
-  const [formData, setFormData] = useState<ProjectData>({
-    title: '',
-    description: '',
-    tags: [],
-    categories: [],
-    needsFeedback: false,
-    ...projectData,
+  const [showMoreCategories, setShowMoreCategories] = React.useState(false);
+  const router = useRouter();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors, isValid },
+    reset,
+    setValue,
+    getValues,
+  } = useForm<ProjectFormData>({
+    resolver: zodResolver(projectSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      tags: [],
+      categories: [],
+      coverImage: '',
+      needsFeedback: false,
+      ...defaultValues,
+    },
+    mode: 'onChange', // Validate on change for real-time feedback
   });
 
-  const [showMoreCategories, setShowMoreCategories] = useState(false);
-  const [errors, setErrors] = useState<ValidationErrors>({
-    title: false,
-    description: false,
-    tags: false,
-    categories: false,
-    coverImage: false,
-  });
+  // Watch all form values for real-time updates
+  const watchedValues = watch();
+
+  // Only send form data to parent on specific actions, not on every change
+  const notifyParentOfChange = () => {
+    if (onFormChange && open) {
+      onFormChange(getValues());
+    }
+  };
 
   // Handle escape key press
   useEffect(() => {
@@ -172,90 +179,62 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
     };
   }, [open, onClose]);
 
-  // Reset form when modal opens
+  // Reset form when modal opens with new default values
   useEffect(() => {
-    if (open && projectData) {
-      setFormData({ ...projectData });
+    if (open) {
+      reset({
+        title: '',
+        description: '',
+        tags: [],
+        categories: [],
+        coverImage: '',
+        needsFeedback: false,
+        ...defaultValues,
+      });
     }
-    // Reset errors when modal opens
-    setErrors({
-      title: false,
-      description: false,
-      tags: false,
-      categories: false,
-      coverImage: false,
-    });
-  }, [open, projectData]);
+  }, [open, defaultValues, reset]);
 
   const handleTagsChange = (
     newValue: MultiValue<TagOption>,
     actionMeta: ActionMeta<TagOption>
   ) => {
-    setFormData((prev) => ({
-      ...prev,
-      tags: newValue.map((tag) => tag.value),
-    }));
-    // Clear error when user starts typing
-    if (errors.tags) {
-      setErrors((prev) => ({ ...prev, tags: false }));
-    }
+    const tagsArray = Array.isArray(newValue) ? newValue : [];
+    setValue(
+      'tags',
+      tagsArray.map((tag) => tag.value),
+      { shouldValidate: true }
+    );
+    notifyParentOfChange();
   };
 
   const handleCreateOption = (inputValue: string) => {
-    const newTag = {
-      value: inputValue.toLowerCase().replace(/\W/g, '-'),
-      label: inputValue,
-    };
+    const currentTags = getValues('tags');
+    const newTagValue = inputValue.toLowerCase().replace(/\W/g, '-');
 
-    if (!formData.tags.includes(newTag.value) && formData.tags.length < 10) {
-      setFormData((prev) => ({
-        ...prev,
-        tags: [...prev.tags, newTag.value],
-      }));
-      // Clear error when user adds a tag
-      if (errors.tags) {
-        setErrors((prev) => ({ ...prev, tags: false }));
-      }
+    if (!currentTags.includes(newTagValue) && currentTags.length < 10) {
+      setValue('tags', [...currentTags, newTagValue], { shouldValidate: true });
+      notifyParentOfChange();
     }
   };
 
   const handleCategoryToggle = (category: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      categories: prev.categories.includes(category)
-        ? prev.categories.filter((cat) => cat !== category)
-        : [...prev.categories, category],
-    }));
-    // Clear error when user selects a category
-    if (errors.categories) {
-      setErrors((prev) => ({ ...prev, categories: false }));
-    }
+    const currentCategories = getValues('categories');
+    const newCategories = currentCategories.includes(category)
+      ? currentCategories.filter((cat) => cat !== category)
+      : [...currentCategories, category];
+
+    setValue('categories', newCategories, { shouldValidate: true });
+    notifyParentOfChange();
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: ValidationErrors = {
-      title: !formData.title.trim(),
-      description: !formData.description.trim(),
-      tags: formData.tags.length === 0,
-      categories: formData.categories.length === 0,
-      coverImage: !formData.coverImage,
-    };
-
-    setErrors(newErrors);
-
-    // Return true if no errors
-    return !Object.values(newErrors).some((error) => error);
-  };
-
-  const handlePublish = () => {
-    if (validateForm()) {
-      onPublish?.(formData);
-      onClose();
-    }
+  const onSubmitPublish = (data: ProjectFormData) => {
+    onPublish?.(data);
+    router.push('/portfolio/preview');
   };
 
   const handleSaveDraft = () => {
-    onSaveDraft?.(formData);
+    const currentData = getValues();
+    onSaveDraft?.(currentData);
     onClose();
   };
 
@@ -263,11 +242,12 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
     ? availableCategories
     : availableCategories.slice(0, 6);
 
-  // Convert formData.tags to the format React Select expects
-  const selectedTags = formData.tags.map((tag) => {
-    const predefined = predefinedTags.find((t) => t.value === tag);
-    return predefined || { value: tag, label: tag };
-  });
+  // Convert tags to the format React Select expects
+  const selectedTags =
+    watchedValues.tags?.map((tag) => {
+      const predefined = predefinedTags.find((t) => t.value === tag);
+      return predefined || { value: tag, label: tag };
+    }) || [];
 
   return (
     <AnimatePresence>
@@ -305,27 +285,30 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
               </button>
             </div>
 
-            <div className="flex flex-col md:flex-row flex-1 min-h-0">
+            <form
+              onSubmit={handleSubmit(onSubmitPublish)}
+              className="flex flex-col md:flex-row flex-1 min-h-0"
+            >
               {/* Left Side - Preview */}
               <div className="w-full md:flex-1 p-4 md:p-6 bg-gray-50 border-b md:border-b-0 md:border-r overflow-y-auto max-h-[50vh] md:max-h-none">
                 <div className="space-y-4">
                   {/* Project Title */}
                   <div className="mb-4">
                     <h3 className="text-sm font-medium text-gray-900 truncate">
-                      Project Cover(required)
+                      Project Cover (required)
                     </h3>
                   </div>
 
-                  <div className="relative  rounded-md overflow-hidden">
+                  <div className="relative rounded-md overflow-hidden">
                     <div
                       className={`bg-black rounded-lg overflow-hidden h-[200px] w-full aspect-[4/5] ${
                         errors.coverImage ? 'ring-2 ring-red-500' : ''
                       }`}
                     >
-                      {formData.coverImage ? (
+                      {watchedValues.coverImage ? (
                         <>
                           <Image
-                            src={formData.coverImage}
+                            src={watchedValues.coverImage}
                             alt="Project cover"
                             fill
                             className="object-cover overflow-hidden"
@@ -341,7 +324,7 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
                         </div>
                       )}
 
-                      {/* Stats overlay - now without background */}
+                      {/* Stats overlay */}
                       <div className="absolute bottom-4 right-4 flex items-center gap-2">
                         <span className="text-white text-sm flex items-center gap-1">
                           <FaHeart className="text-white" /> 0
@@ -352,14 +335,15 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
                       </div>
                     </div>
 
-                    {/* Cover preview text - now without background */}
+                    {/* Cover preview text */}
                     <div className="absolute bottom-4 left-4 text-white font-semibold">
-                      {formData.title || 'Untitled Project'}
+                      {watchedValues.title || 'Untitled Project'}
                     </div>
                   </div>
 
                   <button
-                    className="text-sm  text-[#718096] border-b border-[#FF8C00] hover:text-blue-700 flex items-center gap-1 pb-1"
+                    type="button"
+                    className="text-sm text-[#718096] border-b border-[#FF8C00] hover:text-blue-700 flex items-center gap-1 pb-1"
                     onClick={() => {
                       setShowCoverModal(true);
                       onClose();
@@ -370,7 +354,7 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
 
                   {errors.coverImage && (
                     <p className="text-red-500 text-sm">
-                      This field is required
+                      {errors.coverImage.message}
                     </p>
                   )}
                 </div>
@@ -385,33 +369,31 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
                       <label className="block text-sm font-medium text-[#1A202C] mb-2">
                         Project Title
                       </label>
-                      <Input
-                        value={formData.title}
-                        onChange={(e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            title: e.target.value,
-                          }));
-                          // Clear error when user starts typing
-                          if (errors.title) {
-                            setErrors((prev) => ({ ...prev, title: false }));
-                          }
-                        }}
-                        placeholder="Enter project title"
-                        className={`border
-                        focus-visible:ring-0 focus-visible:ring-offset-0 
-                        focus-visible:border-1 h-[47px] 
-                        px-2 py-1 w-full bg-transparent  ${
-                          errors.title
-                            ? 'border-red-500 focus-visible:border-red-500'
-                            : formData.title
-                            ? 'border-[#1A202CE5] '
-                            : 'focus-visible:border-[#E2E4EA] '
-                        }`}
+                      <Controller
+                        name="title"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              notifyParentOfChange();
+                            }}
+                            placeholder="Enter project title"
+                            className={`border focus-visible:ring-0 focus-visible:ring-offset-0 
+                              focus-visible:border-1 h-[47px] px-2 py-1 w-full bg-transparent ${
+                                errors.title
+                                  ? 'border-red-500 focus-visible:border-red-500'
+                                  : field.value
+                                  ? 'border-[#1A202CE5]'
+                                  : 'focus-visible:border-[#E2E4EA]'
+                              }`}
+                          />
+                        )}
                       />
                       {errors.title && (
                         <p className="text-red-500 text-sm mt-1">
-                          This field is required
+                          {errors.title.message}
                         </p>
                       )}
                     </div>
@@ -421,38 +403,46 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
                       <label className="block text-sm font-medium text-[#1A202C] mb-2">
                         Tags <span className="text-gray-500">(Max 10)</span>
                       </label>
-                      <CreatableSelect
-                        isMulti
-                        options={predefinedTags}
-                        value={selectedTags}
-                        onChange={handleTagsChange}
-                        onCreateOption={handleCreateOption}
-                        styles={errors.tags ? customStylesError : customStyles}
-                        placeholder="Select or create tags..."
-                        isSearchable
-                        isClearable
-                        noOptionsMessage={() => 'Type to create a new tag'}
-                        formatCreateLabel={(inputValue) =>
-                          `Create "${inputValue}"`
-                        }
-                        isValidNewOption={(inputValue) =>
-                          inputValue.trim() !== '' &&
-                          !formData.tags.includes(
-                            inputValue.toLowerCase().replace(/\W/g, '-')
-                          ) &&
-                          formData.tags.length < 10
-                        }
-                        components={{
-                          DropdownIndicator: () => null,
-                          IndicatorSeparator: () => null,
-                        }}
+                      <Controller
+                        name="tags"
+                        control={control}
+                        render={({ field: { value } }) => (
+                          <CreatableSelect
+                            isMulti
+                            options={predefinedTags}
+                            value={selectedTags}
+                            onChange={handleTagsChange}
+                            onCreateOption={handleCreateOption}
+                            styles={
+                              errors.tags ? customStylesError : customStyles
+                            }
+                            placeholder="Select or create tags..."
+                            isSearchable
+                            isClearable
+                            noOptionsMessage={() => 'Type to create a new tag'}
+                            formatCreateLabel={(inputValue) =>
+                              `Create "${inputValue}"`
+                            }
+                            isValidNewOption={(inputValue) =>
+                              inputValue.trim() !== '' &&
+                              !value.includes(
+                                inputValue.toLowerCase().replace(/\W/g, '-')
+                              ) &&
+                              value.length < 10
+                            }
+                            components={{
+                              DropdownIndicator: () => null,
+                              IndicatorSeparator: () => null,
+                            }}
+                          />
+                        )}
                       />
                       <div className="text-xs text-gray-500 mt-1">
-                        {formData.tags.length}/10 tags
+                        {watchedValues.tags?.length || 0}/10 tags
                       </div>
                       {errors.tags && (
                         <p className="text-red-500 text-sm mt-1">
-                          This field is required
+                          {errors.tags.message}
                         </p>
                       )}
                     </div>
@@ -462,37 +452,32 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
                       <label className="block text-sm font-medium text-[#1A202C] mb-2">
                         Description
                       </label>
-                      <Textarea
-                        value={formData.description}
-                        onChange={(e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            description: e.target.value,
-                          }));
-                          // Clear error when user starts typing
-                          if (errors.description) {
-                            setErrors((prev) => ({
-                              ...prev,
-                              description: false,
-                            }));
-                          }
-                        }}
-                        placeholder="Describe your project..."
-                        rows={3}
-                        className={`border
-                          focus-visible:ring-0 focus-visible:ring-offset-0 
-                          focus-visible:border-1 h-[47px] 
-                          px-2 py-1 w-full bg-transparent  ${
-                            errors.description
-                              ? 'border-red-500 focus-visible:border-red-500'
-                              : formData.description
-                              ? 'border-[#1A202CE5] '
-                              : 'focus-visible:border-[#E2E4EA] '
-                          }`}
+                      <Controller
+                        name="description"
+                        control={control}
+                        render={({ field }) => (
+                          <Textarea
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              notifyParentOfChange();
+                            }}
+                            placeholder="Describe your project..."
+                            rows={3}
+                            className={`border focus-visible:ring-0 focus-visible:ring-offset-0 
+                              focus-visible:border-1 h-[47px] px-2 py-1 w-full bg-transparent ${
+                                errors.description
+                                  ? 'border-red-500 focus-visible:border-red-500'
+                                  : field.value
+                                  ? 'border-[#1A202CE5]'
+                                  : 'focus-visible:border-[#E2E4EA]'
+                              }`}
+                          />
+                        )}
                       />
                       {errors.description && (
                         <p className="text-red-500 text-sm mt-1">
-                          This field is required
+                          {errors.description.message}
                         </p>
                       )}
                     </div>
@@ -515,7 +500,10 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
                             className="flex items-center space-x-2 cursor-pointer"
                           >
                             <Checkbox
-                              checked={formData.categories.includes(category)}
+                              checked={
+                                watchedValues.categories?.includes(category) ||
+                                false
+                              }
                               onCheckedChange={() =>
                                 handleCategoryToggle(category)
                               }
@@ -529,6 +517,7 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
 
                       {availableCategories.length > 6 && (
                         <button
+                          type="button"
                           onClick={() =>
                             setShowMoreCategories(!showMoreCategories)
                           }
@@ -539,7 +528,7 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
                       )}
                       {errors.categories && (
                         <p className="text-red-500 text-sm mt-1">
-                          This field is required
+                          {errors.categories.message}
                         </p>
                       )}
                     </div>
@@ -551,24 +540,29 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
                           I need feedbacks from other designers
                         </h3>
                       </div>
-                      <Switch
-                        checked={formData.needsFeedback}
-                        onCheckedChange={(checked) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            needsFeedback: checked,
-                          }))
-                        }
+                      <Controller
+                        name="needsFeedback"
+                        control={control}
+                        render={({ field: { value, onChange } }) => (
+                          <Switch
+                            checked={value}
+                            onCheckedChange={(checked) => {
+                              onChange(checked);
+                              notifyParentOfChange();
+                            }}
+                          />
+                        )}
                       />
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </form>
 
             {/* Footer */}
             <div className="flex flex-col sm:flex-row items-center justify-end gap-3 p-4 md:p-6 border-t bg-gray-50 mt-auto">
               <Button
+                type="button"
                 variant="outline"
                 onClick={handleSaveDraft}
                 className="w-full sm:w-auto px-6 py-3 bg-[#F7F5F4] order-2 sm:order-1"
@@ -576,7 +570,8 @@ export const PublishProjectModal: React.FC<PublishProjectModalProps> = ({
                 Save as draft
               </Button>
               <Button
-                onClick={handlePublish}
+                type="submit"
+                onClick={handleSubmit(onSubmitPublish)}
                 className="w-full sm:w-auto px-6 py-3 secondary-btn-gradient order-1 sm:order-2"
               >
                 Continue
