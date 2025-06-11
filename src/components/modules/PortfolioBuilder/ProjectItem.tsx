@@ -27,12 +27,13 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   isEditing,
   className = 'relative p-4 bg-white rounded-lg transition-all',
   isUploadingImg,
-  uploadImgProgress,
   onReplaceImage,
   isUploadingVideo,
-  uploadVideoProgress,
+  isUploadingAudio,
   onReplaceVideo,
+  onReplaceAudio,
   isDeleting,
+  getUploadProgress,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -45,8 +46,20 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   const { addToast } = useToast();
 
   console.log(isDeleting);
+
   const triggerFileInput = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleReplaceFile(file);
+    }
+    // Reset the input value so the same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const saveAltText = () => {
@@ -68,6 +81,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
 
   const handleReplaceFile = (file: File) => {
     const MAX_VIDEO_SIZE = 20 * 1024 * 1024; // 20MB in bytes
+    const MAX_AUDIO_SIZE = 10 * 1024 * 1024; // 10MB in bytes (adjust as needed)
 
     if (file.type.startsWith('image/')) {
       onReplaceImage?.(file);
@@ -78,11 +92,23 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             file.size /
             (1024 * 1024)
           ).toFixed(1)}MB.`,
-          'success'
+          'error'
         );
         return;
       }
       onReplaceVideo?.(file);
+    } else if (file.type.startsWith('audio/')) {
+      if (file.size > MAX_AUDIO_SIZE) {
+        addToast(
+          `Audio file is too large. Maximum size allowed is 10MB. Your file is ${(
+            file.size /
+            (1024 * 1024)
+          ).toFixed(1)}MB.`,
+          'error'
+        );
+        return;
+      }
+      onReplaceAudio?.(file);
     }
   };
 
@@ -112,6 +138,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
       baseActions.push({
         label: 'Replace Audio',
         onClick: triggerFileInput,
+        disabled: isUploadingAudio || content.isUploading,
       });
     } else if (content.type === 'text') {
       baseActions.push({
@@ -139,7 +166,11 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     baseActions.push({
       label: 'Delete',
       onClick: () => removeProject(id),
-      disabled: isUploadingImg || content.isUploading || isUploadingVideo,
+      disabled:
+        isUploadingImg ||
+        content.isUploading ||
+        isUploadingVideo ||
+        isUploadingAudio,
       variant: 'danger',
     });
 
@@ -147,6 +178,20 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   };
 
   const editMenuActions = createEditMenuActions();
+
+  // Determine the accept attribute based on content type
+  const getAcceptAttribute = () => {
+    switch (content.type) {
+      case 'image':
+        return 'image/*';
+      case 'video':
+        return 'video/*';
+      case 'audio':
+        return 'audio/*';
+      default:
+        return '';
+    }
+  };
 
   const renderContent = () => {
     switch (content.type) {
@@ -157,7 +202,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             isHovered={isHovered}
             setIsHovered={setIsHovered}
             isUploadingImg={isUploadingImg}
-            uploadImgProgress={uploadImgProgress}
+            uploadImgProgress={getUploadProgress('image')}
             onReplaceImage={handleReplaceFile}
             showCaptionEditor={showCaptionEditor}
             setShowCaptionEditor={setShowCaptionEditor}
@@ -175,7 +220,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             isHovered={isHovered}
             setIsHovered={setIsHovered}
             isUploadingVideo={isUploadingVideo}
-            uploadVideoProgress={uploadVideoProgress}
+            uploadVideoProgress={getUploadProgress('video')}
             onReplaceVideo={handleReplaceFile}
             showCaptionEditor={showCaptionEditor}
             setShowCaptionEditor={setShowCaptionEditor}
@@ -211,8 +256,12 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             setShowCaptionEditor={setShowCaptionEditor}
             caption={caption}
             setCaption={setCaption}
+            uploadProgress={getUploadProgress('audio')}
+            isUploadingAudio={isUploadingAudio}
             saveCaption={saveCaption}
             editMenuActions={editMenuActions}
+            onReplaceAudio={handleReplaceFile}
+            isDeleting={isDeleting}
           />
         );
       default:
@@ -222,7 +271,27 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
 
   return (
     <div ref={ref} className={className}>
+      {/* Hidden file input for all content types */}
+      {content.type !== 'text' && (
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept={getAcceptAttribute()}
+          className="hidden"
+          disabled={
+            (content.type === 'image' &&
+              (isUploadingImg || content.isUploading)) ||
+            (content.type === 'video' &&
+              (isUploadingVideo || content.isUploading)) ||
+            (content.type === 'audio' &&
+              (isUploadingAudio || content.isUploading))
+          }
+        />
+      )}
+
       {renderContent()}
+
       <EditAltTextModal
         isOpen={showAltTextEditor}
         onClose={() => setShowAltTextEditor(false)}

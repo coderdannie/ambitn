@@ -14,7 +14,7 @@ interface ImageContentProps {
   isHovered: boolean;
   setIsHovered: (hovered: boolean) => void;
   isUploadingImg: boolean | undefined;
-  uploadImgProgress: number | undefined;
+  uploadImgProgress: number | undefined | void;
   onReplaceImage?: (file: File) => void;
   showCaptionEditor: boolean;
   setShowCaptionEditor: (show: boolean) => void;

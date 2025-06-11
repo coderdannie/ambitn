@@ -687,3 +687,30 @@ abbr[title] {
 .insert-line.visible {
   opacity: 1;
 }
+
+.project-item-wrapper {
+  scroll-margin-top: 100px; /* Adjust based on your header height */
+}
+
+.text-editor-container {
+  scroll-margin-top: 100px;
+}
+
+.highlight-new-content {
+  animation: highlight 2s ease-out;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: rgba(56, 182, 255, 0.2);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.text-editor-container {
+  scroll-margin-top: 100px; /* Adjust based on your header height */
+  min-height: 200px; /* Ensure it's tall enough to scroll to */
+  margin: 1rem 0;
+}

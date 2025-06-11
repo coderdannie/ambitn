@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { IoMusicalNotesOutline } from 'react-icons/io5';
+import LoadingOverlay from '@/components/common/Loaders/UploadingLoadingOverlay';
 import EditMenu from '../Components';
 import { CaptionEditor } from '../Components';
 import { CaptionDisplay } from '../Components';
@@ -19,6 +19,10 @@ interface AudioContentProps {
   setCaption: (caption: string) => void;
   saveCaption: () => void;
   editMenuActions: EditMenuAction[];
+  isUploadingAudio: boolean | undefined;
+  uploadProgress: number | undefined | void;
+  onReplaceAudio?: (file: File) => void;
+  isDeleting?: boolean;
 }
 
 const AudioContent: React.FC<AudioContentProps> = ({
@@ -31,12 +35,18 @@ const AudioContent: React.FC<AudioContentProps> = ({
   setCaption,
   saveCaption,
   editMenuActions,
+  isUploadingAudio,
+  uploadProgress,
+  onReplaceAudio,
+  isDeleting,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    // Handle audio file replacement logic here
+    if (file && onReplaceAudio) {
+      onReplaceAudio(file);
+    }
   };
 
   return (
@@ -46,22 +56,26 @@ const AudioContent: React.FC<AudioContentProps> = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative group">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <IoMusicalNotesOutline className="text-blue-600" />
-            </div>
-            <div>
-              <h3 className="font-medium text-gray-900">{content.title}</h3>
-              <p className="text-sm text-gray-500">Audio file</p>
-            </div>
-          </div>
-        </div>
+        <div
+          className={`relative w-full ${
+            isUploadingAudio || content.isUploading ? ' min-h-[180px]' : ''
+          }`}
+        >
+          <audio
+            controls
+            className={`w-full ${
+              isUploadingAudio || content.isUploading ? 'opacity-60' : ''
+            }`}
+            preload="metadata"
+          >
+            <source src={content.data} />
+            Your browser does not support the audio element.
+          </audio>
 
-        <audio controls className="w-full" preload="metadata">
-          <source src={content.data} />
-          Your browser does not support the audio element.
-        </audio>
+          {(isUploadingAudio || content.isUploading) && (
+            <LoadingOverlay uploadProgress={uploadProgress || 0} />
+          )}
+        </div>
 
         <input
           type="file"
@@ -69,9 +83,14 @@ const AudioContent: React.FC<AudioContentProps> = ({
           onChange={handleFileChange}
           accept="audio/*"
           className="hidden"
+          disabled={isUploadingAudio || content.isUploading}
         />
 
-        <EditMenu actions={editMenuActions} isVisible={isHovered} />
+        <EditMenu
+          actions={editMenuActions}
+          isVisible={isHovered && !isUploadingAudio && !content.isUploading}
+          isDeleting={isDeleting}
+        />
       </div>
 
       <CaptionDisplay caption={content.caption} />

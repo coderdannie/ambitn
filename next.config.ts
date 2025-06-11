@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     domains: ['https://res.cloudinary.com'],
     unoptimized: true,
   },
+  // pathname: '/src/assets/**',
 };
 
 export default nextConfig;

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React from 'react';
 import LoadingOverlay from '@/components/common/Loaders/UploadingLoadingOverlay';
 import EditMenu from '../Components';
 import { CaptionEditor } from '../Components';
@@ -13,7 +13,7 @@ interface VideoContentProps {
   isHovered: boolean;
   setIsHovered: (hovered: boolean) => void;
   isUploadingVideo: boolean | undefined;
-  uploadVideoProgress: number | undefined;
+  uploadVideoProgress: number | undefined | void;
   onReplaceVideo?: (file: File) => void;
   showCaptionEditor: boolean;
   setShowCaptionEditor: (show: boolean) => void;
@@ -39,15 +39,6 @@ const VideoContent: React.FC<VideoContentProps> = ({
   editMenuActions,
   isDeleting,
 }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && onReplaceVideo) {
-      onReplaceVideo(file);
-    }
-  };
-
   return (
     <MediaWrapper
       isHovered={isHovered}
@@ -67,15 +58,6 @@ const VideoContent: React.FC<VideoContentProps> = ({
         {(isUploadingVideo || content.isUploading) && (
           <LoadingOverlay uploadProgress={uploadVideoProgress || 0} />
         )}
-
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          accept="video/*"
-          className="hidden"
-          disabled={isUploadingVideo || content.isUploading}
-        />
 
         <EditMenu
           actions={editMenuActions}
