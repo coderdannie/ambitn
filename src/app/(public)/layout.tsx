@@ -1,13 +1,15 @@
+import React from 'react';
 // import Nav from "@/components/Layouts/NonAuthLayout/Nav";
-export default function RootLayout({
+
+export default function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <>
       {/* <Nav /> */}
       {children}
-    </div>
+    </>
   );
 }
