@@ -1,6 +1,11 @@
 import * as API from '../url';
 import axiosInstance, { uploadInstance } from '../axiosInstance';
-import { CreateProjectPayload, UploadBody } from '@/types/portfolio';
+import {
+  CreateProjectPayload,
+  getUserAllProjectResponse,
+  UploadBody,
+} from '@/types/portfolio';
+import { ProjectResponse } from '@/types/project';
 
 export const uploadImage = async (
   body: UploadBody,
@@ -134,4 +139,28 @@ export const createProject = async (
 ): Promise<any> => {
   const res = await axiosInstance.post(API.CREATE_PROJECT, payload);
   return res.data;
+};
+
+export const getUserAllProjects = async ({
+  queryKey,
+}): Promise<getUserAllProjectResponse> => {
+  const [, page, limit, searchTerm] = queryKey;
+
+  const params = new URLSearchParams();
+
+  if (page) params.append('page', page);
+  if (limit) params.append('limit', limit);
+  if (searchTerm) params.append('searchTerm', searchTerm);
+
+  const res = await axiosInstance.get<getUserAllProjectResponse>(
+    `${`${API.GET_USER_ALL_PROJECTS}/all`}?${params.toString()}`
+  );
+  return res.data;
+};
+
+export const getUserProject = async (id: string): Promise<ProjectResponse> => {
+  const res = await axiosInstance.get<{ data: ProjectResponse }>(
+    `${API.GET_USER_ALL_PROJECTS}/${id}`
+  );
+  return res.data.data;
 };

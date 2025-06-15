@@ -6,12 +6,18 @@ import { ProjectItem } from '@/types/portfolio';
 import { ProjectFormData } from '@/utils/validation';
 import Image from 'next/image';
 import { usePortfolioState } from './hooks/usePortfolioState';
+import PublishingModal from '@/components/modals/PublishingModal';
 
 interface PortfolioPreviewProps {
   projects: ProjectItem[];
   projectData: ProjectFormData;
   projectTitle: string;
   onBackToEdit: () => void;
+  handlePublishClick: () => void;
+  handleModalPublish: () => void;
+  handleModalClose: () => void;
+  isModalOpen: boolean;
+  isPending: boolean;
 }
 
 const PortfolioPreview = ({
@@ -19,6 +25,11 @@ const PortfolioPreview = ({
   projectData,
   projectTitle,
   onBackToEdit,
+  handlePublishClick,
+  handleModalPublish,
+  handleModalClose,
+  isModalOpen,
+  isPending,
 }: PortfolioPreviewProps) => {
   const { clearPortfolioStorage } = usePortfolioState();
 
@@ -28,7 +39,7 @@ const PortfolioPreview = ({
         <Button
           variant="outline"
           onClick={onBackToEdit}
-          className="flex items-center gap-2 px-4 py-4 h-[44px] text-gray-600 hover:text-gray-800 transition-colors border-[#1A202C] text-[#1A202C]"
+          className="flex items-center gap-2 px-4 py-4 h-[44px] text-gray-600 hover:text-gray-800 transition-colors border-[#1A202C] "
         >
           Back to Edit
         </Button>
@@ -42,8 +53,12 @@ const PortfolioPreview = ({
           >
             Cancel
           </Button>
-          <Button className="secondary-btn-gradient px-4 grid place-items-center !h-[44px]">
-            Publish
+          <Button
+            className="secondary-btn-gradient px-4 grid place-items-center !h-[44px]"
+            onClick={handlePublishClick}
+            disabled={isPending}
+          >
+            {isPending ? 'processing' : 'Publish'}
           </Button>
         </div>
       </div>
@@ -51,7 +66,7 @@ const PortfolioPreview = ({
         {/* Preview Header with Back Button */}
         <div className="flex items-center justify-center mb-6">
           <div className="flex-1 h-px bg-gray-200"></div>
-          <h1 className="text-2xl font-semibold text-primary px-6">
+          <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-primary px-6">
             {projectData.title || projectTitle || 'Untitled Project'} Preview
           </h1>
           <div className="flex-1 h-px bg-gray-200"></div>
@@ -75,9 +90,12 @@ const PortfolioPreview = ({
                     height={100}
                   />
                   {project.content.caption && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      {project.content.caption}
-                    </div>
+                    <div
+                      className="prose max-w-none"
+                      dangerouslySetInnerHTML={{
+                        __html: project.content.caption,
+                      }}
+                    />
                   )}
                 </div>
               )}
@@ -89,9 +107,12 @@ const PortfolioPreview = ({
                     className="w-full h-auto max-h-[400px] object-contain"
                   />
                   {project.content.caption && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      {project.content.caption}
-                    </div>
+                    <div
+                      className="prose max-w-none"
+                      dangerouslySetInnerHTML={{
+                        __html: project.content.caption,
+                      }}
+                    />
                   )}
                 </div>
               )}
@@ -182,6 +203,12 @@ const PortfolioPreview = ({
           </div>
         </div>
       </div>
+      <PublishingModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        isPending={isPending}
+        onPublish={handleModalPublish}
+      />
     </>
   );
 };

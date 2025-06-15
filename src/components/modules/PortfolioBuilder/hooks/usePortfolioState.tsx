@@ -15,6 +15,9 @@ import { clearStorage, loadFromStorage, saveToStorage } from '@/utils/helper';
 import { ProjectFormData } from '@/utils/validation';
 
 export const usePortfolioState = () => {
+  // Track if this is initial load to avoid premature lastSaved
+  const isInitialLoad = useRef(true);
+
   const [projects, setProjects] = useState<ProjectItem[]>(() =>
     loadFromStorage(STORAGE_KEYS.PROJECTS, [])
   );
@@ -62,6 +65,8 @@ export const usePortfolioState = () => {
     })
   );
 
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
   const editorRef = useRef<HTMLDivElement | null>(null);
   const { addToast } = useToast();
 
@@ -75,34 +80,48 @@ export const usePortfolioState = () => {
   const { mutate: deleteUploadedImage } = useDeleteUploadedImage();
   const { mutate: deleteUploadedVideo } = useDeleteUploadedVideo();
   const { mutate: deleteUploadedAudio } = useDeleteUploadedAudio();
-  // Save to localStorage whenever state changes
+
+  // Single effect to handle all localStorage operations and lastSaved
   useEffect(() => {
+    // Skip saving and lastSaved update on initial load
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      return;
+    }
+
+    // Check if there's meaningful content to save
+    const hasContent =
+      projects.length > 0 ||
+      projectData.title.trim() !== '' ||
+      projectData.description.trim() !== '' ||
+      projectTitle.trim() !== '' ||
+      textContent.trim() !== '' ||
+      addingText ||
+      editingTextId !== null ||
+      insertPosition !== null;
+
+    // Save all state to localStorage
     saveToStorage(STORAGE_KEYS.PROJECTS, projects);
-  }, [projects]);
-
-  useEffect(() => {
     saveToStorage(STORAGE_KEYS.PROJECT_DATA, projectData);
-  }, [projectData]);
-
-  useEffect(() => {
     saveToStorage(STORAGE_KEYS.PROJECT_TITLE, projectTitle);
-  }, [projectTitle]);
-
-  useEffect(() => {
     saveToStorage(STORAGE_KEYS.TEXT_CONTENT, textContent);
-  }, [textContent]);
-
-  useEffect(() => {
     saveToStorage(STORAGE_KEYS.ADDING_TEXT, addingText);
-  }, [addingText]);
-
-  useEffect(() => {
     saveToStorage(STORAGE_KEYS.EDITING_TEXT_ID, editingTextId);
-  }, [editingTextId]);
-
-  useEffect(() => {
     saveToStorage(STORAGE_KEYS.INSERT_POSITION, insertPosition);
-  }, [insertPosition]);
+
+    // Only update lastSaved if there's actual content
+    if (hasContent) {
+      setLastSaved(new Date());
+    }
+  }, [
+    projects,
+    projectData,
+    projectTitle,
+    textContent,
+    addingText,
+    editingTextId,
+    insertPosition,
+  ]);
 
   // Clear storage when project is published or user explicitly wants to start fresh
   const clearPortfolioStorage = useCallback(() => {
@@ -122,54 +141,17 @@ export const usePortfolioState = () => {
     setAddingText(false);
     setEditingTextId(null);
     setInsertPosition(null);
-  }, []);
-
-  // Auto-save indicator
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-
-  useEffect(() => {
-    setLastSaved(new Date());
-  }, [projects, projectData, projectTitle, textContent]);
-
-  // Enhanced setters that also update localStorage
-  const setProjectsWithStorage = useCallback(
-    (newProjects: ProjectItem[] | ((prev: ProjectItem[]) => ProjectItem[])) => {
-      setProjects((prev) => {
-        const updated =
-          typeof newProjects === 'function' ? newProjects(prev) : newProjects;
-        saveToStorage(STORAGE_KEYS.PROJECTS, updated);
-        return updated;
-      });
-    },
-    []
-  );
-
-  const setProjectDataWithStorage = useCallback(
-    (
-      newData: ProjectFormData | ((prev: ProjectFormData) => ProjectFormData)
-    ) => {
-      setProjectData((prev) => {
-        const updated = typeof newData === 'function' ? newData(prev) : newData;
-        saveToStorage(STORAGE_KEYS.PROJECT_DATA, updated);
-        return updated;
-      });
-    },
-    []
-  );
-
-  const setProjectTitleWithStorage = useCallback((newTitle: string) => {
-    setProjectTitle(newTitle);
-    saveToStorage(STORAGE_KEYS.PROJECT_TITLE, newTitle);
+    setLastSaved(null);
   }, []);
 
   return {
     // State
     projects,
-    setProjects: setProjectsWithStorage,
+    setProjects,
     projectData,
-    setProjectData: setProjectDataWithStorage,
+    setProjectData,
     projectTitle,
-    setProjectTitle: setProjectTitleWithStorage,
+    setProjectTitle,
     textContent,
     setTextContent,
     addingText,

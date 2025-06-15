@@ -14,40 +14,40 @@ const mockDrafts = [
 ];
 
 // Draft Card Component
-const DraftCard = ({ draft }) => (
-  <motion.div
-    className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow transition-all"
-    whileHover={{ y: -4 }}
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.3 }}
-  >
-    <div className="flex justify-between items-start mb-3">
-      <h3 className="font-medium text-gray-900">{draft.title}</h3>
-      <button className="text-purple-600 hover:text-purple-800">
-        <Edit size={16} />
-      </button>
-    </div>
+// const DraftCard = ({ draft }) => (
+//   <motion.div
+//     className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow transition-all"
+//     whileHover={{ y: -4 }}
+//     initial={{ opacity: 0, y: 20 }}
+//     animate={{ opacity: 1, y: 0 }}
+//     transition={{ duration: 0.3 }}
+//   >
+//     <div className="flex justify-between items-start mb-3">
+//       <h3 className="font-medium text-gray-900">{draft.title}</h3>
+//       <button className="text-purple-600 hover:text-purple-800">
+//         <Edit size={16} />
+//       </button>
+//     </div>
 
-    <div className="mt-4">
-      <div className="flex justify-between text-sm text-gray-500 mb-2">
-        <span>Progress</span>
-        <span>{draft.progress}%</span>
-      </div>
-      <div className="w-full bg-gray-200 rounded-full h-1.5">
-        <div
-          className="bg-purple-600 h-1.5 rounded-full"
-          style={{ width: `${draft.progress}%` }}
-        />
-      </div>
-    </div>
+//     <div className="mt-4">
+//       <div className="flex justify-between text-sm text-gray-500 mb-2">
+//         <span>Progress</span>
+//         <span>{draft.progress}%</span>
+//       </div>
+//       <div className="w-full bg-gray-200 rounded-full h-1.5">
+//         <div
+//           className="bg-purple-600 h-1.5 rounded-full"
+//           style={{ width: `${draft.progress}%` }}
+//         />
+//       </div>
+//     </div>
 
-    <div className="flex items-center mt-4 text-xs text-gray-500">
-      <Clock size={14} className="mr-1" />
-      <span>Last edited {draft.lastEdited}</span>
-    </div>
-  </motion.div>
-);
+//     <div className="flex items-center mt-4 text-xs text-gray-500">
+//       <Clock size={14} className="mr-1" />
+//       <span>Last edited {draft.lastEdited}</span>
+//     </div>
+//   </motion.div>
+// );
 
 const DraftContent = () => (
   <motion.div
@@ -64,9 +64,9 @@ const DraftContent = () => (
     </div>
 
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {mockDrafts.map((draft) => (
+      {/* {mockDrafts.map((draft) => (
         <DraftCard key={draft.id} draft={draft} />
-      ))}
+      ))} */}
     </div>
   </motion.div>
 );
