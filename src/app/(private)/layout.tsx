@@ -18,12 +18,12 @@ export default function RootLayout({
         <SidebarWrapper />
 
         {/* Main content area */}
-        <div className="flex-1 flex flex-col min-w-0 relative">
+        <div className="flex-1 flex flex-col min-w-0 relative overflow-auto">
           <Header />
           <main
             className={cn(
               'flex-1 pb-6 max-w-[1377px] relative w-full pt-24',
-              'px-6 pt-5 overflow-auto' // Removed -z-10
+              'px-6 pt-5 ' // Removed -z-10
             )}
           >
             <ToastProvider>{children}</ToastProvider>

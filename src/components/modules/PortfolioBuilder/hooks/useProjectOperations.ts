@@ -92,10 +92,10 @@ export const useProjectOperations = ({
           { publicId },
           {
             onSuccess: () => {
-              addToast(
-                `${projectToRemove.content.type} deleted successfully`,
-                'success'
-              );
+              // addToast(
+              //   `${projectToRemove.content.type} deleted successfully`,
+              //   'success'
+              // );
               cleanupProjectStates(id);
             },
             onError: (error: any) => {
@@ -127,22 +127,29 @@ export const useProjectOperations = ({
   );
 
   const addProject = useCallback(
-    (content: ProjectContent) => {
-      setProjects((prevProjects) => [
-        ...prevProjects,
-        { id: uuidv4(), content },
-      ]);
+    (content: ProjectContent): string => {
+      const newProjectId = uuidv4();
+      const newProject = { id: newProjectId, content };
+
+      setProjects((prevProjects) => [...prevProjects, newProject]);
+
+      return newProjectId; // Return the project ID
     },
     [setProjects]
   );
 
   const addProjectAtPosition = useCallback(
-    (content: ProjectContent, position: number) => {
+    (content: ProjectContent, position: number): string => {
+      const newProjectId = uuidv4();
+      const newProject = { id: newProjectId, content };
+
       setProjects((prevProjects) => {
         const newProjects = [...prevProjects];
-        newProjects.splice(position, 0, { id: uuidv4(), content });
+        newProjects.splice(position, 0, newProject);
         return newProjects;
       });
+
+      return newProjectId; // Return the project ID
     },
     [setProjects]
   );

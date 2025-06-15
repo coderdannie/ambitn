@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import LoadingOverlay from '../common/Loaders/UploadingLoadingOverlay';
 
 interface CoverPhotoModalProps {
   open: boolean;
@@ -14,6 +15,8 @@ interface CoverPhotoModalProps {
   onSelect: (imageUrl: string, cropData?: CropData) => void;
   onUpload: (file: File) => Promise<string>;
   setOpen: (value: boolean) => void;
+  uploadProgress?: number;
+  isUploading?: boolean;
 }
 
 interface CropData {
@@ -33,9 +36,14 @@ export const CoverPhotoModal: React.FC<CoverPhotoModalProps> = ({
   onSelect,
   onUpload,
   setOpen,
+  uploadProgress = 0,
+  isUploading: externalIsUploading = false,
 }) => {
   const [selectedImage, setSelectedImage] = useState(currentCover);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isLocalUploading, setIsLocalUploading] = useState(false);
+
+  const isUploading = isLocalUploading || externalIsUploading;
+
   const [cropData, setCropData] = useState<CropData>({
     x: 0,
     y: 0,
@@ -66,7 +74,7 @@ export const CoverPhotoModal: React.FC<CoverPhotoModalProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsUploading(true);
+    setIsLocalUploading(true);
     try {
       const imageUrl = await onUpload(file);
       setSelectedImage(imageUrl);
@@ -74,7 +82,7 @@ export const CoverPhotoModal: React.FC<CoverPhotoModalProps> = ({
     } catch (error) {
       console.error('Upload failed:', error);
     } finally {
-      setIsUploading(false);
+      setIsLocalUploading(false);
     }
   };
 
@@ -206,6 +214,7 @@ export const CoverPhotoModal: React.FC<CoverPhotoModalProps> = ({
                 <h3 className="text-sm font-medium text-gray-700 mb-4">
                   Preview
                 </h3>
+
                 <div className="space-y-6 flex-1">
                   {/* Cover Preview */}
                   <div>
@@ -225,6 +234,11 @@ export const CoverPhotoModal: React.FC<CoverPhotoModalProps> = ({
                             fill
                             className="object-cover"
                           />
+                          {isUploading && (
+                            <LoadingOverlay
+                              uploadProgress={uploadProgress || 0}
+                            />
+                          )}
                         </div>
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">

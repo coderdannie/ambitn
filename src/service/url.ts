@@ -17,3 +17,4 @@ export const DELETE_UPLOADED_IMAGE = 'media/image/delete';
 export const DELETE_UPLOADED_VIDEO = 'media/video/delete';
 export const DELETE_UPLOADED_AUDIO = 'media/audio/delete';
 export const CREATE_PROJECT = 'projects/create';
+export const GET_USER_ALL_PROJECTS = 'projects';

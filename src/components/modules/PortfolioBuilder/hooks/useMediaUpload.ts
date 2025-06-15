@@ -110,7 +110,7 @@ export const useMediaUpload = ({
             { file },
             {
               onSuccess: (res: any) => {
-                addToast(successMessage, 'success');
+                // addToast(successMessage, 'success');
 
                 const finalContent: ProjectContent = {
                   type: mediaType,

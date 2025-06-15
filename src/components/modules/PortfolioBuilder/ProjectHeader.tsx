@@ -16,7 +16,6 @@ interface PortfolioHeaderProps {
   setIsDrawerOpen: (open: boolean) => void;
   onPreview: () => void;
   setOpen: (open: boolean) => void;
-  // Add these new props for handling unsaved changes
   hasUnsavedChanges?: boolean;
   onClearStorage?: () => void;
 }

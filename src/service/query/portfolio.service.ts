@@ -8,6 +8,8 @@ import {
   uploadAudio,
   createProject,
   deleteUploadedAudio,
+  getUserAllProjects,
+  getUserProject,
 } from '../api/portfolio.service';
 import { useState } from 'react';
 import { UploadData, UploadOptions } from '@/types/portfolio';
@@ -156,5 +158,40 @@ export const useCreateProject = (options = {}) => {
     error,
     isSuccess,
     data,
+  };
+};
+
+export const useGetUserAllProjects = (
+  page = 1,
+  limit = '',
+  searchTerm = '',
+  options = {}
+) => {
+  const { data, isSuccess, isError, isPending } = useQuery({
+    queryKey: [QUERY_KEYS.GET_USER_ALL_PROJECTS, page, limit, searchTerm],
+    queryFn: getUserAllProjects,
+    ...options,
+  });
+  return {
+    data,
+    isSuccess,
+    isError,
+    isPending,
+  };
+};
+
+export const useGetUserProjectDetails = (id: string) => {
+  const { data, isSuccess, isError, isPending } = useQuery({
+    queryKey: [QUERY_KEYS.GET_USER_PROJECT_DETAILS, id],
+    enabled: !!id,
+    refetchOnWindowFocus: false,
+    queryFn: () => getUserProject(id),
+  });
+
+  return {
+    data,
+    isSuccess,
+    isError,
+    isPending,
   };
 };

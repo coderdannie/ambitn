@@ -196,7 +196,7 @@ const PortfolioBuilder = () => {
         // }
 
         // For demo purposes:
-        addToast('Project published successfully!', 'success');
+
         // clearPortfolioStorage();
         setOpen(false);
       } catch (error) {
@@ -386,18 +386,28 @@ const PortfolioBuilder = () => {
         };
 
         if (insertPosition !== null) {
-          addProjectAtPosition(content, insertPosition);
-          // We'll scroll in the useEffect above
-        } else {
-          addProject(content);
+          const newProjectId = addProjectAtPosition(content, insertPosition);
           // Scroll to the newly added item
-          scrollToProjectItem(projects[projects.length - 1].id, { delay: 200 });
+          if (newProjectId) {
+            setTimeout(() => {
+              scrollToProjectItem(newProjectId, { delay: 200 });
+            }, 100);
+          }
+        } else {
+          const newProjectId = addProject(content);
+          // Only scroll if we have a valid project ID
+          if (newProjectId) {
+            setTimeout(() => {
+              scrollToProjectItem(newProjectId, { delay: 200 });
+            }, 100);
+          }
         }
         setInsertPosition(null);
       }
       setTextContent('');
     }
 
+    // Always reset the text editor state, regardless of content
     setAddingText(false);
     setEditingTextId(null);
   };
@@ -418,18 +428,55 @@ const PortfolioBuilder = () => {
     .filter((p) => p.content.type === 'image' && p.content.data)
     .map((p) => p.content.data as string);
 
+  // Replace the existing handleUploadCover function in PortfolioBuilder component
+
   const handleUploadCover = async (file: File): Promise<string> => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+      // Create a temporary preview for immediate display
       const reader = new FileReader();
       reader.onload = () => {
-        const imageUrl = reader.result as string;
-        resolve(imageUrl);
+        const previewUrl = reader.result as string;
+
+        // Set temporary preview
         setProjectData((prev) => ({
           ...prev,
-          coverImage: imageUrl,
+          coverImage: previewUrl,
         }));
       };
       reader.readAsDataURL(file);
+
+      // Use the actual upload mutation
+      uploadImage(
+        { file },
+        {
+          onSuccess: (res: any) => {
+            const uploadedUrl = res?.data?.url;
+
+            // Update with the actual uploaded URL
+            setProjectData((prev) => ({
+              ...prev,
+              coverImage: uploadedUrl,
+            }));
+
+            addToast('Cover photo uploaded successfully!', 'success');
+            resolve(uploadedUrl);
+          },
+          onError: (error: any) => {
+            // Revert to previous cover image on error
+            setProjectData((prev) => ({
+              ...prev,
+              coverImage: projectData.coverImage, // Revert to previous
+            }));
+
+            const errorMessage =
+              error?.response?.data?.message ||
+              error?.message ||
+              'Cover photo upload failed';
+            addToast(errorMessage, 'error');
+            reject(new Error(errorMessage));
+          },
+        }
+      );
     });
   };
 
@@ -475,7 +522,7 @@ const PortfolioBuilder = () => {
     <section className="grid mt-7 md:[grid-template-columns:1fr_265px] gap-8 mx-auto px-4">
       <div className="">
         {/* Auto-save indicator */}
-        {lastSaved && (
+        {hasUnsavedChanges && lastSaved && (
           <div className="mb-4 text-sm text-gray-500">
             Last saved: {lastSaved.toLocaleTimeString()}
           </div>
@@ -592,6 +639,8 @@ const PortfolioBuilder = () => {
           setProjectData((prev) => ({ ...prev, coverImage: imageUrl }));
         }}
         onUpload={handleUploadCover}
+        uploadProgress={imageUploadProgress}
+        isUploading={false}
       />
     </section>
   );

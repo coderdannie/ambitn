@@ -8,7 +8,6 @@ import DraftContent from './DraftContent';
 
 export default function ProjectUploadTab() {
   const [activeTab, setActiveTab] = useState('work');
-  const [searchQuery, setSearchQuery] = useState('');
 
   const tabs = [
     { id: 'work', label: 'Work' },

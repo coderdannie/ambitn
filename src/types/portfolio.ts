@@ -133,25 +133,6 @@ interface EmbedContent {
   caption?: string; // optional
 }
 
-interface ContentItem {
-  type: ContentType; // compulsory
-  // position?: number; // commented out as per your example
-  text?: TextContent;
-  image?: ImageContent;
-  video?: VideoContent;
-  embed?: EmbedContent;
-}
-
-export interface CreateProjectPayload {
-  title: string;
-  description: string;
-  coverImage: CoverImage;
-  needFeedBacks: boolean;
-  tags: string[]; // array of strings
-  categories: string[]; // array of strings
-  contents: ContentItem[];
-}
-
 export interface ProjectData {
   title: string;
   description: string;
@@ -164,4 +145,100 @@ export interface ProjectData {
 export interface UploadingState {
   uploadingProjects: Set<string>;
   deletingProjects: Set<string>;
+}
+
+interface CoverImage {
+  url: string;
+  alt?: string;
+}
+
+interface TextContent {
+  body: string;
+}
+
+interface ImageContent {
+  url: string;
+  alt?: string;
+  caption?: string;
+  tags?: string[];
+  height?: number;
+  width?: number;
+  publicId?: string;
+}
+
+interface VideoContent {
+  url: string;
+  alt?: string;
+  caption?: string;
+  tags?: string[];
+  thumbnail?: string;
+  publicId?: string;
+}
+interface AudioContent {
+  url: string;
+  alt?: string;
+  caption?: string;
+  tags?: string[];
+  thumbnail?: string;
+  publicId?: string;
+}
+
+interface EmbedContent {
+  embedCode: string;
+  service?: string;
+  caption?: string;
+}
+
+type ContentItem =
+  | { type: 'TEXT'; text: TextContent }
+  | { type: 'IMAGE'; image: ImageContent }
+  | { type: 'VIDEO'; video: VideoContent }
+  | { type: 'AUDIO'; audio: AudioContent }
+  | { type: 'EMBED'; embed: EmbedContent };
+
+export interface CreateProjectPayload {
+  title: string;
+  description: string;
+  coverImage: CoverImage;
+  needFeedBacks: boolean;
+  tags: string[];
+  categories: string[];
+  contents: ContentItem[];
+}
+
+interface CoverImg {
+  url: string;
+  alt: string;
+  _id: string;
+}
+
+interface Stats {
+  views: number;
+  likes: number;
+  shares: number;
+  _id: string;
+}
+
+export interface Project {
+  _id: string;
+  title: string;
+  coverImage: CoverImg;
+  status: string; // You might want to use a union type like "PUBLISHED" | "DRAFT" etc. if there are specific possible values
+  stats: Stats;
+  createdAt: string; // or Date if you'll parse it
+}
+
+interface Pagination {
+  totalItems: number;
+  totalPages: number;
+  page: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export interface getUserAllProjectResponse {
+  success: boolean;
+  message: string;
+  data: Project[];
+  pagination: Pagination;
 }
