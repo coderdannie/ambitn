@@ -15,6 +15,7 @@ import { useMediaUpload } from '@/components/modules/PortfolioBuilder/hooks/useM
 import { ProjectContent, ProjectItem } from '@/types/portfolio';
 import { ProjectFormData } from '@/utils/validation';
 import { useScrollToContent } from '@/components/modules/PortfolioBuilder/hooks/useToScrollContent';
+import LoadingOverlay from '@/components/common/Loaders/LoadingOverlay';
 
 const PortfolioBuilder = () => {
   const router = useRouter();
@@ -59,6 +60,8 @@ const PortfolioBuilder = () => {
     addToast,
     clearPortfolioStorage,
     lastSaved,
+    isLoadingDetails,
+    isEditMode,
   } = usePortfolioState();
 
   const {
@@ -94,12 +97,12 @@ const PortfolioBuilder = () => {
     });
 
   // Check if there are unsaved changes
-  const hasUnsavedChanges = projects.length > 0 || projectTitle.trim() !== '';
+  const hasUnsavedChanges = projects?.length > 0 || projectTitle.trim() !== '';
 
   // Auto-update cover image when projects change
   useEffect(() => {
-    const firstImage = projects.find((p) => p.content.type === 'image')?.content
-      .data;
+    const firstImage = projects?.find((p) => p?.content?.type === 'image')
+      ?.content.data;
 
     // Only update if there's no manually set cover image or if the current cover is empty
     if (
@@ -425,7 +428,7 @@ const PortfolioBuilder = () => {
   };
 
   const projectImages = projects
-    .filter((p) => p.content.type === 'image' && p.content.data)
+    ?.filter((p) => p.content?.type === 'image' && p.content.data)
     .map((p) => p.content.data as string);
 
   // Replace the existing handleUploadCover function in PortfolioBuilder component
@@ -518,11 +521,14 @@ const PortfolioBuilder = () => {
     }
   }, [editingTextId, scrollToProjectItem]);
 
+  if (isLoadingDetails) {
+    <LoadingOverlay />;
+  }
   return (
     <section className="grid mt-7 md:[grid-template-columns:1fr_265px] gap-8 mx-auto px-4">
       <div className="">
         {/* Auto-save indicator */}
-        {hasUnsavedChanges && lastSaved && (
+        {!isEditMode && hasUnsavedChanges && lastSaved && (
           <div className="mb-4 text-sm text-gray-500">
             Last saved: {lastSaved.toLocaleTimeString()}
           </div>
@@ -616,7 +622,7 @@ const PortfolioBuilder = () => {
           ...projectData,
           coverImage:
             projectData.coverImage ||
-            projects.find((p) => p.content.type === 'image')?.content.data ||
+            projects?.find((p) => p?.content?.type === 'image')?.content.data ||
             '',
         }}
         onPublish={handlePublish}
@@ -632,7 +638,7 @@ const PortfolioBuilder = () => {
         images={projectImages}
         currentCover={
           projectData.coverImage ||
-          projects.find((p) => p.content.type === 'image')?.content.data ||
+          projects?.find((p) => p?.content?.type === 'image')?.content.data ||
           ''
         }
         onSelect={(imageUrl) => {

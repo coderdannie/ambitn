@@ -18,7 +18,7 @@ const Header = () => {
 
   return (
     <header
-      className={`h-[70px] sticky top-0 left-0 w-full flex justify-between  px-[30px] pt-4 pb-2 z-30  bg-white`}
+      className={`h-[80px] sticky top-0 left-0 w-full flex justify-between  px-[30px] pt-4 pb-4 z-30  bg-white`}
     >
       <button
         className={`${isMobile ? 'block' : 'hidden'} `}

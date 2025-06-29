@@ -80,10 +80,20 @@ export interface ProjectResponse {
   coverImage: CoverImage;
   tags: string[];
   needFeedBacks: boolean;
-  status: 'PUBLISHED' | 'DRAFT' | string; // if you have enum, even better
+  status: 'PUBLISHED' | 'DRAFT' | string;
   stats: Stats;
   contents: ContentItem[];
   createdAt: string;
   updatedAt: string;
   __v: number;
+}
+
+export interface EditProject {
+  title: string;
+  description: string;
+  owner: string;
+  coverImage: CoverImage;
+  tags: string[];
+  needFeedBacks: boolean;
+  contents: ContentItem[];
 }

@@ -1,4 +1,5 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+// hooks/usePortfolioQueries.ts - Updated with optimistic updates for React Query mutations
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '../querykey';
 import {
   deleteUploadedVideo,
@@ -10,10 +11,203 @@ import {
   deleteUploadedAudio,
   getUserAllProjects,
   getUserProject,
+  deleteProject,
+  editProject,
 } from '../api/portfolio.service';
 import { useState } from 'react';
 import { UploadData, UploadOptions } from '@/types/portfolio';
+import { EditProject } from '@/types/project';
 
+// Enhanced delete hooks with optimistic updates
+export const useDeleteUploadedVideo = (options = {}) => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: deleteUploadedVideo,
+    mutationKey: [QUERY_KEYS.DELETE_UPLOADED_VIDEO],
+    onMutate: async (variables) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+      });
+
+      // Snapshot the previous value
+      const previousProjects = queryClient.getQueryData([
+        QUERY_KEYS.GET_USER_ALL_PROJECTS,
+      ]);
+
+      // Optimistically update the cache if you're managing projects in React Query
+      // This is optional if you're only using local state
+
+      // Return context object with the snapshotted value
+      return { previousProjects };
+    },
+    onError: (err, variables, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousProjects) {
+        queryClient.setQueryData(
+          [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+          context.previousProjects
+        );
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure data consistency
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+      });
+    },
+    ...options,
+  });
+
+  return { mutate, isPending };
+};
+
+export const useDeleteUploadedImage = (options = {}) => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: deleteUploadedImage,
+    mutationKey: [QUERY_KEYS.DELETE_UPLOADED_IMAGE],
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+      });
+
+      const previousProjects = queryClient.getQueryData([
+        QUERY_KEYS.GET_USER_ALL_PROJECTS,
+      ]);
+
+      return { previousProjects };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousProjects) {
+        queryClient.setQueryData(
+          [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+          context.previousProjects
+        );
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+      });
+    },
+    ...options,
+  });
+
+  return { mutate, isPending };
+};
+
+export const useDeleteUploadedAudio = (options = {}) => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: deleteUploadedAudio,
+    mutationKey: [QUERY_KEYS.DELETE_UPLOADED_AUDIO],
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+      });
+
+      const previousProjects = queryClient.getQueryData([
+        QUERY_KEYS.GET_USER_ALL_PROJECTS,
+      ]);
+
+      return { previousProjects };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousProjects) {
+        queryClient.setQueryData(
+          [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+          context.previousProjects
+        );
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+      });
+    },
+    ...options,
+  });
+
+  return { mutate, isPending };
+};
+
+export const useDeleteProject = (options = {}) => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending, data } = useMutation({
+    mutationFn: deleteProject,
+    mutationKey: [QUERY_KEYS.DELETE_PROJECT],
+    onMutate: async (projectId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+      });
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.GET_USER_PROJECT_DETAILS, projectId],
+      });
+
+      // Snapshot the previous values
+      const previousProjects = queryClient.getQueryData([
+        QUERY_KEYS.GET_USER_ALL_PROJECTS,
+      ]);
+      const previousProject = queryClient.getQueryData([
+        QUERY_KEYS.GET_USER_PROJECT_DETAILS,
+        projectId,
+      ]);
+
+      // Optimistically remove the project from the projects list
+      queryClient.setQueryData(
+        [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+        (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            data:
+              old.data?.filter((project: any) => project.id !== projectId) ||
+              [],
+          };
+        }
+      );
+
+      // Remove the individual project from cache
+      queryClient.removeQueries({
+        queryKey: [QUERY_KEYS.GET_USER_PROJECT_DETAILS, projectId],
+      });
+
+      return { previousProjects, previousProject, projectId };
+    },
+    onError: (err, projectId, context) => {
+      // If the mutation fails, use the context to roll back
+      if (context?.previousProjects) {
+        queryClient.setQueryData(
+          [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+          context.previousProjects
+        );
+      }
+      if (context?.previousProject) {
+        queryClient.setQueryData(
+          [QUERY_KEYS.GET_USER_PROJECT_DETAILS, context.projectId],
+          context.previousProject
+        );
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+      });
+    },
+    ...options,
+  });
+
+  return { mutate, isPending, data };
+};
+
+// Keep other hooks unchanged
 export const useUploadImage = (options: UploadOptions = {}) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -29,7 +223,6 @@ export const useUploadImage = (options: UploadOptions = {}) => {
     onSuccess: (data) => {
       setIsUploading(false);
       setUploadProgress(100);
-      // Reset progress after a delay
       setTimeout(() => setUploadProgress(0), 1000);
       options.onSuccess?.(data);
     },
@@ -81,33 +274,6 @@ export const useUploadVideo = (options: UploadOptions = {}) => {
     isUploading,
     uploadProgress,
   };
-};
-
-export const useDeleteUploadedVideo = (options = {}) => {
-  const { mutate, isPending } = useMutation({
-    mutationFn: deleteUploadedVideo,
-    mutationKey: [QUERY_KEYS.DELETE_UPLOADED_VIDEO],
-    ...options,
-  });
-  return { mutate, isPending };
-};
-
-export const useDeleteUploadedImage = (options = {}) => {
-  const { mutate, isPending } = useMutation({
-    mutationFn: deleteUploadedImage,
-    mutationKey: [QUERY_KEYS.DELETE_UPLOADED_IMAGE],
-    ...options,
-  });
-  return { mutate, isPending };
-};
-
-export const useDeleteUploadedAudio = (options = {}) => {
-  const { mutate, isPending } = useMutation({
-    mutationFn: deleteUploadedAudio,
-    mutationKey: [QUERY_KEYS.DELETE_UPLOADED_AUDIO],
-    ...options,
-  });
-  return { mutate, isPending };
 };
 
 export const useUploadAudio = (options: UploadOptions = {}) => {
@@ -183,8 +349,6 @@ export const useGetUserAllProjects = (
 export const useGetUserProjectDetails = (id: string) => {
   const { data, isSuccess, isError, isPending } = useQuery({
     queryKey: [QUERY_KEYS.GET_USER_PROJECT_DETAILS, id],
-    enabled: !!id,
-    refetchOnWindowFocus: false,
     queryFn: () => getUserProject(id),
   });
 
@@ -194,4 +358,15 @@ export const useGetUserProjectDetails = (id: string) => {
     isError,
     isPending,
   };
+};
+
+export const useEditProject = (options = {}) => {
+  const { mutate, isPending } = useMutation({
+    mutationFn: (payload: { id: string; data: EditProject }) =>
+      editProject(payload.id, payload.data),
+    mutationKey: [QUERY_KEYS.EDIT_PROJECT],
+    ...options,
+  });
+
+  return { mutate, isPending };
 };

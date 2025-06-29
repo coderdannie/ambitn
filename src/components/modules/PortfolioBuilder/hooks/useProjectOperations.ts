@@ -1,4 +1,4 @@
-// hooks/useProjectOperations.ts
+// hooks/useProjectOperations.ts - Updated with optimistic updates
 import { useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ProjectItem, ProjectContent } from '@/types/portfolio';
@@ -52,9 +52,6 @@ export const useProjectOperations = ({
 
   const cleanupProjectStates = useCallback(
     (id: string) => {
-      setProjects((prevProjects) =>
-        prevProjects.filter((project) => project.id !== id)
-      );
       setUploadingProjects((prev) => {
         const newSet = new Set(prev);
         newSet.delete(id);
@@ -66,21 +63,36 @@ export const useProjectOperations = ({
         return newSet;
       });
     },
-    [setProjects, setUploadingProjects, setDeletingProjects]
+    [setUploadingProjects, setDeletingProjects]
   );
 
   const removeProject = useCallback(
     (id: string) => {
       const projectToRemove = projects.find((project) => project.id === id);
+
+      if (!projectToRemove) {
+        addToast('Project not found', 'error');
+        return;
+      }
+
       const needsApiDeletion =
-        projectToRemove?.content.publicUrl &&
+        projectToRemove.content.publicUrl &&
         (projectToRemove.content.type === 'image' ||
           projectToRemove.content.type === 'video' ||
           projectToRemove.content.type === 'audio');
 
+      // Store the current state for potential rollback
+      const previousProjects = [...projects];
+      const projectIndex = projects.findIndex((p) => p.id === id);
+
+      // OPTIMISTIC UPDATE: Remove project immediately from UI
+      setProjects((prevProjects) =>
+        prevProjects.filter((project) => project.id !== id)
+      );
+
       if (needsApiDeletion) {
         setDeletingProjects((prev) => new Set(prev).add(id));
-        const publicId = projectToRemove?.content?.publicUrl || '';
+        const publicId = projectToRemove.content.publicUrl || '';
         const deleteFunction =
           projectToRemove.content.type === 'image'
             ? deleteUploadedImage
@@ -92,13 +104,12 @@ export const useProjectOperations = ({
           { publicId },
           {
             onSuccess: () => {
-              // addToast(
-              //   `${projectToRemove.content.type} deleted successfully`,
-              //   'success'
-              // );
+              // API deletion successful - optimistic update was correct
               cleanupProjectStates(id);
             },
             onError: (error: any) => {
+              // API deletion failed - rollback the optimistic update
+              setProjects(previousProjects);
               addToast(
                 `Failed to delete ${projectToRemove.content.type}`,
                 'error'
@@ -112,7 +123,9 @@ export const useProjectOperations = ({
           }
         );
       } else {
+        // No API call needed, just cleanup
         cleanupProjectStates(id);
+        addToast('Project deleted successfully', 'success');
       }
     },
     [
@@ -123,6 +136,7 @@ export const useProjectOperations = ({
       addToast,
       cleanupProjectStates,
       setDeletingProjects,
+      setProjects,
     ]
   );
 
@@ -133,7 +147,7 @@ export const useProjectOperations = ({
 
       setProjects((prevProjects) => [...prevProjects, newProject]);
 
-      return newProjectId; // Return the project ID
+      return newProjectId;
     },
     [setProjects]
   );
@@ -149,7 +163,7 @@ export const useProjectOperations = ({
         return newProjects;
       });
 
-      return newProjectId; // Return the project ID
+      return newProjectId;
     },
     [setProjects]
   );
