@@ -44,7 +44,7 @@ const LoginPage = () => {
         if (!res?.data?.hasSelectedTopics) {
           router.push('/account-setup');
         } else {
-          router.push('/discover');
+          router.push('/explore');
         }
       }, 200);
     },
@@ -119,7 +119,7 @@ const LoginPage = () => {
           }`}
         >
           <div
-            className={`flex items-center gap-2 justify-center border border-[#E8E8E8] border-dashed py-4 ${
+            className={`flex items-center gap-2 justify-center border border-[#E8E8E8] border-dashed py-1 ${
               isMobile ? 'border-0' : 'border'
             }`}
           >
@@ -141,7 +141,7 @@ const LoginPage = () => {
             </Button>
           </div>
           <div
-            className={`flex items-center gap-2 justify-center border border-[#E8E8E8] border-dashed py-4 ${
+            className={`flex items-center gap-2 justify-center border border-[#E8E8E8] border-dashed py-1 ${
               isMobile ? 'border-0' : 'border'
             }`}
           >
@@ -163,7 +163,7 @@ const LoginPage = () => {
             </Button>
           </div>
         </div>
-        <div className="flex items-center gap-2  text-sm md:text-base mt-2 justify-center border border-[#F1F1F1] border-dashed py-4">
+        <div className="flex items-center gap-2  text-sm md:text-base mt-2 justify-center border border-[#F1F1F1] border-dashed py-1">
           <p className="text-[#828282] ">Don’t have an account?</p>
           <button
             className="hover:underline hover:bg-transparent px-0 bg-transparent text-primary font-semibold"

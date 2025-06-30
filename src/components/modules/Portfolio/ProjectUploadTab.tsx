@@ -17,7 +17,7 @@ export default function ProjectUploadTab() {
   return (
     <div className="mt-10">
       {/* Tab Navigation */}
-      <div className="flex items-center border-b border-gray-200">
+      <div className="flex items-center border-b border-gray-200 mb-8">
         <div className="flex space-x-8">
           {tabs.map((tab) => (
             <button

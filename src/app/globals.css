@@ -537,64 +537,40 @@ abbr[title] {
   min-height: 80px;
 } */
 
-.my-heading {
-  margin: 1rem 0;
-  font-weight: bold;
-}
-
-.my-heading.h1 {
-  font-size: 2em;
-}
-.my-heading.h2 {
-  font-size: 1.5em;
-}
-.my-heading.h3 {
-  font-size: 1.17em;
-}
-.my-heading.h4 {
-  font-size: 1em;
-}
-.my-heading.h5 {
-  font-size: 0.83em;
-}
-.my-heading.h6 {
-  font-size: 0.67em;
-}
-
 /* Add these styles to your global CSS */
 .ProseMirror h1 {
   font-size: 2em;
   font-weight: bold;
-  margin: 0.67em 0;
+  /* margin: 0.67em 0; */
 }
 
 .ProseMirror h2 {
   font-size: 1.5em;
   font-weight: bold;
-  margin: 0.83em 0;
+  /* margin: 0.83em 0; */
 }
 
 .ProseMirror h3 {
   font-size: 1.17em;
   font-weight: bold;
-  margin: 1em 0;
+  /* margin: 1em 0; */
 }
 
 .ProseMirror h4 {
   font-weight: bold;
-  margin: 1.33em 0;
+  /* margin: 1.33em 0; */
 }
 
 .ProseMirror h5 {
   font-size: 0.83em;
   font-weight: bold;
-  margin: 1.67em 0;
+  /* margin: 1.67em 0; */
 }
 
 .ProseMirror h6 {
   font-size: 0.67em;
   font-weight: bold;
-  margin: 2.33em 0;
+  /* margin: 2.33em 0; */
 }
 
 .my-bullet-list {

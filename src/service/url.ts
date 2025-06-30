@@ -18,3 +18,5 @@ export const DELETE_UPLOADED_VIDEO = 'media/video/delete';
 export const DELETE_UPLOADED_AUDIO = 'media/audio/delete';
 export const CREATE_PROJECT = 'projects/create';
 export const GET_USER_ALL_PROJECTS = 'projects';
+export const DELETE_PROJECT = (id = '') => `projects/${id}/delete`;
+export const EDIT_PROJECT = (id = '') => `projects/${id}/edit`;

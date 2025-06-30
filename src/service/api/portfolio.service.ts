@@ -5,7 +5,7 @@ import {
   getUserAllProjectResponse,
   UploadBody,
 } from '@/types/portfolio';
-import { ProjectResponse } from '@/types/project';
+import { EditProject, ProjectResponse } from '@/types/project';
 
 export const uploadImage = async (
   body: UploadBody,
@@ -163,4 +163,15 @@ export const getUserProject = async (id: string): Promise<ProjectResponse> => {
     `${API.GET_USER_ALL_PROJECTS}/${id}`
   );
   return res.data.data;
+};
+
+export const deleteProject = async (id: string) => {
+  if (!id) throw new Error('ID is required');
+  const res = await axiosInstance.delete(API.DELETE_PROJECT(id));
+  return res.data;
+};
+
+export const editProject = async (id: string, data: EditProject) => {
+  const res = await axiosInstance.put(API.EDIT_PROJECT(id), data);
+  return res.data;
 };

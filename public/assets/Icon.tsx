@@ -1,6 +1,6 @@
 import { IconProps } from '../../src/types/sidebar';
 
-export const DiscoverIcon = ({ fill }: IconProps) => (
+export const ExploreIcon = ({ fill }: IconProps) => (
   <svg
     width="24"
     height="24"

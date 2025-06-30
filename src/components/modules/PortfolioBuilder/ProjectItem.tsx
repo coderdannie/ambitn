@@ -39,9 +39,9 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [showAltTextEditor, setShowAltTextEditor] = useState(false);
-  const [altText, setAltText] = useState(content.altText || '');
-  const [tags, setTags] = useState(content.tags || []);
-  const [caption, setCaption] = useState(content.caption || '');
+  const [altText, setAltText] = useState(content?.altText || '');
+  const [tags, setTags] = useState(content?.tags || []);
+  const [caption, setCaption] = useState(content?.caption || '');
   const [showCaptionEditor, setShowCaptionEditor] = useState(false);
   const { addToast } = useToast();
 
@@ -122,42 +122,42 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     ];
 
     // Add content-specific actions
-    if (content.type === 'image') {
+    if (content?.type === 'image') {
       baseActions.push({
         label: 'Replace Image',
         onClick: triggerFileInput,
-        disabled: isUploadingImg || content.isUploading,
+        disabled: isUploadingImg || content?.isUploading,
       });
-    } else if (content.type === 'video') {
+    } else if (content?.type === 'video') {
       baseActions.push({
         label: 'Replace Video',
         onClick: triggerFileInput,
-        disabled: isUploadingVideo || content.isUploading,
+        disabled: isUploadingVideo || content?.isUploading,
       });
-    } else if (content.type === 'audio') {
+    } else if (content?.type === 'audio') {
       baseActions.push({
         label: 'Replace Audio',
         onClick: triggerFileInput,
-        disabled: isUploadingAudio || content.isUploading,
+        disabled: isUploadingAudio || content?.isUploading,
       });
-    } else if (content.type === 'text') {
+    } else if (content?.type === 'text') {
       baseActions.push({
         label: 'Edit Text',
         onClick: () => {
-          setTextContent(content.data || '');
+          setTextContent(content?.data || '');
           onEditClick?.();
         },
       });
     }
 
     // Add common actions for media types
-    if (content.type !== 'text') {
+    if (content?.type !== 'text') {
       baseActions.push({
         label: 'Edit Alt Text & Tags',
         onClick: () => setShowAltTextEditor(true),
       });
       baseActions.push({
-        label: content.caption ? 'Edit Caption' : 'Add Caption',
+        label: content?.caption ? 'Edit Caption' : 'Add Caption',
         onClick: () => setShowCaptionEditor(!showCaptionEditor),
       });
     }
@@ -168,7 +168,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
       onClick: () => removeProject(id),
       disabled:
         isUploadingImg ||
-        content.isUploading ||
+        content?.isUploading ||
         isUploadingVideo ||
         isUploadingAudio,
       variant: 'danger',
@@ -181,7 +181,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
 
   // Determine the accept attribute based on content type
   const getAcceptAttribute = () => {
-    switch (content.type) {
+    switch (content?.type) {
       case 'image':
         return 'image/*';
       case 'video':
@@ -194,7 +194,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   };
 
   const renderContent = () => {
-    switch (content.type) {
+    switch (content?.type) {
       case 'image':
         return (
           <ImageContent
@@ -272,7 +272,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   return (
     <div ref={ref} className={className}>
       {/* Hidden file input for all content types */}
-      {content.type !== 'text' && (
+      {content?.type !== 'text' && (
         <input
           type="file"
           ref={fileInputRef}
@@ -280,12 +280,12 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
           accept={getAcceptAttribute()}
           className="hidden"
           disabled={
-            (content.type === 'image' &&
-              (isUploadingImg || content.isUploading)) ||
-            (content.type === 'video' &&
-              (isUploadingVideo || content.isUploading)) ||
-            (content.type === 'audio' &&
-              (isUploadingAudio || content.isUploading))
+            (content?.type === 'image' &&
+              (isUploadingImg || content?.isUploading)) ||
+            (content?.type === 'video' &&
+              (isUploadingVideo || content?.isUploading)) ||
+            (content?.type === 'audio' &&
+              (isUploadingAudio || content?.isUploading))
           }
         />
       )}

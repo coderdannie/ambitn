@@ -1,7 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useGetUserProjectDetails } from '@/service/query/portfolio.service';
+import {
+  useDeleteProject,
+  useGetUserProjectDetails,
+} from '@/service/query/portfolio.service';
 import { useGetProfile } from '@/service/query/account.service';
 import { FaUserCircle } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
@@ -10,15 +14,58 @@ import LoadingOverlay from '@/components/common/Loaders/LoadingOverlay';
 import { MdArrowBackIos } from 'react-icons/md';
 import Image from 'next/image';
 import IconToolbar from '@/components/common/IconToolbar';
+import DeleteModal from '@/components/modals/CancelModal';
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/service/querykey';
+import { useToast } from '@/context/ToastContext';
 
 const Page = () => {
+  const { addToast } = useToast();
   const { id } = useParams();
   const { data, isPending } = useGetUserProjectDetails(id as string);
   const { data: profile } = useGetProfile();
   const router = useRouter();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleClickBack = () => {
     router.back();
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleOpenDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const queryClient = useQueryClient();
+  const { mutate, isPending: isDeleting } = useDeleteProject({
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.GET_USER_ALL_PROJECTS],
+      });
+      router.back();
+      addToast('Project successfully deleted', 'success');
+    },
+    onError: (error: {
+      response: {
+        data: {
+          message: string;
+        };
+      };
+    }) => {
+      addToast(error.response.data?.message, 'error');
+    },
+  });
+
+  const handleDelete = () => {
+    if (!id) return;
+    mutate(id as string);
+  };
+
+  const handleEdit = () => {
+    router.push(`/portfolio-builder?project_id=${id}`);
   };
 
   if (isPending) {
@@ -48,7 +95,7 @@ const Page = () => {
         </Button>
       </div>
       <ProjectContent data={data} />
-      <IconToolbar />
+      <IconToolbar onDelete={handleOpenDeleteModal} onEdit={handleEdit} />
       <div className="flex items-center justify-center my-[32px]">
         {/* Left Line */}
         <div className="flex-grow border-t border-gray-200"></div>
@@ -71,6 +118,16 @@ const Page = () => {
         {/* Right Line */}
         <div className="flex-grow border-t border-gray-200"></div>
       </div>
+      <DeleteModal
+        title="Delete Project"
+        description="Are you sure you want to delete this project?"
+        confirmText="Delete"
+        cancelText="Close"
+        open={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleDelete}
+        isPending={isDeleting}
+      />
     </div>
   );
 };

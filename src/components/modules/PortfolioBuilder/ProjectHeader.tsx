@@ -8,7 +8,7 @@ import { useWindowSize } from '@/hooks/useWindowSize';
 import { CiCircleChevLeft } from 'react-icons/ci';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import ConfirmLeaveModal from '@/components/modals/ConfirmLeave';
+import CancelModal from '@/components/modals/CancelModal';
 
 interface PortfolioHeaderProps {
   projectTitle: string;
@@ -72,26 +72,11 @@ const PortfolioHeader = ({
             variant="outline"
             className="px-4 grid place-items-center !h-[44px]"
           >
-            Back
+            Cancel
           </Button>
         )}
 
         <div className="flex items-center gap-2">
-          <Button
-            onClick={handleCancelClick}
-            variant="outline"
-            className="bg-[#F7F5F4] px-4 grid place-items-center h-[44px]"
-          >
-            Cancel
-          </Button>
-          {/* Uncomment if you want to add preview button back */}
-          {/* <Button
-            onClick={onPreview}
-            variant="outline"
-            className="bg-[#F7F5F4] px-4 grid place-items-center h-[44px]"
-          >
-            Preview
-          </Button> */}
           <Button
             disabled={!projectTitle.trim()}
             className="secondary-btn-gradient px-4 grid place-items-center !h-[44px]"
@@ -132,7 +117,7 @@ const PortfolioHeader = ({
       </div>
 
       {/* Confirmation Modal */}
-      <ConfirmLeaveModal
+      <CancelModal
         open={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={handleConfirmLeave}
