@@ -1,19 +1,64 @@
 import React from "react";
 import Image from "next/image";
+
 import {
   companyLinks,
   legalLinks,
+  navLinks,
   productLinks,
   resourcesLinks,
   socialIcons,
   socialLinks,
 } from "@/components/common/constants";
+import { Images } from "lucide-react";
 
 const Footer = () => {
   return (
-    <div className="">
-      <div className="mt-[5rem] bg-black">
-        <div className="footer-signup-box  sign-up-gradient p-[2.5rem] bg-[#F9FAFB] desktop-width mx-auto md:flex items-center rounded-[1rem] justify-between transform translate-y-[-70px]">
+    <div className="bg-black">
+      <div className="wrapper mt-[5rem]">
+        <div className="mx-auto mobi-place-center md:flex items-center justify-between">
+          <div>
+            <Image
+              src="/assets/logo-icon-footer.png"
+              alt="footer-logo"
+              width={100}
+              height={100}
+            />
+          </div>
+          <div className="footer-navs text-[10px] md:flex items-center bottom-mobi text-center leading-[2] gap-[10px]">
+            {navLinks.map((link) => {
+              const { name } = link;
+              return (
+                <div className="text-white cursor-pointer" key={link.id}>
+                  {name}
+                </div>
+              );
+            })}
+            <div className="cursor-pointer">
+              <a href="/support" className="text-white">
+                Support
+              </a>
+            </div>
+          </div>
+
+          <div className="footer-social-icons flex items-center text-center screen-mobi gap-[10px]">
+            {socialIcons.map((icon, i) => {
+              return (
+                <div key={i}>
+                  <Image src={icon} alt="icon" width={15} height={15} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+export default Footer;
+
+{
+  /* <div className="footer-signup-box  sign-up-gradient p-[2.5rem] bg-[#F9FAFB] desktop-width mx-auto md:flex items-center rounded-[1rem] justify-between transform translate-y-[-70px]">
           <div>
             <h3 className="font-bold text-[#101828] text-[1.5rem]">
               Sign up to meet the world greatest
@@ -35,8 +80,8 @@ const Footer = () => {
         <div className="btn-gradient p-[1.2rem]">
           <div className="wrapper">
             <div className="md:flex text-white justify-between gap-[40px]">
-              <div>
-                <div className="logo-box flex items-center gap-[1px]">
+              <div className="">
+                <div className="logo-box mobi-center flex items-center gap-[1px]">
                   <Image
                     src="/assets/Logomark.png"
                     alt="logo"
@@ -45,18 +90,18 @@ const Footer = () => {
                   />
                   <h3 className="ml-[.3rem]">Powerbank</h3>
                 </div>
-                <p className="mt-[2rem] text-[#D0D5DD] text-[.7rem] w-[35ch]">
+                <p className="md:mt-[2rem] bottom-mobi screen-mobi text-[#D0D5DD] text-[.7rem] w-[35ch]">
                   Design amazing digital experiences that create more happy in
                   the world
                 </p>
               </div>
 
-              <div className="product ">
+              <div className="product">
                 {productLinks.map((link) => {
                   return (
                     <div
                       key={link.id}
-                      className="first:text-[#D0D5DD] text-[.9rem] text-[#EAECF0] leading-[2]"
+                      className="first:text-[#D0D5DD] screen-mobi text-[.7rem] text-[#EAECF0] leading-[2]"
                     >
                       {link.name}
                     </div>
@@ -68,7 +113,7 @@ const Footer = () => {
                   return (
                     <div
                       key={link.id}
-                      className="first:text-[#D0D5DD] text-[.9rem] text-[#EAECF0] leading-[2]"
+                      className="first:text-[#D0D5DD] screen-mobi text-[.7rem] text-[#EAECF0] leading-[2]"
                     >
                       {link.name}
                     </div>
@@ -80,7 +125,7 @@ const Footer = () => {
                   return (
                     <div
                       key={link.id}
-                      className="first:text-[#D0D5DD] text-[.9rem] text-[#EAECF0] leading-[2]"
+                      className="first:text-[#D0D5DD] screen-mobi text-[.7rem] text-[#EAECF0] leading-[2]"
                     >
                       {link.name}
                     </div>
@@ -92,7 +137,7 @@ const Footer = () => {
                   return (
                     <div
                       key={link.id}
-                      className="first:text-[#D0D5DD] text-[.9rem] text-[#EAECF0] leading-[2]"
+                      className="first:text-[#D0D5DD] screen-mobi text-[.7rem] text-[#EAECF0] leading-[2]"
                     >
                       {link.name}
                     </div>
@@ -104,7 +149,7 @@ const Footer = () => {
                   return (
                     <div
                       key={link.id}
-                      className="first:text-[#D0D5DD] text-[.9rem] text-[#EAECF0] leading-[2]"
+                      className="first:text-[#D0D5DD] screen-mobi text-[.7rem] text-[#EAECF0] leading-[2]"
                     >
                       {link.name}
                     </div>
@@ -133,9 +178,5 @@ const Footer = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-export default Footer;
+        </div> */
+}

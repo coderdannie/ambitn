@@ -1,13 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { frameCards } from "@/components/common/constants";
 import { Key } from "lucide-react";
 import { CiSearch } from "react-icons/ci";
+import LoginModal from "./LoginModal";
 
-const Frame = () => {
+const Frame = ({
+  showModal,
+  setShowModal,
+  showScreenModal,
+  setShowScreenModal,
+}) => {
+  const [onClose, setOnClose] = useState(false);
+  const handleClose = () => {
+    setOnClose(true);
+    setShowScreenModal(false);
+  };
   return (
     <>
-      <div className="wrapper mt-[6rem]">
+      <div className="wrapper mt-[6rem] relative">
         <div className="md:flex gap-[10px] items-center justify-between mb-[3rem]">
           <div className="relative flex-1">
             <div className="absolute top-[12px] left-[10px]">
@@ -54,6 +65,12 @@ const Frame = () => {
             })}
           </div>
         </div>
+        {showScreenModal && (
+          <div className="absolute inset-0 top-0">
+            {" "}
+            <LoginModal handleClose={handleClose} />
+          </div>
+        )}
       </div>
     </>
   );
