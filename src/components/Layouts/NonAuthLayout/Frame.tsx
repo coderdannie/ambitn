@@ -65,12 +65,8 @@ const Frame = ({
             })}
           </div>
         </div>
-        {showScreenModal && (
-          <div className="absolute inset-0 top-0">
-            {" "}
-            <LoginModal handleClose={handleClose} />
-          </div>
-        )}
+        {/* {showScreenModal && <LoginModal handleClose={handleClose} />} */}
+        <LoginModal open={showScreenModal} onOpenChange={setShowScreenModal} />
       </div>
     </>
   );

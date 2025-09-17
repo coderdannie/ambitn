@@ -4,6 +4,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { Import } from "lucide-react";
 import Image from "next/image";
 import { IoArrowForwardSharp } from "react-icons/io5";
+import LoginModal from "./LoginModal";
 
 const Nav = ({
   handleClickOpen,
@@ -16,10 +17,10 @@ const Nav = ({
   return (
     <div className="wrapper">
       <div className="flex items-center justify-between">
-        <div className="hide-logo cursor-pointer" onClick={handleClickOpen}>
+        <div className="md:hidden cursor-pointer" onClick={handleClickOpen}>
           <GiHamburgerMenu />
         </div>
-        <div>
+        <div className="mobi-margin ">
           <div>
             <Image
               src="/assets/new logo.png"
@@ -111,6 +112,7 @@ const Nav = ({
           </button>
         </div>
       </div>
+      {/* <LoginModal open={} onOpenChange={} /> */}
     </div>
   );
 };
