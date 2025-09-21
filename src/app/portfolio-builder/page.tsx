@@ -1,21 +1,26 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import PortfolioHeader from '@/components/modules/PortfolioBuilder/ProjectHeader';
-import ProjectsList from '@/components/modules/PortfolioBuilder/ProjectLists';
-import AddContentPanel from '@/components/modules/PortfolioBuilder/AddContentPanel';
-import ReorderModal from '@/components/modals/ReorderModal';
-import AddContentDrawer from '@/components/modals/AddContentDrawer';
-import { PublishProjectModal } from '@/components/modals/PublishProjectModal';
-import { CoverPhotoModal } from '@/components/modals/CoverPhotoModal';
-import { usePortfolioState } from '@/components/modules/PortfolioBuilder/hooks/usePortfolioState';
-import { useProjectOperations } from '@/components/modules/PortfolioBuilder/hooks/useProjectOperations';
-import { useMediaUpload } from '@/components/modules/PortfolioBuilder/hooks/useMediaUpload';
-import { ProjectContent, ProjectItem } from '@/types/portfolio';
-import { ProjectFormData } from '@/utils/validation';
-import { useScrollToContent } from '@/components/modules/PortfolioBuilder/hooks/useToScrollContent';
-import LoadingOverlay from '@/components/common/Loaders/LoadingOverlay';
+import { useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import PortfolioHeader from "@/components/modules/PortfolioBuilder/ProjectHeader";
+import ProjectsList from "@/components/modules/PortfolioBuilder/ProjectLists";
+import AddContentPanel from "@/components/modules/PortfolioBuilder/AddContentPanel";
+import ReorderModal from "@/components/modals/ReorderModal";
+import AddContentDrawer from "@/components/modals/AddContentDrawer";
+import { PublishProjectModal } from "@/components/modals/PublishProjectModal";
+import { CoverPhotoModal } from "@/components/modals/CoverPhotoModal";
+import { usePortfolioState } from "@/components/modules/PortfolioBuilder/hooks/usePortfolioState";
+import { useProjectOperations } from "@/components/modules/PortfolioBuilder/hooks/useProjectOperations";
+import { useMediaUpload } from "@/components/modules/PortfolioBuilder/hooks/useMediaUpload";
+import { ProjectContent, ProjectItem } from "@/types/portfolio";
+import { ProjectFormData } from "@/utils/validation";
+import { useScrollToContent } from "@/components/modules/PortfolioBuilder/hooks/useToScrollContent";
+import LoadingOverlay from "@/components/common/Loaders/LoadingOverlay";
+import ProjectSidebar from "@/components/Layouts/AuthLayout/ProjectSidebar";
+import Header from "@/components/Layouts/AuthLayout/Header";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { IoMdArrowBack } from "react-icons/io";
 
 const PortfolioBuilder = () => {
   const router = useRouter();
@@ -97,17 +102,17 @@ const PortfolioBuilder = () => {
     });
 
   // Check if there are unsaved changes
-  const hasUnsavedChanges = projects?.length > 0 || projectTitle.trim() !== '';
+  const hasUnsavedChanges = projects?.length > 0 || projectTitle.trim() !== "";
 
   // Auto-update cover image when projects change
   useEffect(() => {
-    const firstImage = projects?.find((p) => p?.content?.type === 'image')
+    const firstImage = projects?.find((p) => p?.content?.type === "image")
       ?.content.data;
 
     // Only update if there's no manually set cover image or if the current cover is empty
     if (
       firstImage &&
-      (!projectData.coverImage || projectData.coverImage === '')
+      (!projectData.coverImage || projectData.coverImage === "")
     ) {
       setProjectData((prev) => ({
         ...prev,
@@ -119,7 +124,7 @@ const PortfolioBuilder = () => {
     if (!firstImage && projectData.coverImage && projectImages.length === 0) {
       setProjectData((prev) => ({
         ...prev,
-        coverImage: '',
+        coverImage: "",
       }));
     }
   }, [projects, projectData.coverImage, setProjectData]);
@@ -128,12 +133,12 @@ const PortfolioBuilder = () => {
   useEffect(() => {
     const html = document.documentElement;
     if (open || showCoverModal) {
-      html.style.overflow = 'hidden';
+      html.style.overflow = "hidden";
     } else {
-      html.style.overflow = '';
+      html.style.overflow = "";
     }
     return () => {
-      html.style.overflow = '';
+      html.style.overflow = "";
     };
   }, [open, showCoverModal]);
 
@@ -143,12 +148,12 @@ const PortfolioBuilder = () => {
       if (hasUnsavedChanges) {
         e.preventDefault();
         e.returnValue =
-          'You have unsaved changes. Are you sure you want to leave?';
+          "You have unsaved changes. Are you sure you want to leave?";
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
   // Handle form changes (memoized to prevent unnecessary re-renders)
@@ -162,22 +167,22 @@ const PortfolioBuilder = () => {
   // Handle preview navigation
   const handlePreview = useCallback(() => {
     // Save current state to localStorage before navigating
-    router.push('/portfolio/preview');
+    router.push("/portfolio/preview");
   }, [router]);
 
   // Handle publish
   const handlePublish = useCallback(
     async (data: ProjectFormData) => {
       try {
-        console.log('Publishing project:', data);
+        console.log("Publishing project:", data);
 
         // Ensure cover image is set to first image if not manually selected
         const finalData = {
           ...data,
           coverImage:
             data.coverImage ||
-            projects.find((p) => p.content.type === 'image')?.content.data ||
-            '',
+            projects.find((p) => p.content.type === "image")?.content.data ||
+            "",
         };
 
         // Your publish logic here
@@ -203,8 +208,8 @@ const PortfolioBuilder = () => {
         // clearPortfolioStorage();
         setOpen(false);
       } catch (error) {
-        console.error('Error publishing project:', error);
-        addToast('Error publishing project. Please try again.', 'error');
+        console.error("Error publishing project:", error);
+        addToast("Error publishing project. Please try again.", "error");
       }
     },
     [projects, projectTitle, addToast, clearPortfolioStorage, router]
@@ -213,19 +218,19 @@ const PortfolioBuilder = () => {
   // Handle save draft
   const handleSaveDraft = useCallback(
     (data: ProjectFormData) => {
-      console.log('Saving draft:', data);
+      console.log("Saving draft:", data);
 
       // Ensure cover image is set to first image if not manually selected
       const finalData = {
         ...data,
         coverImage:
           data.coverImage ||
-          projects.find((p) => p.content.type === 'image')?.content.data ||
-          '',
+          projects.find((p) => p.content.type === "image")?.content.data ||
+          "",
       };
 
       setProjectData(finalData);
-      addToast('Draft saved successfully!', 'success');
+      addToast("Draft saved successfully!", "success");
       setOpen(false);
     },
     [setProjectData, addToast, projects]
@@ -240,22 +245,22 @@ const PortfolioBuilder = () => {
         addingText &&
         editorRef.current &&
         !editorRef.current.contains(target) &&
-        !target.closest('[data-tippy-root]') &&
-        !target.closest('.ProseMirror') &&
+        !target.closest("[data-tippy-root]") &&
+        !target.closest(".ProseMirror") &&
         !target.closest('[role="dialog"]') &&
         !target.closest('[role="menu"]') &&
         !target.closest('[role="listbox"]') &&
-        !target.closest('.dropdown-menu') &&
-        !target.closest('[data-radix-collection-item]') &&
-        !target.closest('[data-radix-popper-content-wrapper]') &&
+        !target.closest(".dropdown-menu") &&
+        !target.closest("[data-radix-collection-item]") &&
+        !target.closest("[data-radix-popper-content-wrapper]") &&
         !target.closest('[data-state="open"]') &&
         !target.closest('button[role="combobox"]') &&
         !target.closest('div[role="combobox"]') &&
-        !target.closest('.lucide') &&
-        !target.closest('svg') &&
-        !target.closest('[data-editor-toolbar]') &&
-        !target.hasAttribute('data-state') &&
-        !target.parentElement?.hasAttribute('data-state') &&
+        !target.closest(".lucide") &&
+        !target.closest("svg") &&
+        !target.closest("[data-editor-toolbar]") &&
+        !target.hasAttribute("data-state") &&
+        !target.parentElement?.hasAttribute("data-state") &&
         !target.closest('[class*="editor"]') &&
         !target.closest('[class*="toolbar"]') &&
         !target.closest('[class*="dropdown"]') &&
@@ -272,9 +277,9 @@ const PortfolioBuilder = () => {
       }, 150);
     };
 
-    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener("mousedown", handleMouseDown);
     return () => {
-      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener("mousedown", handleMouseDown);
     };
   }, [addingText, textContent]);
 
@@ -294,7 +299,7 @@ const PortfolioBuilder = () => {
 
       setInsertPosition(null);
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
     }
   };
 
@@ -312,7 +317,7 @@ const PortfolioBuilder = () => {
 
       setInsertPosition(null);
     } catch (error) {
-      console.error('Error uploading video:', error);
+      console.error("Error uploading video:", error);
     }
   };
 
@@ -330,7 +335,7 @@ const PortfolioBuilder = () => {
 
       setInsertPosition(null);
     } catch (error) {
-      console.error('Error uploading audio:', error);
+      console.error("Error uploading audio:", error);
     }
   };
 
@@ -340,7 +345,7 @@ const PortfolioBuilder = () => {
         await handleImageUpload(file, projectId);
         scrollToProjectItem(projectId, { delay: 300 });
       } catch (error) {
-        console.error('Error replacing image:', error);
+        console.error("Error replacing image:", error);
       }
     },
     [handleImageUpload, scrollToProjectItem]
@@ -352,7 +357,7 @@ const PortfolioBuilder = () => {
         await handleVideoUpload(file, projectId);
         scrollToProjectItem(projectId, { delay: 300 });
       } catch (error) {
-        console.error('Error replacing video:', error);
+        console.error("Error replacing video:", error);
       }
     },
     [handleVideoUpload, scrollToProjectItem]
@@ -364,28 +369,28 @@ const PortfolioBuilder = () => {
         await handleAudioUpload(file, projectId);
         scrollToProjectItem(projectId, { delay: 300 });
       } catch (error) {
-        console.error('Error replacing audio:', error);
+        console.error("Error replacing audio:", error);
       }
     },
     [handleAudioUpload, scrollToProjectItem]
   );
 
   const handleAddText = () => {
-    const cleanContent = textContent.replace(/<p><\/p>/g, '').trim();
-    if (cleanContent && cleanContent !== '<p></p>') {
+    const cleanContent = textContent.replace(/<p><\/p>/g, "").trim();
+    if (cleanContent && cleanContent !== "<p></p>") {
       if (editingTextId) {
         updateProject(editingTextId, {
-          type: 'text',
+          type: "text",
           data: textContent,
-          title: 'Text Block',
+          title: "Text Block",
         });
         // Scroll to the edited item
         scrollToProjectItem(editingTextId, { delay: 200 });
       } else {
         const content: ProjectContent = {
-          type: 'text',
+          type: "text",
           data: textContent,
-          title: 'Text Block',
+          title: "Text Block",
         };
 
         if (insertPosition !== null) {
@@ -407,7 +412,7 @@ const PortfolioBuilder = () => {
         }
         setInsertPosition(null);
       }
-      setTextContent('');
+      setTextContent("");
     }
 
     // Always reset the text editor state, regardless of content
@@ -420,15 +425,15 @@ const PortfolioBuilder = () => {
   };
 
   const getUploadProgress = (contentType: string) => {
-    return contentType === 'image'
+    return contentType === "image"
       ? imageUploadProgress
-      : contentType === 'video'
+      : contentType === "video"
       ? videoUploadProgress
       : audioUploadProgress;
   };
 
   const projectImages = projects
-    ?.filter((p) => p.content?.type === 'image' && p.content.data)
+    ?.filter((p) => p.content?.type === "image" && p.content.data)
     .map((p) => p.content.data as string);
 
   // Replace the existing handleUploadCover function in PortfolioBuilder component
@@ -461,7 +466,7 @@ const PortfolioBuilder = () => {
               coverImage: uploadedUrl,
             }));
 
-            addToast('Cover photo uploaded successfully!', 'success');
+            addToast("Cover photo uploaded successfully!", "success");
             resolve(uploadedUrl);
           },
           onError: (error: any) => {
@@ -474,8 +479,8 @@ const PortfolioBuilder = () => {
             const errorMessage =
               error?.response?.data?.message ||
               error?.message ||
-              'Cover photo upload failed';
-            addToast(errorMessage, 'error');
+              "Cover photo upload failed";
+            addToast(errorMessage, "error");
             reject(new Error(errorMessage));
           },
         }
@@ -484,7 +489,7 @@ const PortfolioBuilder = () => {
   };
 
   useEffect(() => {
-    if (!addingText && !editingTextId && textContent === '') {
+    if (!addingText && !editingTextId && textContent === "") {
       if (insertPosition !== null) {
         // Scroll to the text editor position that was just added
         scrollToNewContent(`text-editor-${insertPosition}`, { delay: 300 });
@@ -525,130 +530,166 @@ const PortfolioBuilder = () => {
     <LoadingOverlay />;
   }
   return (
-    <section className="grid mt-7 md:[grid-template-columns:1fr_265px] gap-8 mx-auto px-4">
-      <div className="">
-        {/* Auto-save indicator */}
-        {!isEditMode && hasUnsavedChanges && lastSaved && (
-          <div className="mb-4 text-sm text-gray-500">
-            Last saved: {lastSaved.toLocaleTimeString()}
-          </div>
-        )}
-
-        <PortfolioHeader
-          projectTitle={projectTitle}
-          setProjectTitle={setProjectTitle}
-          setIsDrawerOpen={setIsDrawerOpen}
-          onPreview={handlePreview}
-          setOpen={setOpen}
-          hasUnsavedChanges={hasUnsavedChanges}
-          onClearStorage={clearPortfolioStorage}
-        />
-
-        <ProjectsList
-          projects={projects}
-          moveProject={moveProject}
-          updateProject={updateProject}
-          removeProject={removeProject}
-          setShowRearrangeModal={setShowRearrangeModal}
-          textContent={textContent}
+    <div className="flex h-screen">
+      <ProjectSidebar>
+        <AddContentPanel
+          handleImageSelected={handleImageSelected}
+          setAddingText={(adding) => {
+            if (adding) {
+              setTextContent("");
+              setInsertPosition(null);
+            }
+            setAddingText(adding);
+          }}
+          handleVideoSelected={handleVideoSelected}
+          handleAudioSelected={handleAudioSelected}
           setTextContent={setTextContent}
-          addingText={addingText}
-          setAddingText={setAddingText}
-          editingTextId={editingTextId}
-          setEditingTextId={setEditingTextId}
-          insertPosition={insertPosition}
-          setInsertPosition={setInsertPosition}
-          deletingProjects={deletingProjects}
-          uploadingProjects={uploadingProjects}
-          imageUploadProgress={imageUploadProgress}
-          videoUploadProgress={videoUploadProgress}
-          getUploadProgress={getUploadProgress}
-          onImageSelected={handleImageSelected}
-          onVideoSelected={handleVideoSelected}
-          onAudioSelected={handleAudioSelected}
-          onReplaceImage={handleReplaceImage}
-          onReplaceVideo={handleReplaceVideo}
-          onReplaceAudio={handleReplaceAudio}
-          onAddText={handleAddText}
-          editorRef={editorRef as React.RefObject<HTMLDivElement>}
         />
+      </ProjectSidebar>
+      <div className="flex-1 flex flex-col min-w-0 relative overflow-auto">
+        <Header />
+        <main
+          className={cn(
+            "flex-1 pb-6 max-w-[1377px] relative w-full pt-24",
+            "pt-5 " // Removed -z-10
+          )}
+        >
+          {projects.length === 0 ? (
+            <div className="h-full">
+              <button className="flex items-center gap-2  ml-8">
+                <IoMdArrowBack />{" "}
+                <span className="text-sm font-medium">Back</span>
+              </button>
+              <div className="grid place-items-center pt-[120px]">
+                <Image
+                  src="/assets/empty.png"
+                  alt="empty state"
+                  width={500}
+                  height={500}
+                />
+                <div className="text-center">
+                  <h3 className="font-medium">Nothing to Display</h3>
+                  <p className="text-sm text-[#656565]">Add content</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <section className="grid mt-4  gap-8 mx-auto px-4">
+              <div className="">
+                {/* Auto-save indicator */}
+                {!isEditMode && hasUnsavedChanges && lastSaved && (
+                  <div className="mb-1 text-sm text-gray-500">
+                    Last saved: {lastSaved.toLocaleTimeString()}
+                  </div>
+                )}
+
+                <PortfolioHeader
+                  projectTitle={projectTitle}
+                  setProjectTitle={setProjectTitle}
+                  setIsDrawerOpen={setIsDrawerOpen}
+                  onPreview={handlePreview}
+                  setOpen={setOpen}
+                  hasUnsavedChanges={hasUnsavedChanges}
+                  onClearStorage={clearPortfolioStorage}
+                />
+
+                <ProjectsList
+                  projects={projects}
+                  moveProject={moveProject}
+                  updateProject={updateProject}
+                  removeProject={removeProject}
+                  setShowRearrangeModal={setShowRearrangeModal}
+                  textContent={textContent}
+                  setTextContent={setTextContent}
+                  addingText={addingText}
+                  setAddingText={setAddingText}
+                  editingTextId={editingTextId}
+                  setEditingTextId={setEditingTextId}
+                  insertPosition={insertPosition}
+                  setInsertPosition={setInsertPosition}
+                  deletingProjects={deletingProjects}
+                  uploadingProjects={uploadingProjects}
+                  imageUploadProgress={imageUploadProgress}
+                  videoUploadProgress={videoUploadProgress}
+                  getUploadProgress={getUploadProgress}
+                  onImageSelected={handleImageSelected}
+                  onVideoSelected={handleVideoSelected}
+                  onAudioSelected={handleAudioSelected}
+                  onReplaceImage={handleReplaceImage}
+                  onReplaceVideo={handleReplaceVideo}
+                  onReplaceAudio={handleReplaceAudio}
+                  onAddText={handleAddText}
+                  editorRef={editorRef as React.RefObject<HTMLDivElement>}
+                />
+              </div>
+
+              <ReorderModal
+                isOpen={showRearrangeModal}
+                onClose={() => setShowRearrangeModal(false)}
+                projects={projects}
+                onSave={handleSaveReorder}
+              />
+
+              <AddContentDrawer
+                isOpen={isDrawerOpen}
+                onClose={() => {
+                  setIsDrawerOpen(false);
+                  setInsertPosition(null);
+                }}
+                setAddingText={(adding) => {
+                  if (adding) {
+                    setTextContent("");
+                  }
+                  setAddingText(adding);
+                }}
+                handleImageSelected={handleImageSelected}
+                handleVideoSelected={handleVideoSelected}
+                setTextContent={setTextContent}
+                onAudioAdd={() => console.log("Audio clicked")}
+                onEmbedAdd={() => console.log("Embed clicked")}
+                onSocialLinksAdd={() => console.log("Social links clicked")}
+              />
+
+              <PublishProjectModal
+                open={open}
+                onClose={() => setOpen(false)}
+                defaultValues={{
+                  ...projectData,
+                  coverImage:
+                    projectData.coverImage ||
+                    projects?.find((p) => p?.content?.type === "image")?.content
+                      .data ||
+                    "",
+                }}
+                onPublish={handlePublish}
+                onSaveDraft={handleSaveDraft}
+                setShowCoverModal={setShowCoverModal}
+                onFormChange={handleFormChange}
+              />
+
+              <CoverPhotoModal
+                open={showCoverModal}
+                setOpen={setOpen}
+                onClose={() => setShowCoverModal(false)}
+                images={projectImages}
+                currentCover={
+                  projectData.coverImage ||
+                  projects?.find((p) => p?.content?.type === "image")?.content
+                    .data ||
+                  ""
+                }
+                onSelect={(imageUrl) => {
+                  setProjectData((prev) => ({ ...prev, coverImage: imageUrl }));
+                }}
+                onUpload={handleUploadCover}
+                uploadProgress={imageUploadProgress}
+                isUploading={false}
+              />
+            </section>
+          )}
+        </main>
       </div>
-
-      <AddContentPanel
-        handleImageSelected={handleImageSelected}
-        setAddingText={(adding) => {
-          if (adding) {
-            setTextContent('');
-            setInsertPosition(null);
-          }
-          setAddingText(adding);
-        }}
-        handleVideoSelected={handleVideoSelected}
-        handleAudioSelected={handleAudioSelected}
-        setTextContent={setTextContent}
-      />
-
-      <ReorderModal
-        isOpen={showRearrangeModal}
-        onClose={() => setShowRearrangeModal(false)}
-        projects={projects}
-        onSave={handleSaveReorder}
-      />
-
-      <AddContentDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => {
-          setIsDrawerOpen(false);
-          setInsertPosition(null);
-        }}
-        setAddingText={(adding) => {
-          if (adding) {
-            setTextContent('');
-          }
-          setAddingText(adding);
-        }}
-        handleImageSelected={handleImageSelected}
-        handleVideoSelected={handleVideoSelected}
-        setTextContent={setTextContent}
-        onAudioAdd={() => console.log('Audio clicked')}
-        onEmbedAdd={() => console.log('Embed clicked')}
-        onSocialLinksAdd={() => console.log('Social links clicked')}
-      />
-
-      <PublishProjectModal
-        open={open}
-        onClose={() => setOpen(false)}
-        defaultValues={{
-          ...projectData,
-          coverImage:
-            projectData.coverImage ||
-            projects?.find((p) => p?.content?.type === 'image')?.content.data ||
-            '',
-        }}
-        onPublish={handlePublish}
-        onSaveDraft={handleSaveDraft}
-        setShowCoverModal={setShowCoverModal}
-        onFormChange={handleFormChange}
-      />
-
-      <CoverPhotoModal
-        open={showCoverModal}
-        setOpen={setOpen}
-        onClose={() => setShowCoverModal(false)}
-        images={projectImages}
-        currentCover={
-          projectData.coverImage ||
-          projects?.find((p) => p?.content?.type === 'image')?.content.data ||
-          ''
-        }
-        onSelect={(imageUrl) => {
-          setProjectData((prev) => ({ ...prev, coverImage: imageUrl }));
-        }}
-        onUpload={handleUploadCover}
-        uploadProgress={imageUploadProgress}
-        isUploading={false}
-      />
-    </section>
+    </div>
   );
 };
 

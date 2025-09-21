@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import Header from '@/components/Layouts/AuthLayout/SecondarHeader';
-import GlobalProvider from '@/context/appContext';
-import { ToastProvider } from '@/context/ToastContext';
+import Header from "@/components/Layouts/AuthLayout/Header";
+import ProjectSidebar from "@/components/Layouts/AuthLayout/ProjectSidebar";
+import GlobalProvider from "@/context/appContext";
+import { ToastProvider } from "@/context/ToastContext";
+import { cn } from "@/lib/utils";
 
 export default function RootLayout({
   children,
@@ -11,10 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <GlobalProvider>
-      <div className=" bg-[#fcfcfc] min-h-screen  h-auto  max-w-[1600px] mx-auto">
-        <Header />
-        <ToastProvider>{children}</ToastProvider>
-      </div>
+      <ToastProvider>{children}</ToastProvider>
     </GlobalProvider>
   );
 }
