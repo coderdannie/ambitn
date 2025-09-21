@@ -1,4 +1,4 @@
-import { TabData } from "@/types/discover";
+import { TabData } from "@/types/explore";
 import {
   ExploreIcon,
   MessageIcon,
@@ -32,8 +32,8 @@ export const slides = [
 ];
 export const sidebarData = [
   {
-    title: "Discover",
-    path: "/discover",
+    title: "Explore",
+    path: "/explore",
     icon: <ExploreIcon fill="#718096" />,
     sec: <ExploreIcon fill="#1A202C" />,
     hover: <ExploreIcon fill="#1A202C" />,
@@ -59,7 +59,13 @@ export const sidebarData = [
     sec: <MessageIcon fill="#1A202C" />,
     hover: <MessageIcon fill="#1A202C" />,
   },
-
+  {
+    title: "Profile",
+    path: "/profile",
+    icon: <ProfileIcon fill="#718096" />,
+    sec: <ProfileIcon fill="#1A202C" />,
+    hover: <ProfileIcon fill="#1A202C" />,
+  },
   {
     title: "Subscription",
     path: "/subscription",
@@ -73,7 +79,7 @@ export const navLinks = [
   {
     id: 1,
     name: "Explore",
-    link: "/discover",
+    link: "/explore",
   },
   {
     id: 2,
@@ -296,11 +302,11 @@ export const STORAGE_KEYS = {
 
 export const EXPLORE_TABS: TabData[] = [
   {
-    id: "discover",
-    label: "Discover",
+    id: "featured",
+    label: "Featured",
     title: "Explore bold ideas and fresh portfolios from",
     subtitle: "creatives worldwide.",
-    leftImage: "/assets/discoverbag.png",
+    leftImage: "/assets/explorebag.png",
     rightImage: "🎨",
     portfolioItems: [
       {
@@ -354,8 +360,8 @@ export const EXPLORE_TABS: TabData[] = [
     ],
   },
   {
-    id: "following",
-    label: "Following",
+    id: "new-noteworthy",
+    label: "New & Noteworthy",
     title: "Discover fresh talent and innovative",
     subtitle: "design solutions.",
     leftImage: "/assets/stars.png",
@@ -412,8 +418,8 @@ export const EXPLORE_TABS: TabData[] = [
     ],
   },
   {
-    id: "best-of-ambitn",
-    label: "Best of Ambitn",
+    id: "trending",
+    label: "Trending",
     title: "See what's hot and making waves in",
     subtitle: "the design community.",
     leftImage: "🔥",
@@ -470,8 +476,8 @@ export const EXPLORE_TABS: TabData[] = [
     ],
   },
   {
-    id: "product-design",
-    label: "Product design",
+    id: "case-studies",
+    label: "Case Studies",
     title: "Deep dive into detailed design processes and",
     subtitle: "problem-solving approaches.",
     leftImage: "📊",
@@ -524,6 +530,122 @@ export const EXPLORE_TABS: TabData[] = [
         imageUrl: "/assets/coversample.jpg",
         likes: 712,
         views: 13400,
+      },
+    ],
+  },
+  {
+    id: "templates",
+    label: "Templates in Use",
+    title: "Popular templates and resources being used by",
+    subtitle: "design professionals.",
+    leftImage: "📋",
+    rightImage: "⚡",
+    portfolioItems: [
+      {
+        id: "25",
+        title: "Website Template",
+        subtitle: "Web Template",
+        imageUrl: "/assets/coversample.jpg",
+        likes: 234,
+        views: 4100,
+      },
+      {
+        id: "26",
+        title: "Presentation Kit",
+        subtitle: "Template Design",
+        imageUrl: "/assets/coversample2.jpg",
+        likes: 345,
+        views: 5600,
+      },
+      {
+        id: "27",
+        title: "UI Kit Components",
+        subtitle: "Design System",
+        imageUrl: "/assets/coversample.jpg",
+        likes: 456,
+        views: 7200,
+      },
+      {
+        id: "28",
+        title: "Wireframe Template",
+        subtitle: "UX Template",
+        imageUrl: "/assets/coversample2.jpg",
+        likes: 178,
+        views: 3400,
+      },
+      {
+        id: "29",
+        title: "Icon Set Bundle",
+        subtitle: "Icon Design",
+        imageUrl: "/assets/coversample.jpg",
+        likes: 567,
+        views: 8900,
+      },
+      {
+        id: "30",
+        title: "Brand Guidelines",
+        subtitle: "Brand Template",
+        imageUrl: "/assets/coversample2.jpg",
+        likes: 289,
+        views: 4800,
+      },
+    ],
+  },
+  {
+    id: "staff-picks",
+    label: "Staff Picks",
+    title: "Handpicked favorites from our",
+    subtitle: "editorial team.",
+    leftImage: "🎯",
+    rightImage: "⭐",
+    portfolioItems: [
+      {
+        id: "31",
+        title: "Experimental Design",
+        subtitle: "Creative Direction",
+        imageUrl: "/assets/coversample2.jpg",
+        likes: 892,
+        views: 16700,
+      },
+      {
+        id: "32",
+        title: "Art Installation",
+        subtitle: "Digital Art",
+        imageUrl: "/assets/coversample.jpg",
+        likes: 1234,
+        views: 24500,
+      },
+      {
+        id: "33",
+        title: "Interactive Website",
+        subtitle: "Web Experience",
+        imageUrl: "/assets/coversample2.jpg",
+        likes: 756,
+        views: 13200,
+      },
+      {
+        id: "34",
+        title: "Editorial Design",
+        subtitle: "Print Design",
+        imageUrl: "/assets/coversample.jpg",
+        likes: 445,
+        views: 8600,
+      },
+      {
+        id: "35",
+        title: "VR Experience",
+        subtitle: "Immersive Design",
+        imageUrl: "/assets/coversample2.jpg",
+        likes: 667,
+        views: 11900,
+      },
+      {
+        id: "36",
+        title: "Sustainable Design",
+        subtitle: "Eco Design",
+        imageUrl: "/assets/coversample.jpg",
+        likes: 523,
+        views: 9800,
       },
     ],
   },
