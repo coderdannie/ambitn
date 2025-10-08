@@ -257,6 +257,41 @@ export const legalLinks = [
   { id: 6, name: "Settings" },
   { id: 7, name: "Contact" },
 ];
+export const plans = [
+  {
+    name: "Free Plan",
+    features: [
+      { text: "Template edit", available: true },
+      { text: "File Sharing", available: true },
+      { text: "Template Saving", available: false },
+      { text: "24/7 support", available: false },
+      { text: "Collaboration Tools", available: false },
+      { text: "Profile Verification Badge", available: false },
+    ],
+  },
+  {
+    name: "Basic Plan",
+    features: [
+      { text: "Template edit", available: true },
+      { text: "File Sharing", available: true },
+      { text: "Template Saving", available: true },
+      { text: "24/7 support", available: true },
+      { text: "Collaboration Tools", available: false },
+      { text: "Profile Verification Badge", available: false },
+    ],
+  },
+  {
+    name: "Premium Plan",
+    features: [
+      { text: "Template edit", available: true },
+      { text: "File Sharing", available: true },
+      { text: "Template Saving", available: true },
+      { text: "24/7 support", available: true },
+      { text: "Collaboration Tools", available: true },
+      { text: "Profile Verification Badge", available: true },
+    ],
+  },
+];
 export const topics = [
   "UI/UX",
   "Graphics Design",
@@ -280,9 +315,6 @@ export const socialIcons = [
   "/assets/twitter.svg",
   "/assets/linkedin.svg",
   "/assets/facebook.svg",
-  // "/assets/reeddit.svg",
-  // "/assets/social-icon5.svg",
-  // "/assets/social-icon6.svg",
 ];
 
 // Storage keys

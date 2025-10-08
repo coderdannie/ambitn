@@ -15,7 +15,6 @@ const HomePage = () => {
   };
   const handleShowModal = () => {
     setShowModal(true);
-    console.log("hovered");
   };
   const handleCloseModal = () => {
     setShowModal(false);

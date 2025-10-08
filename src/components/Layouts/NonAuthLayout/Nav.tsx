@@ -32,76 +32,88 @@ const Nav = ({
           </div>
           {/* <div className="font-bold text-[1.5rem]">Forlio</div> */}
         </div>
-        <div
-          className=""
-          onMouseEnter={handleShowModal}
-          onMouseLeave={handleCloseModal}
-        >
+        <div className="">
           <ul className="flex relative hide gap-[20px] nav-list">
-            {navLinks.map((link) => {
+            {navLinks.map((link, i) => {
               const { name } = link;
+              if (i === 0) {
+                return (
+                  <li
+                    key={link.id}
+                    className="cursor-pointer border-b-2 border-transparent first:hover:border-[#000000] pb-1 transition-all duration-300"
+                    onMouseEnter={handleShowModal}
+                    onMouseLeave={handleCloseModal}
+                  >
+                    {name}
+
+                    {showModal && (
+                      <div className="sub-nav-link bg-[#FFFFFF] rounded-[.7rem] modal-gradient p-[1.2rem] w-[300px] height-[139px] z-[1] absolute left-[50px] top-[25px]">
+                        <div
+                          className="flex items-center justify-between gap-3 bg-[#FBFDFE] border-solid border-[1px] border-[#E4E4E4] cursor-pointer rounded-[.5rem] p-[.7rem]"
+                          onClick={handleShowScreenModal}
+                        >
+                          <div>
+                            <Image
+                              src="/assets/start-icon.png"
+                              alt="start icon"
+                              width={50}
+                              height={50}
+                              className=""
+                            />
+                          </div>
+                          <div>
+                            <h2 className="text-[14px] font-bold">
+                              Start from scratch
+                            </h2>
+                            <p className="text-[10px]">
+                              Build a complete case study
+                            </p>
+                          </div>
+                          <div className="forward-arrow">
+                            <IoArrowForwardSharp />
+                          </div>
+                        </div>
+
+                        <div
+                          className="flex items-center justify-between gap-3 bg-[#FBFDFE] border-solid border-[1px] border-[#E4E4E4] cursor-pointer rounded-[.5rem] p-[.7rem] mt-[1rem]"
+                          onClick={handleShowScreenModal}
+                        >
+                          <div>
+                            <Image
+                              src="/assets/create-icon.png"
+                              alt=""
+                              className=""
+                              width={50}
+                              height={50}
+                            />
+                          </div>
+                          <div>
+                            <h2 className="text-[14px] font-bold">
+                              Create case study with AI
+                            </h2>
+                            <p className="text-[10px]">
+                              Use our AI assistant to publish your work{" "}
+                            </p>
+                          </div>
+                          <div className="forward-arrow">
+                            <IoArrowForwardSharp />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                );
+              }
+
               return (
                 <li
                   key={link.id}
-                  className="cursor-pointer border-b-2 border-transparent hover:border-[#000000] pb-1 transition-all duration-300"
+                  className="cursor-pointer border-b-2 border-transparent first:hover:border-[#000000] pb-1 transition-all duration-300"
                 >
                   {name}
                 </li>
               );
             })}
-            {showModal && (
-              <div className="sub-nav-link bg-[#FFFFFF] rounded-[.7rem] modal-gradient p-[1.2rem] w-[300px] height-[139px] absolute z-[100] left-[50px] top-[29px]">
-                <div
-                  className="flex items-center justify-between gap-3 bg-[#FBFDFE] border-solid border-[1px] border-[#E4E4E4] cursor-pointer rounded-[.5rem] p-[.7rem]"
-                  onClick={handleShowScreenModal}
-                >
-                  <div>
-                    <Image
-                      src="/assets/start-icon.png"
-                      alt="start icon"
-                      width={50}
-                      height={50}
-                      className=""
-                    />
-                  </div>
-                  <div>
-                    <h2 className="text-[14px] font-bold">
-                      Start from scratch
-                    </h2>
-                    <p className="text-[10px]">Build a complete case study</p>
-                  </div>
-                  <div className="forward-arrow">
-                    <IoArrowForwardSharp />
-                  </div>
-                </div>
-
-                <div
-                  className="flex items-center justify-between gap-3 bg-[#FBFDFE] border-solid border-[1px] border-[#E4E4E4] cursor-pointer rounded-[.5rem] p-[.7rem] mt-[1rem]"
-                  onClick={handleShowScreenModal}
-                >
-                  <div>
-                    <Image
-                      src="/assets/create-icon.png"
-                      alt=""
-                      className=""
-                      width={50}
-                      height={50}
-                    />
-                  </div>
-                  <div>
-                    <h2 className="text-[14px] font-bold">
-                      Create case study with AI
-                    </h2>
-                    <p className="text-[10px]">
-                      Use our AI assistant to publish your work{" "}
-                    </p>
-                  </div>
-                  <div className="forward-arrow">
-                    <IoArrowForwardSharp />
-                  </div>
-                </div>
-              </div>
-            )}
           </ul>
         </div>
 
