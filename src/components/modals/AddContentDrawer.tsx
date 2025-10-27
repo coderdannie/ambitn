@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import {
   MdAudiotrack,
   MdCode,
   MdLink,
   MdImage,
   MdVideoLibrary,
-} from 'react-icons/md';
-import { RxText } from 'react-icons/rx';
-import { X, Plus } from 'lucide-react';
-import FileInput from '../modules/PortfolioBuilder/FileInput';
+} from "react-icons/md";
+import { RxText } from "react-icons/rx";
+import { X, Plus } from "lucide-react";
+import FileInput from "../modules/PortfolioBuilder/FileInput";
 
 interface AddContentDrawerProps {
   isOpen: boolean;
@@ -42,30 +42,30 @@ const AddContentDrawer = ({
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (isOpen && target.classList.contains('drawer-backdrop')) {
+      if (isOpen && target.classList.contains("drawer-backdrop")) {
         onClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onClose]);
 
   // Lock scroll when drawer is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     }
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     };
   }, [isOpen]);
 
   const handleTextClick = () => {
     if (setTextContent) {
-      setTextContent(''); // Clear previous text content
+      setTextContent(""); // Clear previous text content
     }
     setAddingText(true);
     onClose(); // Close drawer after selection
@@ -81,9 +81,9 @@ const AddContentDrawer = ({
   // Drawer animation variants
   const drawerVariants = {
     hidden: {
-      x: '-100%',
+      x: "-100%",
       transition: {
-        type: 'spring',
+        type: "spring" as const,
         stiffness: 400,
         damping: 40,
       },
@@ -91,7 +91,7 @@ const AddContentDrawer = ({
     visible: {
       x: 0,
       transition: {
-        type: 'spring',
+        type: "spring" as const,
         stiffness: 400,
         damping: 40,
       },
@@ -110,51 +110,51 @@ const AddContentDrawer = ({
   const contentOptions = [
     {
       icon: MdImage,
-      label: 'Image',
-      color: 'text-blue-600',
-      bgColor: 'hover:bg-blue-50',
+      label: "Image",
+      color: "text-blue-600",
+      bgColor: "hover:bg-blue-50",
       isFileInput: true,
-      fileType: 'image/*',
+      fileType: "image/*",
       onFileSelect: handleImageSelected,
     },
     {
       icon: RxText,
-      label: 'Text',
-      color: 'text-green-600',
-      bgColor: 'hover:bg-green-50',
+      label: "Text",
+      color: "text-green-600",
+      bgColor: "hover:bg-green-50",
       onClick: handleTextClick,
     },
     {
       icon: MdVideoLibrary,
-      label: 'Video',
-      color: 'text-purple-600',
-      bgColor: 'hover:bg-purple-50',
+      label: "Video",
+      color: "text-purple-600",
+      bgColor: "hover:bg-purple-50",
       isFileInput: true,
-      fileType: 'video/*',
+      fileType: "video/*",
       onFileSelect: handleVideoSelected,
     },
     {
       icon: MdAudiotrack,
-      label: 'Audio',
-      color: 'text-orange-600',
-      bgColor: 'hover:bg-orange-50',
+      label: "Audio",
+      color: "text-orange-600",
+      bgColor: "hover:bg-orange-50",
       onClick: () => handleOptionClick(onAudioAdd),
       disabled: !onAudioAdd,
     },
     {
       icon: MdCode,
-      label: 'Embed',
-      color: 'text-gray-600',
-      bgColor: 'hover:bg-gray-50',
+      label: "Embed",
+      color: "text-gray-600",
+      bgColor: "hover:bg-gray-50",
       onClick: () => handleOptionClick(onEmbedAdd),
       disabled: !onEmbedAdd,
-      badge: 'E',
+      badge: "E",
     },
     {
       icon: MdLink,
-      label: 'Social Links',
-      color: 'text-indigo-600',
-      bgColor: 'hover:bg-indigo-50',
+      label: "Social Links",
+      color: "text-indigo-600",
+      bgColor: "hover:bg-indigo-50",
       onClick: () => handleOptionClick(onSocialLinksAdd),
       disabled: !onSocialLinksAdd,
     },
@@ -237,7 +237,7 @@ const AddContentDrawer = ({
                               transition-all duration-200
                               ${
                                 option.disabled
-                                  ? 'opacity-50 cursor-not-allowed'
+                                  ? "opacity-50 cursor-not-allowed"
                                   : `${option.bgColor} hover:border-gray-400 cursor-pointer`
                               }
                             `}
@@ -284,12 +284,12 @@ const AddContentDrawer = ({
                       />
                       <motion.div
                         className={`w-11 h-6 rounded-full transition-all ${
-                          aiSuggestionEnabled ? 'bg-blue-500' : 'bg-gray-200'
+                          aiSuggestionEnabled ? "bg-blue-500" : "bg-gray-200"
                         }`}
                         animate={{
                           backgroundColor: aiSuggestionEnabled
-                            ? '#3B82F6'
-                            : '#E5E7EB',
+                            ? "#3B82F6"
+                            : "#E5E7EB",
                         }}
                       />
                       <motion.div
@@ -298,7 +298,7 @@ const AddContentDrawer = ({
                           x: aiSuggestionEnabled ? 20 : 0,
                         }}
                         transition={{
-                          type: 'spring',
+                          type: "spring",
                           stiffness: 500,
                           damping: 30,
                         }}
