@@ -66,7 +66,7 @@ const Frame = ({
           </div>
         </div>
         {/* {showScreenModal && <LoginModal handleClose={handleClose} />} */}
-        <LoginModal open={showScreenModal} onOpenChange={setShowScreenModal} />
+        {/* <LoginModal onOpenChange={setShowScreenModal} /> */}
       </div>
     </>
   );

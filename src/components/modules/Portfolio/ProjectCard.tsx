@@ -1,8 +1,8 @@
-import React from 'react';
-import { Project } from '@/types/portfolio';
-import { formatDate } from '@/utils/helper';
-import { IoMdGlobe } from 'react-icons/io';
-import { motion } from 'framer-motion';
+import React from "react";
+import { Project } from "@/types/portfolio";
+import { formatDate } from "@/utils/helper";
+import { IoMdGlobe } from "react-icons/io";
+import { motion } from "framer-motion";
 
 interface Props {
   data: Project;
@@ -13,9 +13,9 @@ export default function ProjectCard({ data }: Props) {
     const statusConfig = {
       published: {
         icon: <IoMdGlobe />,
-        bgColor: 'bg-[#E2FFF0]',
-        text: 'Published',
-        textColor: 'text-[#38A169]',
+        bgColor: "bg-[#E2FFF0]",
+        text: "Published",
+        textColor: "text-[#38A169]",
       },
       draft: {
         icon: (
@@ -31,10 +31,10 @@ export default function ProjectCard({ data }: Props) {
             />
           </svg>
         ),
-        bgColor: 'bg-gray-500',
-        text: 'Draft',
+        bgColor: "bg-gray-500",
+        text: "Draft",
       },
-      'in-progress': {
+      "in-progress": {
         icon: (
           <svg
             className="w-3 h-3 text-white"
@@ -48,8 +48,8 @@ export default function ProjectCard({ data }: Props) {
             />
           </svg>
         ),
-        bgColor: 'bg-yellow-500',
-        text: 'In Progress',
+        bgColor: "bg-yellow-500",
+        text: "In Progress",
       },
     };
 
@@ -64,7 +64,7 @@ export default function ProjectCard({ data }: Props) {
       initial={false} // This prevents initial animation on mount
       whileHover={{
         y: -8,
-        transition: { duration: 0.3, ease: 'easeOut' },
+        transition: { duration: 0.3, ease: "easeOut" },
       }}
       whileTap={{ scale: 0.98 }}
       suppressHydrationWarning
@@ -73,7 +73,7 @@ export default function ProjectCard({ data }: Props) {
         className="relative h-[179px] overflow-hidden bg-no-repeat bg-cover bg-center"
         style={{ backgroundImage: `url(${data?.coverImage?.url})` }}
         whileHover={{ scale: 1.05 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         suppressHydrationWarning
       >
         <motion.div
@@ -85,7 +85,7 @@ export default function ProjectCard({ data }: Props) {
           <motion.div
             className={`bg-opacity-95 px-4 py-2 rounded-full flex items-center gap-2 font-medium text-sm shadow-lg ${statusBadge.textColor} ${statusBadge.bgColor}`}
             whileHover={{
-              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+              boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
               y: -2,
             }}
             transition={{ duration: 0.2 }}
@@ -113,7 +113,7 @@ export default function ProjectCard({ data }: Props) {
       >
         <motion.h1
           className="font-medium text-xl pb-1"
-          whileHover={{ color: '#4A5568' }}
+          whileHover={{ color: "#4A5568" }}
           transition={{ duration: 0.2 }}
           suppressHydrationWarning
         >
@@ -121,13 +121,13 @@ export default function ProjectCard({ data }: Props) {
         </motion.h1>
         <motion.p
           className="text-[#718096] text-lg"
-          whileHover={{ color: '#2D3748' }}
+          whileHover={{ color: "#2D3748" }}
           transition={{ duration: 0.2 }}
           suppressHydrationWarning
         >
-          {data?.status.toLowerCase() === 'published'
-            ? 'Published on'
-            : 'Last updated'}{' '}
+          {data?.status.toLowerCase() === "published"
+            ? "Published on"
+            : "Last updated"}{" "}
           {formatDate(data?.createdAt)}
         </motion.p>
       </motion.div>

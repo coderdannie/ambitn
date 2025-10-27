@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import PortfolioPreview from '@/components/modules/PortfolioBuilder/PortfolioPreview';
-import { ProjectItem } from '@/types/portfolio';
-import { ProjectFormData } from '@/utils/validation';
-import { useCreateProject } from '@/service/query/portfolio.service';
-import { useToast } from '@/context/ToastContext';
-import LoadingOverlay from '@/components/common/Loaders/LoadingOverlay';
-import { AxiosError } from 'axios';
-import { useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEYS } from '@/service/querykey';
+import { useEffect, useState, useCallback } from "react"; // ADDED useCallback
+import { useRouter, useSearchParams } from "next/navigation";
+import PortfolioPreview from "@/components/modules/PortfolioBuilder/PortfolioPreview";
+import { ProjectItem } from "@/types/portfolio";
+import { ProjectFormData } from "@/utils/validation";
+import { useCreateProject } from "@/service/query/portfolio.service";
+import { useToast } from "@/context/ToastContext";
+import LoadingOverlay from "@/components/common/Loaders/LoadingOverlay";
+import { AxiosError } from "axios";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/service/querykey";
 
 const PreviewPageContent = () => {
   const { addToast } = useToast();
@@ -19,46 +19,48 @@ const PreviewPageContent = () => {
 
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [projectData, setProjectData] = useState<ProjectFormData>({
-    title: '',
-    description: '',
+    title: "",
+    description: "",
     tags: [],
     categories: [],
-    coverImage: '',
+    coverImage: "",
     needsFeedback: false,
   });
-  const [projectTitle, setProjectTitle] = useState('');
+  const [projectTitle, setProjectTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const queryClient = useQueryClient();
+
+  // --- NEW: Function to clear storage ---
+  const clearPortfolioStorage = useCallback(() => {
+    localStorage.removeItem("portfolio_projects");
+    localStorage.removeItem("portfolio_project_data");
+    localStorage.removeItem("portfolio_project_title");
+  }, []);
+  // ------------------------------------
 
   const { mutate, isPending } = useCreateProject({
     onSuccess: () => {
       queryClient.refetchQueries({
         queryKey: [QUERY_KEYS.GET_USER_ALL_PROJECTS],
       });
+
       // Clear localStorage/sessionStorage on success
-      localStorage.removeItem('portfolio_projects');
-      localStorage.removeItem('portfolio_project_data');
-      localStorage.removeItem('portfolio_project_title');
+      clearPortfolioStorage();
 
-      // Also clear sessionStorage if you're using it
-      sessionStorage.removeItem('portfolio_projects');
-      sessionStorage.removeItem('portfolio_project_data');
-      sessionStorage.removeItem('portfolio_project_title');
-
-      addToast('Project successfully created', 'success');
+      addToast("Project successfully created", "success");
 
       // Close modal after success
       setTimeout(() => {
         setIsModalOpen(false);
-        router.push('/portfolio');
+        router.push("/portfolio");
       }, 1500);
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        const err = error?.response?.data?.message || 'Something went wrong';
-        addToast(err, 'error');
+        const err = error?.response?.data?.message || "Something went wrong";
+        addToast(err, "error");
       }
       // Close modal on error so user can try again
       setTimeout(() => {
@@ -67,8 +69,8 @@ const PreviewPageContent = () => {
     },
   });
 
-  console.log('projects', projects);
-  console.log('projectData', projectData);
+  console.log("projects", projects);
+  console.log("projectData", projectData);
 
   const handlePublishClick = () => {
     setIsModalOpen(true);
@@ -83,10 +85,10 @@ const PreviewPageContent = () => {
         }
 
         switch (project.content.type) {
-          case 'image':
+          case "image":
             if (!project.content.publicUrl) return null;
             return {
-              type: 'IMAGE' as const,
+              type: "IMAGE" as const,
               image: {
                 url: project.content.data,
                 alt: project.content.altText || project.content.title,
@@ -95,10 +97,10 @@ const PreviewPageContent = () => {
                 caption: project.content.caption,
               },
             };
-          case 'video':
+          case "video":
             if (!project.content.publicUrl) return null;
             return {
-              type: 'VIDEO' as const,
+              type: "VIDEO" as const,
               video: {
                 url: project.content.data,
                 alt: project.content.altText || project.content.title,
@@ -107,17 +109,17 @@ const PreviewPageContent = () => {
                 caption: project.content.caption,
               },
             };
-          case 'text':
+          case "text":
             return {
-              type: 'TEXT' as const,
+              type: "TEXT" as const,
               text: {
                 body: project.content.data,
               },
             };
-          case 'audio':
+          case "audio":
             if (!project.content.publicUrl) return null;
             return {
-              type: 'AUDIO' as const,
+              type: "AUDIO" as const,
               audio: {
                 url: project.content.data,
                 publicId: project.content.publicUrl,
@@ -159,10 +161,10 @@ const PreviewPageContent = () => {
     const getPreviewData = () => {
       try {
         // First, try to get from localStorage (for in-progress projects)
-        const savedProjects = localStorage.getItem('portfolio_projects');
-        const savedProjectData = localStorage.getItem('portfolio_project_data');
+        const savedProjects = localStorage.getItem("portfolio_projects");
+        const savedProjectData = localStorage.getItem("portfolio_project_data");
         const savedProjectTitle = localStorage.getItem(
-          'portfolio_project_title'
+          "portfolio_project_title"
         );
 
         if (savedProjects && savedProjectData && savedProjectTitle) {
@@ -173,7 +175,7 @@ const PreviewPageContent = () => {
         }
 
         // If no localStorage data, check URL params (for published projects)
-        const projectId = searchParams.get('id');
+        const projectId = searchParams.get("id");
         if (projectId) {
           // Fetch published project data by ID
           fetchPublishedProject(projectId);
@@ -181,10 +183,10 @@ const PreviewPageContent = () => {
         }
 
         // If no data found, redirect back to builder
-        router.push('/portfolio');
+        router.push("/portfolio");
       } catch (error) {
-        console.error('Error loading preview data:', error);
-        router.push('/portfolio');
+        console.error("Error loading preview data:", error);
+        router.push("/portfolio");
       } finally {
         setLoading(false);
       }
@@ -202,10 +204,10 @@ const PreviewPageContent = () => {
       // setProjectData(data.projectData);
       // setProjectTitle(data.title);
 
-      console.log('Fetching published project:', projectId);
+      console.log("Fetching published project:", projectId);
     } catch (error) {
-      console.error('Error fetching published project:', error);
-      router.push('/portfolio');
+      console.error("Error fetching published project:", error);
+      router.push("/portfolio");
     }
   };
 
@@ -229,6 +231,7 @@ const PreviewPageContent = () => {
         handleModalClose={handleModalClose}
         isModalOpen={isModalOpen}
         isPending={isPending}
+        clearPortfolioStorage={clearPortfolioStorage}
       />
     </div>
   );

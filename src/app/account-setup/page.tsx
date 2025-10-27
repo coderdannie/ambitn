@@ -25,7 +25,7 @@ const TopicSelection = () => {
   const { mutate, isPending } = useAddTopics({
     onSuccess: (res: AccountSetupResponse) => {
       addToast(res.message, 'success');
-      router.push('/explore');
+      router.push('/discover');
     },
     onError: (error: {
       response?: { data?: { message?: string } };

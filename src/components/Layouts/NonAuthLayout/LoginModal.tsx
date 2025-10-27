@@ -17,7 +17,7 @@ interface LoginModalProps {
   onOpen: () => void;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ onOpenChange, open }) => {
+const LoginModal = ({ onOpenChange, open }: any) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

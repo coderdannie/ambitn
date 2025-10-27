@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { ProjectItem } from '@/types/portfolio';
-import { ProjectFormData } from '@/utils/validation';
-import Image from 'next/image';
-import { usePortfolioState } from './hooks/usePortfolioState';
-import PublishingModal from '@/components/modals/PublishingModal';
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { ProjectItem } from "@/types/portfolio";
+import { ProjectFormData } from "@/utils/validation";
+import Image from "next/image";
+import { usePortfolioState } from "./hooks/usePortfolioState";
+import PublishingModal from "@/components/modals/PublishingModal";
 
 interface PortfolioPreviewProps {
   projects: ProjectItem[];
@@ -18,6 +18,8 @@ interface PortfolioPreviewProps {
   handleModalClose: () => void;
   isModalOpen: boolean;
   isPending: boolean;
+  // --- ADDED REQUIRED PROP ---
+  clearPortfolioStorage: () => void;
 }
 
 const PortfolioPreview = ({
@@ -30,9 +32,8 @@ const PortfolioPreview = ({
   handleModalClose,
   isModalOpen,
   isPending,
+  clearPortfolioStorage,
 }: PortfolioPreviewProps) => {
-  const { clearPortfolioStorage } = usePortfolioState();
-
   return (
     <>
       <div className="flex mb-6 justify-between items-center">
@@ -58,7 +59,7 @@ const PortfolioPreview = ({
             onClick={handlePublishClick}
             disabled={isPending}
           >
-            {isPending ? 'processing' : 'Publish'}
+            {isPending ? "processing" : "Publish"}
           </Button>
         </div>
       </div>
@@ -67,7 +68,7 @@ const PortfolioPreview = ({
         <div className="flex items-center justify-center mb-6">
           <div className="flex-1 h-px bg-gray-200"></div>
           <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-primary px-6">
-            {projectData.title || projectTitle || 'Untitled Project'} Preview
+            {projectData.title || projectTitle || "Untitled Project"} Preview
           </h1>
           <div className="flex-1 h-px bg-gray-200"></div>
         </div>
@@ -76,14 +77,14 @@ const PortfolioPreview = ({
         <div className="space-y-4 mb-8">
           {projects.map((project) => (
             <div key={project.id} className="w-full">
-              {project.content.type === 'image' && (
+              {project.content.type === "image" && (
                 <div className="overflow-hidden rounded-lg relative group">
                   <Image
-                    src={project.content.data || ''}
+                    src={project.content.data || ""}
                     alt={
                       project.content.altText ||
                       project.content.title ||
-                      'Project image'
+                      "Project image"
                     }
                     className="w-full h-auto max-h-[400px] object-contain"
                     width={800}
@@ -99,7 +100,7 @@ const PortfolioPreview = ({
                   )}
                 </div>
               )}
-              {project.content.type === 'video' && (
+              {project.content.type === "video" && (
                 <div className="overflow-hidden rounded-lg relative group">
                   <video
                     src={project.content.data}
@@ -116,7 +117,7 @@ const PortfolioPreview = ({
                   )}
                 </div>
               )}
-              {project.content.type === 'audio' && (
+              {project.content.type === "audio" && (
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <audio
                     src={project.content.data}
@@ -133,11 +134,11 @@ const PortfolioPreview = ({
                   )}
                 </div>
               )}
-              {project.content.type === 'text' && (
+              {project.content.type === "text" && (
                 <div
                   className="prose max-w-none"
                   dangerouslySetInnerHTML={{
-                    __html: project.content.data || '',
+                    __html: project.content.data || "",
                   }}
                 />
               )}

@@ -1,14 +1,17 @@
-'use client';
+"use client";
 
-import FileInput from './FileInput';
-import { MdCode, MdLink } from 'react-icons/md';
-import { RxText } from 'react-icons/rx';
+import FileInput from "./FileInput";
+import { Type, Video, Link, Sparkles } from "lucide-react";
+import { BsImage } from "react-icons/bs";
+import { PiPlayCircleFill } from "react-icons/pi";
+import { IoMusicalNotesOutline } from "react-icons/io5";
+import { VscLink } from "react-icons/vsc";
 
 interface Props {
   setAddingText: (prop: boolean) => void;
   handleImageSelected: (prop: File) => void;
   handleVideoSelected: (prop: File) => void;
-  handleAudioSelected: (prop: File) => void; // Add this prop
+  handleAudioSelected: (prop: File) => void;
   setTextContent?: (content: string) => void;
 }
 
@@ -16,77 +19,111 @@ export default function AddContentPanel({
   handleImageSelected,
   setAddingText,
   handleVideoSelected,
-  handleAudioSelected, // Add this parameter
+  handleAudioSelected,
   setTextContent,
 }: Props) {
   const handleTextClick = () => {
     if (setTextContent) {
-      setTextContent(''); // Clear previous text content
+      setTextContent("");
     }
     setAddingText(true);
   };
 
   return (
-    <div className="w-full hidden md:block overflow-hidden rounded-xl border border-gray-200 shadow-sm bg-white h-fit">
-      <h2 className="text-sm font-semibold bg-[#F7FAFCB2] px-2 py-4">
-        Add Content
-      </h2>
-
-      <div className="grid grid-cols-2">
+    <div className="w-full mt-6">
+      <div
+        className="grid gap-2
+      overflow-hidden"
+      >
         {/* Image */}
-        <FileInput
-          accept="image/*"
-          onFileSelected={handleImageSelected}
-          className="border border-gray-200"
-        />
+        <div className="border border-[#E4E4E480] bg-white rounded-[8px] ">
+          <FileInput
+            accept="image/*"
+            onFileSelected={handleImageSelected}
+            className="w-full"
+            buttonClassName="w-full flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors text-left"
+            useModernLayout={true}
+            customIcon={
+              <div className="w-10 h-10 rounded-xl bg-[#F6F6F6A6] flex items-center justify-center">
+                <BsImage className="w-5 h-5 text-[#282F3B]" />
+              </div>
+            }
+            customLabel="Image"
+            customDescription="Add photos"
+          />
+        </div>
 
         {/* Text */}
         <button
-          className="flex flex-col items-center justify-center gap-1 p-4 border border-gray-200 hover:bg-gray-50"
+          className="w-full flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors border border-[#E4E4E480] bg-white rounded-[8px] text-left"
           onClick={handleTextClick}
         >
-          <RxText className="text-xl" />
-          <span className="text-sm">Text</span>
+          <div className="w-10 h-10 rounded-xl bg-[#F6F6F6A6]  flex items-center justify-center">
+            <Type className="w-5 h-5 text-[#282F3B]" />
+          </div>
+          <div>
+            <div className="font-medium text-gray-900">Text</div>
+            <div className="text-xs text-gray-500">Write rich content</div>
+          </div>
         </button>
+
+        {/* Videos */}
+        <div className="border border-[#E4E4E480] bg-white rounded-[8px] ">
+          <FileInput
+            accept="video/*"
+            onFileSelected={handleVideoSelected}
+            className="w-full"
+            buttonClassName="w-full flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors text-left"
+            useModernLayout={true}
+            customIcon={
+              <div className="w-10 h-10 rounded-xl bg-[#F6F6F6A6]  flex items-center justify-center">
+                <PiPlayCircleFill className="w-5 h-5 text-[#282F3B]" />
+              </div>
+            }
+            customLabel="Videos"
+            customDescription="Include videos"
+          />
+        </div>
 
         {/* Audio */}
-        <FileInput
-          accept="audio/*"
-          onFileSelected={handleAudioSelected}
-          className="border border-gray-200"
-        />
+        <div className="border border-[#E4E4E480] bg-white rounded-[8px] ">
+          <FileInput
+            accept="audio/*"
+            onFileSelected={handleAudioSelected}
+            className="w-full"
+            buttonClassName="w-full flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors text-left"
+            useModernLayout={true}
+            customIcon={
+              <div className="w-10 h-10 rounded-xl bg-[#F6F6F6A6]  flex items-center justify-center">
+                <IoMusicalNotesOutline className="w-5 h-5 " />
+              </div>
+            }
+            customLabel="Audio"
+            customDescription="Add sound clips"
+          />
+        </div>
 
-        {/* Video */}
-        <FileInput
-          accept="video/*"
-          onFileSelected={handleVideoSelected}
-          className="border border-gray-200"
-        />
-
-        {/* Embed with badge */}
-        <button className="relative flex flex-col items-center justify-center gap-1 p-4 border border-gray-200 hover:bg-gray-50">
-          <MdCode className="text-xl" />
-          <span className="text-sm">Embed</span>
-          <span className="absolute top-1 right-1 bg-red-600 text-white text-xs font-bold rounded-full px-1.5">
-            E
-          </span>
+        {/* Embed */}
+        <button className="w-full flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors border border-[#E4E4E480] bg-white rounded-[8px] text-left">
+          <div className="w-10 h-10 rounded-xl bg-[#F6F6F6A6] ] flex items-center justify-center">
+            <VscLink className="w-5 h-5 text-[#282F3B]" />
+          </div>
+          <div>
+            <div className="font-medium text-gray-900">Embed</div>
+            <div className="text-sm text-gray-500">Add links</div>
+          </div>
         </button>
 
-        {/* Social Links */}
-        <button className="flex flex-col items-center justify-center gap-1 p-4 border border-gray-200 hover:bg-gray-50">
-          <MdLink className="text-xl" />
-          <span className="text-sm">Social links</span>
+        {/* Ambian AI */}
+        <button className="w-full flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors border border-[#E4E4E480] bg-white rounded-[8px] text-left">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <div className="font-medium text-gray-900">Ambian AI</div>
+            <div className="text-sm text-gray-500">Use AI</div>
+          </div>
         </button>
-      </div>
-
-      {/* AI Suggestion Toggle */}
-      <div className="flex items-center justify-between py-4 px-2 bg-[#F7FAFCB2]">
-        <span className="text-sm font-medium">AI Suggestion</span>
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" className="sr-only peer" />
-          <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-blue-500 transition-all"></div>
-          <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
-        </label>
       </div>
     </div>
   );

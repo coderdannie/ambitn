@@ -1,7 +1,9 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { ContentType, ProjectItem } from '@/types/portfolio';
-import { useToast } from '@/context/ToastContext';
+// components/modules/PortfolioBuilder/hooks/usePortfolioState.ts
 
+import { useState, useRef, useEffect, useCallback } from "react";
+import { ContentType, ProjectItem } from "@/types/portfolio";
+import { useToast } from "@/context/ToastContext";
+import { useGlobalContext } from "@/context/appContext";
 import {
   useDeleteUploadedAudio,
   useDeleteUploadedImage,
@@ -10,61 +12,62 @@ import {
   useUploadAudio,
   useUploadImage,
   useUploadVideo,
-} from '@/service/query/portfolio.service';
-import { STORAGE_KEYS } from '@/components/common/constants';
-import { clearStorage, loadFromStorage, saveToStorage } from '@/utils/helper';
-import { ProjectFormData } from '@/utils/validation';
-import { useSearchParams } from 'next/navigation';
+} from "@/service/query/portfolio.service";
+import { STORAGE_KEYS } from "@/components/common/constants";
+import { clearStorage, loadFromStorage, saveToStorage } from "@/utils/helper";
+import { ProjectFormData } from "@/utils/validation";
+// IMPORTANT: useSearchParams is still imported here
+import { useSearchParams } from "next/navigation";
+import {
+  transformAICaseStudyToProjects,
+  isAICaseStudyEdit,
+} from "@/utils/aiCaseStudyTransformer";
 
-// Helper function to transform API content to ProjectItem format
+// Helper function to transform API content to ProjectItem format (keep this)
 const transformContentToProjectItems = (contents: any[]): ProjectItem[] => {
   return contents
     .map((content) => {
       const projectItem: ProjectItem = {
         id: content._id,
         content: {
-          type: content.type.toLowerCase() as ContentType, // Convert 'TEXT' to 'text', etc.
+          type: content.type.toLowerCase() as ContentType,
           id: content._id,
         },
       };
 
       switch (content.type) {
-        case 'TEXT':
+        case "TEXT":
           projectItem.content = {
             ...projectItem.content,
-            data: content.text.body || '',
+            data: content.text.body || "",
           };
           break;
-        case 'IMAGE':
+        case "IMAGE":
           projectItem.content = {
             ...projectItem.content,
             data: content.image.url,
-            altText: content.image.alt || '',
-            caption: content.image.caption || '',
-            tags: content.image.tags || '',
+            altText: content.image.alt || "",
+            caption: content.image.caption || "",
+            tags: content.image.tags || "",
           };
           break;
-        case 'VIDEO':
+        case "VIDEO":
           projectItem.content = {
             ...projectItem.content,
             data: content.video.url,
-            caption: content.video.caption || '',
+            caption: content.video.caption || "",
             tags: content.video.tags,
-            altText: content.video.alt || '',
-            // If you have thumbnail in your ProjectContent interface, add it here
-            // thumbnail: content.video.thumbnail || '',
+            altText: content.video.alt || "",
           };
           break;
-        case 'AUDIO':
+        case "AUDIO":
           projectItem.content = {
             ...projectItem.content,
             publicUrl: content.audio.url,
-            title: content.audio.title || '',
-            caption: content.audio.caption || '',
+            title: content.audio.title || "",
+            caption: content.audio.caption || "",
             tags: content.audio.tags,
-            altText: content.audio.alt || '',
-            // If you have duration in your ProjectContent interface, add it here
-            // duration: content.audio.duration || 0,
+            altText: content.audio.alt || "",
           };
           break;
         default:
@@ -76,10 +79,47 @@ const transformContentToProjectItems = (contents: any[]): ProjectItem[] => {
     .filter(Boolean) as ProjectItem[];
 };
 
-export const usePortfolioState = () => {
+// --- NEW HOOK: ISOLATES useSearchParams() CALL ---
+export const useURLParams = () => {
   const searchParams = useSearchParams();
-  const projectId = searchParams.get('project_id');
+  const projectId = searchParams.get("project_id");
+  const isAIEdit = isAICaseStudyEdit(searchParams);
+
+  // Get AI case study data from global context
+  const { previewData: contextPreviewData } = useGlobalContext();
+
+  const previewData =
+    contextPreviewData ||
+    (() => {
+      if (typeof window !== "undefined" && isAIEdit) {
+        try {
+          const stored = localStorage.getItem("ai_case_study_preview");
+          return stored ? JSON.parse(stored) : null;
+        } catch (error) {
+          console.error("Error loading preview from localStorage:", error);
+          return null;
+        }
+      }
+      return null;
+    })();
+
+  return { projectId, isAIEdit, previewData };
+};
+// ----------------------------------------------------
+
+// --- MODIFIED HOOK: ACCEPTS PARAMS AS ARGUMENTS ---
+export const usePortfolioState = (params: {
+  projectId: string | null;
+  isAIEdit: boolean;
+  previewData: any;
+}) => {
+  const { projectId, isAIEdit, previewData } = params;
+
   const isEditMode = Boolean(projectId);
+
+  // NOTE: The console logs below are necessary to keep the logic consistent with the original
+  console.log("isAiEdit", isAIEdit);
+  console.log("previewData", previewData);
 
   // Track if this is initial load to avoid premature lastSaved
   const isInitialLoad = useRef(true);
@@ -87,31 +127,37 @@ export const usePortfolioState = () => {
 
   // Initialize states based on edit mode
   const [projects, setProjects] = useState<ProjectItem[]>(() =>
-    isEditMode ? [] : loadFromStorage(STORAGE_KEYS.PROJECTS, [])
+    isEditMode || isAIEdit ? [] : loadFromStorage(STORAGE_KEYS.PROJECTS, [])
   );
 
-  console.log(projects);
-
   const [textContent, setTextContent] = useState<string>(() =>
-    isEditMode ? '' : loadFromStorage(STORAGE_KEYS.TEXT_CONTENT, '')
+    isEditMode || isAIEdit ? "" : loadFromStorage(STORAGE_KEYS.TEXT_CONTENT, "")
   );
 
   const [addingText, setAddingText] = useState<boolean>(() =>
-    isEditMode ? false : loadFromStorage(STORAGE_KEYS.ADDING_TEXT, false)
+    isEditMode || isAIEdit
+      ? false
+      : loadFromStorage(STORAGE_KEYS.ADDING_TEXT, false)
   );
 
   const [editingTextId, setEditingTextId] = useState<string | null>(() =>
-    isEditMode ? null : loadFromStorage(STORAGE_KEYS.EDITING_TEXT_ID, null)
+    isEditMode || isAIEdit
+      ? null
+      : loadFromStorage(STORAGE_KEYS.EDITING_TEXT_ID, null)
   );
 
   const [showRearrangeModal, setShowRearrangeModal] = useState(false);
 
   const [projectTitle, setProjectTitle] = useState<string>(() =>
-    isEditMode ? '' : loadFromStorage(STORAGE_KEYS.PROJECT_TITLE, '')
+    isEditMode || isAIEdit
+      ? ""
+      : loadFromStorage(STORAGE_KEYS.PROJECT_TITLE, "")
   );
 
   const [insertPosition, setInsertPosition] = useState<number | null>(() =>
-    isEditMode ? null : loadFromStorage(STORAGE_KEYS.INSERT_POSITION, null)
+    isEditMode || isAIEdit
+      ? null
+      : loadFromStorage(STORAGE_KEYS.INSERT_POSITION, null)
   );
 
   const [uploadingProjects, setUploadingProjects] = useState<Set<string>>(
@@ -126,21 +172,21 @@ export const usePortfolioState = () => {
   const [showPreview, setShowPreview] = useState(false);
 
   const [projectData, setProjectData] = useState<ProjectFormData>(() =>
-    isEditMode
+    isEditMode || isAIEdit
       ? {
-          title: '',
-          description: '',
+          title: "",
+          description: "",
           tags: [],
           categories: [],
-          coverImage: '',
+          coverImage: "",
           needsFeedback: false,
         }
       : loadFromStorage(STORAGE_KEYS.PROJECT_DATA, {
-          title: '',
-          description: '',
+          title: "",
+          description: "",
           tags: [],
           categories: [],
-          coverImage: '',
+          coverImage: "",
           needsFeedback: false,
         })
   );
@@ -164,60 +210,94 @@ export const usePortfolioState = () => {
   const { data, isPending: isLoadingDetails } = useGetUserProjectDetails(
     projectId as string
   );
-  console.log('data', data);
-  // Effect to populate state from API data in edit mode
+
+  // Effect to populate state from AI case study data (REMOVED redundant hook)
   useEffect(() => {
-    if (isEditMode && data && !isDataLoaded) {
-      // Transform API data to match your state structure
+    if (isAIEdit && previewData && !isDataLoaded) {
+      try {
+        console.log("Loading AI case study data:", previewData);
+
+        // Transform AI case study data to projects
+        const { projects: transformedProjects, title } =
+          transformAICaseStudyToProjects(
+            previewData.content?.data || previewData.content
+          );
+
+        console.log("Transformed projects:", transformedProjects);
+
+        // Set the transformed projects
+        setProjects(transformedProjects);
+        setProjectTitle(title);
+
+        // Set project data with defaults
+        setProjectData({
+          title,
+          description: previewData.content?.data?.projectOverview || "",
+          tags: [],
+          categories: [],
+          coverImage:
+            previewData.content?.data?.imageUrls?.[0]?.url ||
+            (transformedProjects.find((p) => p.content.type === "image")
+              ?.content.data as string) ||
+            "",
+          needsFeedback: false,
+        });
+
+        // Mark data as loaded
+        setIsDataLoaded(true);
+        addToast("AI case study loaded for editing", "success");
+      } catch (error) {
+        console.error("Error loading AI case study:", error);
+        addToast("Error loading case study data", "error");
+      }
+    }
+  }, [isAIEdit, previewData, isDataLoaded, addToast]);
+
+  // Effect to populate state from API data in regular edit mode
+  useEffect(() => {
+    if (isEditMode && !isAIEdit && data && !isDataLoaded) {
       const transformedProjects = transformContentToProjectItems(
         data.contents || []
       );
 
-      // Set project data
       setProjectData({
-        title: data.title || '',
-        description: data.description || '',
+        title: data.title || "",
+        description: data.description || "",
         tags: data.tags || [],
-        categories: [], // Assuming categories aren't in the API response
-        coverImage: data.coverImage?.url || '',
+        categories: [],
+        coverImage: data.coverImage?.url || "",
         needsFeedback: data.needFeedBacks || false,
       });
 
-      // Set projects (content items)
       setProjects(transformedProjects);
-
-      // Set project title (assuming it's the same as the main title)
-      setProjectTitle(data.title || '');
-
-      // Mark data as loaded to prevent re-initialization
+      setProjectTitle(data.title || "");
       setIsDataLoaded(true);
     }
-  }, [data, isEditMode, isDataLoaded, addToast]);
+  }, [data, isEditMode, isAIEdit, isDataLoaded]);
 
-  // localStorage auto-save effect (only for non-edit mode)
+  // localStorage auto-save effect
   useEffect(() => {
-    // Skip for edit mode or if data hasn't been loaded yet in edit mode
-    if (isEditMode && !isDataLoaded) return;
+    // Skip for edit mode or AI edit mode, or if data hasn't been loaded yet
+    if ((isEditMode || isAIEdit) && !isDataLoaded) return;
 
-    // Skip saving and lastSaved update on initial load
     if (isInitialLoad.current) {
       isInitialLoad.current = false;
       return;
     }
 
-    // Check if there's meaningful content to save
     const hasContent =
       projects.length > 0 ||
-      projectData.title.trim() !== '' ||
-      projectData.description.trim() !== '' ||
-      projectTitle.trim() !== '' ||
-      textContent.trim() !== '' ||
+      projectData.title.trim() !== "" ||
+      projectData.description.trim() !== "" ||
+      projectTitle.trim() !== "" ||
+      textContent.trim() !== "" ||
       addingText ||
       editingTextId !== null ||
       insertPosition !== null;
 
-    // Only save to localStorage in create mode (not edit mode)
-    if (!isEditMode) {
+    // Only save to localStorage in create mode
+    if (!isEditMode && !isAIEdit) {
+      // NOTE: Changed from (isAIEdit) to (!isAIEdit) if you want to save during AI edit
       saveToStorage(STORAGE_KEYS.PROJECTS, projects);
       saveToStorage(STORAGE_KEYS.PROJECT_DATA, projectData);
       saveToStorage(STORAGE_KEYS.PROJECT_TITLE, projectTitle);
@@ -227,7 +307,6 @@ export const usePortfolioState = () => {
       saveToStorage(STORAGE_KEYS.INSERT_POSITION, insertPosition);
     }
 
-    // Update lastSaved if there's actual content (for both modes)
     if (hasContent) {
       setLastSaved(new Date());
     }
@@ -240,33 +319,32 @@ export const usePortfolioState = () => {
     editingTextId,
     insertPosition,
     isEditMode,
+    isAIEdit,
     isDataLoaded,
   ]);
 
-  // Clear storage when project is published or user explicitly wants to start fresh
   const clearPortfolioStorage = useCallback(() => {
-    if (!isEditMode) {
+    if (!isEditMode && !isAIEdit) {
       clearStorage();
     }
 
-    // Reset state to initial values
     setProjects([]);
     setProjectData({
-      title: '',
-      description: '',
+      title: "",
+      description: "",
       tags: [],
       categories: [],
-      coverImage: '',
+      coverImage: "",
       needsFeedback: false,
     });
-    setProjectTitle('');
-    setTextContent('');
+    setProjectTitle("");
+    setTextContent("");
     setAddingText(false);
     setEditingTextId(null);
     setInsertPosition(null);
     setLastSaved(null);
     setIsDataLoaded(false);
-  }, [isEditMode]);
+  }, [isEditMode, isAIEdit]);
 
   return {
     // State
@@ -315,8 +393,9 @@ export const usePortfolioState = () => {
     isLoadingDetails,
 
     // Edit mode specific
-    isEditMode,
+    isEditMode: isEditMode || isAIEdit,
     isDataLoaded,
+    isAIEdit,
 
     // Auto-save info
     lastSaved,

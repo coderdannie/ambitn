@@ -2,13 +2,13 @@ import { cn } from '@/lib/utils';
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
 
-interface ExploreTabsProps {
+interface DiscoverTabsProps {
   tabs: string[];
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
-export const ExploreTabs: React.FC<ExploreTabsProps> = ({
+export const DiscoverTabs: React.FC<DiscoverTabsProps> = ({
   tabs,
   activeTab,
   onTabChange,
@@ -54,17 +54,7 @@ export const ExploreTabs: React.FC<ExploreTabsProps> = ({
             )}
           >
             {tab}
-            {activeTab === tab && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute bottom-1 left-4 right-4 h-0.5 bg-gray-900"
-                transition={{
-                  type: 'spring',
-                  stiffness: 500,
-                  damping: 30,
-                }}
-              />
-            )}
+          
           </motion.button>
         ))}
       </div>

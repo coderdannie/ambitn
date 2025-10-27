@@ -1,5 +1,5 @@
 // types/portfolio.ts
-export type ContentType = 'image' | 'text' | 'video' | 'audio';
+export type ContentType = "image" | "text" | "video" | "audio";
 
 export interface ProjectContent {
   type: ContentType;
@@ -90,13 +90,13 @@ export interface UploadBody {
   file: string | File;
 }
 
-export type MediaType = 'image' | 'video' | 'audio';
+export type MediaType = "image" | "video" | "audio";
 
 export interface EditMenuAction {
   label: string;
   onClick: () => void;
   disabled?: boolean;
-  variant?: 'default' | 'danger';
+  variant?: "default" | "danger";
 }
 
 interface CoverImage {
@@ -190,11 +190,11 @@ interface EmbedContent {
 }
 
 type ContentItem =
-  | { type: 'TEXT'; text: TextContent }
-  | { type: 'IMAGE'; image: ImageContent }
-  | { type: 'VIDEO'; video: VideoContent }
-  | { type: 'AUDIO'; audio: AudioContent }
-  | { type: 'EMBED'; embed: EmbedContent };
+  | { type: "TEXT"; text: TextContent }
+  | { type: "IMAGE"; image: ImageContent }
+  | { type: "VIDEO"; video: VideoContent }
+  | { type: "AUDIO"; audio: AudioContent }
+  | { type: "EMBED"; embed: EmbedContent };
 
 export interface CreateProjectPayload {
   title: string;
@@ -241,4 +241,9 @@ export interface getUserAllProjectResponse {
   message: string;
   data: Project[];
   pagination: Pagination;
+}
+
+export interface aiCreatePayload {
+  files?: any;
+  prompt?: string;
 }

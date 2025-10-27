@@ -44,7 +44,7 @@ const LoginPage = () => {
         if (!res?.data?.hasSelectedTopics) {
           router.push('/account-setup');
         } else {
-          router.push('/explore');
+          router.push('/discover');
         }
       }, 200);
     },

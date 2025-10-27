@@ -1,14 +1,15 @@
 // components/PortfolioBuilder/PortfolioHeader.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useWindowSize } from '@/hooks/useWindowSize';
-import { CiCircleChevLeft } from 'react-icons/ci';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import CancelModal from '@/components/modals/CancelModal';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useWindowSize } from "@/hooks/useWindowSize";
+import { CiCircleChevLeft } from "react-icons/ci";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import CancelModal from "@/components/modals/CancelModal";
+import { IoMdArrowBack } from "react-icons/io";
 
 interface PortfolioHeaderProps {
   projectTitle: string;
@@ -61,29 +62,34 @@ const PortfolioHeader = ({
 
   return (
     <>
-      <div className="flex justify-between items-center mb-6">
-        {isMobile ? (
-          <button onClick={handleBackClick}>
-            <CiCircleChevLeft size={34} className="text-[#1A202C]" />
-          </button>
-        ) : (
-          <Button
-            onClick={handleBackClick}
-            variant="outline"
-            className="px-4 grid place-items-center !h-[44px]"
-          >
-            Cancel
-          </Button>
-        )}
+      <div className="flex items-center justify-between gap-4">
+        <button className="flex items-center gap-2  ml-8">
+          <IoMdArrowBack /> <span className="text-sm font-medium">Back</span>
+        </button>{" "}
+        <div className="flex justify-between items-center gap-4 mb-8">
+          {isMobile ? (
+            <button onClick={handleBackClick}>
+              <CiCircleChevLeft size={34} className="text-[#1A202C]" />
+            </button>
+          ) : (
+            <Button
+              onClick={handleBackClick}
+              variant="outline"
+              className="px-4 grid place-items-center !h-[44px]"
+            >
+              Cancel
+            </Button>
+          )}
 
-        <div className="flex items-center gap-2">
-          <Button
-            disabled={!projectTitle.trim()}
-            className="secondary-btn-gradient px-4 grid place-items-center !h-[44px]"
-            onClick={() => setOpen(true)}
-          >
-            Continue
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              disabled={!projectTitle.trim()}
+              className="secondary-btn-gradient px-4 grid place-items-center !h-[44px]"
+              onClick={() => setOpen(true)}
+            >
+              Continue
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -92,7 +98,7 @@ const PortfolioHeader = ({
           type="text"
           value={projectTitle}
           onChange={(e) => setProjectTitle(e.target.value)}
-          className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-b-2 focus-visible:border-blue-500 px-0 py-1 w-full bg-transparent placeholder:font-md placeholder:text-xl"
+          className="border-0 border-b placeholder:font-semibold rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-b-2 focus-visible:border-blue-500 px-0 py-1 w-full bg-transparent placeholder:font-md placeholder:text-xl"
           placeholder="Give me a title"
         />
       </div>

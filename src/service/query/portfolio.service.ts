@@ -1,6 +1,6 @@
 // hooks/usePortfolioQueries.ts - Updated with optimistic updates for React Query mutations
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEYS } from '../querykey';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "../querykey";
 import {
   deleteUploadedVideo,
   deleteUploadedImage,
@@ -13,10 +13,11 @@ import {
   getUserProject,
   deleteProject,
   editProject,
-} from '../api/portfolio.service';
-import { useState } from 'react';
-import { UploadData, UploadOptions } from '@/types/portfolio';
-import { EditProject } from '@/types/project';
+  aiCreateCaseStudy,
+} from "../api/portfolio.service";
+import { useState } from "react";
+import { UploadData, UploadOptions } from "@/types/portfolio";
+import { EditProject } from "@/types/project";
 
 // Enhanced delete hooks with optimistic updates
 export const useDeleteUploadedVideo = (options = {}) => {
@@ -329,8 +330,8 @@ export const useCreateProject = (options = {}) => {
 
 export const useGetUserAllProjects = (
   page = 1,
-  limit = '',
-  searchTerm = '',
+  limit = "",
+  searchTerm = "",
   options = {}
 ) => {
   const { data, isSuccess, isError, isPending } = useQuery({
@@ -369,4 +370,21 @@ export const useEditProject = (options = {}) => {
   });
 
   return { mutate, isPending };
+};
+
+export const useAiCreateCaseStudy = (options = {}) => {
+  const { mutate, isPending, isError, error, isSuccess, data } = useMutation({
+    mutationFn: aiCreateCaseStudy,
+    mutationKey: [QUERY_KEYS.AI_CREATE_CASE_STUDY],
+    ...options,
+  });
+
+  return {
+    mutate,
+    isPending,
+    isError,
+    error,
+    isSuccess,
+    data,
+  };
 };

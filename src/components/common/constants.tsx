@@ -1,4 +1,4 @@
-import { TabData } from "@/types/explore";
+import { TabData } from "@/types/discover";
 import {
   ExploreIcon,
   MessageIcon,
@@ -32,8 +32,8 @@ export const slides = [
 ];
 export const sidebarData = [
   {
-    title: "Explore",
-    path: "/explore",
+    title: "Discover",
+    path: "/discover",
     icon: <ExploreIcon fill="#718096" />,
     sec: <ExploreIcon fill="#1A202C" />,
     hover: <ExploreIcon fill="#1A202C" />,
@@ -78,24 +78,24 @@ export const sidebarData = [
 export const navLinks = [
   {
     id: 1,
-    name: "Browse",
-    link: "/browse",
+    name: "Explore",
+    link: "/explore",
   },
   {
     id: 2,
-    name: "Publish your work",
-    link: "/publish",
+    name: "Find jobs",
+    link: "/find",
   },
-  // {
-  //   id: 3,
-  //   name: 'Hire a designer',
-  //   link: '/hire',
-  // },
-  // {
-  //   id: 4,
-  //   name: 'Blog',
-  //   link: '/blog',
-  // },
+  {
+    id: 3,
+    name: "Hire a designer",
+    link: "/hire",
+  },
+  {
+    id: 4,
+    name: "Blog",
+    link: "/blog",
+  },
 ];
 
 export const frameCards = [
@@ -244,9 +244,13 @@ export const resourcesLinks = [
 ];
 
 export const socialLinks = [
-  { id: 1, name: "Twitter", images: "/assets/twitter.svg" },
-  { id: 2, name: "LinkedIn", images: "/assets/linkedin.svg" },
-  { id: 3, name: "Facebook", images: "/assets/facebook.svg" },
+  { id: 1, name: "Social" },
+  { id: 2, name: "Twitter" },
+  { id: 3, name: "LinkedIn" },
+  { id: 4, name: "Facebook" },
+  { id: 5, name: "GitHub" },
+  { id: 6, name: "AngelList" },
+  { id: 7, name: "Dribble" },
 ];
 export const legalLinks = [
   { id: 1, name: "Legal" },
@@ -278,11 +282,11 @@ export const ItemTypes = {
 
 export const socialIcons = [
   "/assets/twitter.svg",
-  "/assets/linkedin.svg",
   "/assets/facebook.svg",
-  // "/assets/reeddit.svg",
-  // "/assets/social-icon5.svg",
-  // "/assets/social-icon6.svg",
+  "/assets/linkedin.svg",
+  "/assets/reeddit.svg",
+  "/assets/social-icon5.svg",
+  "/assets/social-icon6.svg",
 ];
 
 // Storage keys
