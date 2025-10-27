@@ -1,4 +1,4 @@
-import { TabData } from "@/types/explore";
+import { TabData } from "@/types/discover";
 import {
   ExploreIcon,
   MessageIcon,
@@ -32,8 +32,8 @@ export const slides = [
 ];
 export const sidebarData = [
   {
-    title: "Explore",
-    path: "/explore",
+    title: "Discover",
+    path: "/discover",
     icon: <ExploreIcon fill="#718096" />,
     sec: <ExploreIcon fill="#1A202C" />,
     hover: <ExploreIcon fill="#1A202C" />,

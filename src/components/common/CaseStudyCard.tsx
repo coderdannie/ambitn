@@ -34,8 +34,12 @@ export default function CaseStudyCard({ data }: CaseStudyCardProps) {
 
         {/* Stats */}
         <div className="flex items-center gap-4 mt-3 text-sm">
-          <span className="flex items-center gap-1">👍 15</span>
-          <span className="flex items-center gap-1">👁 160</span>
+          <span className="flex items-center gap-1">
+            👍 {data?.stats?.likes}
+          </span>
+          <span className="flex items-center gap-1">
+            👁 {data?.stats?.views}
+          </span>
         </div>
       </div>
     </div>

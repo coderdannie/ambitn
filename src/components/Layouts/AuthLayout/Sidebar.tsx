@@ -1,7 +1,7 @@
 // components/Layouts/AuthLayout/Sidebar.tsx
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { sidebarData } from "../../common/constants";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -13,6 +13,7 @@ import { FaBehanceSquare } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaLinkedin } from "react-icons/fa";
 import { IoMdLogOut } from "react-icons/io";
+import { IoChevronDown } from "react-icons/io5";
 import GetBadge from "@/components/common/GetBadge";
 
 interface SidebarProps {
@@ -24,6 +25,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isSocialsExpanded, setIsSocialsExpanded] = useState(false);
 
   // Animation variants
   const menuItemVariants = {
@@ -56,6 +58,11 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
   const toggleButtonVariants = {
     collapsed: { rotate: 180 },
     expanded: { rotate: 0 },
+  };
+
+  const chevronVariants = {
+    collapsed: { rotate: 0 },
+    expanded: { rotate: 180 },
   };
 
   const handleLogout = () => {
@@ -184,26 +191,57 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           })}
         </ul>
 
-        <div className="grid gap-2 text-sm text-[#344054] font-medium px-3 mt-6">
-          <h4 className="font-bold text-[#344054] text-sm">Socials</h4>
-          <button className="flex gap-3 py-2 items-center ">
-            <FaXTwitter size={24} />
-            <span>Twitter (X)</span>
-          </button>
-          <button className="flex gap-3 py-2 items-center ">
-            <FaLinkedin size={24} color="#0A66C2" />
-            <span>LinkedIn</span>
-          </button>
-          <button className="flex gap-3 py-2 items-center ">
-            <FaXTwitter size={24} />
-            <span>Dribble</span>
-          </button>
-          <button className="flex gap-3 py-2 items-center ">
-            <FaBehanceSquare size={24} color="#005CFF" />
-            <span>Behance</span>
-          </button>
-        </div>
-        <GetBadge />
+        {/* Collapsible Socials Section */}
+        {!isCollapsed && (
+          <div className="mt-6">
+            <button
+              onClick={() => setIsSocialsExpanded(!isSocialsExpanded)}
+              className="flex items-center justify-between w-full px-3 py-2 hover:bg-gray-50 rounded-md transition-colors"
+            >
+              <h4 className="font-bold text-[#344054] text-sm">Socials</h4>
+              <motion.span
+                variants={chevronVariants}
+                animate={isSocialsExpanded ? "expanded" : "collapsed"}
+                transition={{ duration: 0.3 }}
+              >
+                <IoChevronDown size={16} className="text-[#344054]" />
+              </motion.span>
+            </button>
+
+            <AnimatePresence>
+              {isSocialsExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden"
+                >
+                  <div className="grid gap-2 text-sm text-[#344054] font-medium px-3 pt-2">
+                    <button className="flex gap-3 py-2 items-center hover:bg-gray-50 rounded-md transition-colors px-2 -mx-2">
+                      <FaXTwitter size={24} />
+                      <span>Twitter (X)</span>
+                    </button>
+                    <button className="flex gap-3 py-2 items-center hover:bg-gray-50 rounded-md transition-colors px-2 -mx-2">
+                      <FaLinkedin size={24} color="#0A66C2" />
+                      <span>LinkedIn</span>
+                    </button>
+                    <button className="flex gap-3 py-2 items-center hover:bg-gray-50 rounded-md transition-colors px-2 -mx-2">
+                      <FaXTwitter size={24} />
+                      <span>Dribble</span>
+                    </button>
+                    <button className="flex gap-3 py-2 items-center hover:bg-gray-50 rounded-md transition-colors px-2 -mx-2">
+                      <FaBehanceSquare size={24} color="#005CFF" />
+                      <span>Behance</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+        {!isCollapsed && <GetBadge />}
+
         {/* Logout Button */}
         <motion.li
           variants={menuItemVariants}
