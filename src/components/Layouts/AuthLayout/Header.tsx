@@ -1,15 +1,15 @@
-'use client';
-import { useState } from 'react';
-import Image from 'next/image';
-import { HiOutlineBell } from 'react-icons/hi2';
-import { IoMenuSharp } from 'react-icons/io5';
-import { useWindowSize } from '@/hooks/useWindowSize';
-import SearchInput from '@/components/common/SearchInput';
-import MobileSidebar from './Sidedrawer';
+"use client";
+import { useState } from "react";
+import Image from "next/image";
+import { HiOutlineBell } from "react-icons/hi2";
+import { IoMenuSharp } from "react-icons/io5";
+import { useWindowSize } from "@/hooks/useWindowSize";
+import SearchInput from "@/components/common/SearchInput";
+import MobileSidebar from "./Sidedrawer";
 
 const Header = () => {
   const { isMobile } = useWindowSize();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const toggleMobileSidebar = () => {
@@ -18,17 +18,17 @@ const Header = () => {
 
   return (
     <header
-      className={`h-[80px] sticky top-0 left-0 w-full flex justify-between  px-[30px] pt-4 pb-4 z-30  bg-white`}
+      className={`h-[80px] border-y  border-[#E4E4E4] sticky top-0 left-0 w-full flex justify-between  px-[30px] pt-4 pb-4 z-30  bg-white`}
     >
       <button
-        className={`${isMobile ? 'block' : 'hidden'} `}
+        className={`${isMobile ? "block" : "hidden"} `}
         onClick={toggleMobileSidebar}
       >
         <IoMenuSharp className="text-primary text-3xl" />
       </button>
       <div
         className={`flex items-center ${
-          isMobile ? 'justify-end' : 'justify-between'
+          isMobile ? "justify-end" : "justify-between"
         } w-full`}
       >
         {!isMobile && (

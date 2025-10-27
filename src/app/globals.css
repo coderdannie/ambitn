@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -76,7 +76,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --font-primary: 'Inter', sans-serif;
+  --font-primary: "Inter", sans-serif;
 }
 
 .dark {
@@ -161,6 +161,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -203,12 +204,32 @@ button {
   min-width: 0;
   position: relative;
 }
-@media (max-width: 760px) {
+@media (max-width: 768px) {
   .mobile-margin-top {
     margin-top: 1rem;
   }
   .mobi-center {
     justify-content: center;
+  }
+  .mobi-place-center {
+    display: grid;
+    place-content: center;
+  }
+  .screen-mobi {
+    text-align: center;
+    @apply mx-auto;
+  }
+  .bottom-mobi {
+    @apply my-[1rem];
+  }
+  .font-text {
+    font-size: clamp(2rem, 3vw + 1rem, 4rem);
+  }
+  .mobi-margin {
+    @apply ml-auto;
+  }
+  .hide-desktop {
+    display: none;
   }
 }
 @media (max-width: 999px) {
@@ -222,7 +243,7 @@ button {
     @apply backdrop-blur-2xl;
   }
   .auth-layout {
-    background-image: url('/assets/slide1.jpg');
+    background-image: url("/assets/slide1.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     padding-inline: 1.4rem;
@@ -240,19 +261,27 @@ button {
   .slider-show {
     grid-template-columns: 1fr 1.2fr;
   }
-  .hide-logo {
-    display: none;
-  }
   .desktop-width {
     width: 80%;
   }
+  .font-text {
+    font-size: clamp(4rem, 3vw + 1rem, 2rem);
+  }
 }
+/* @media (min-width: 999px) {
+  .hide-desktop {
+    display: none;
+  }
+} */
 .secondary-btn {
   background: linear-gradient(to bottom, #1a202c, #441c31);
   border-radius: 10px;
   width: 100%;
   color: white;
   @apply h-[46px] md:h-[56px];
+}
+.modal-gradient {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .secondary-btn-gradient {
   background: linear-gradient(to bottom, #1a202c, #441c31);
@@ -267,9 +296,6 @@ button {
   background: linear-gradient(to bottom, #1a202c, #441c31);
   background-clip: text;
   color: transparent;
-}
-.font-text {
-  font-size: clamp(4rem, 3vw + 1rem, 2rem);
 }
 
 .frameCards {
@@ -400,11 +426,9 @@ abbr[title] {
 @keyframes fadeFloatUp {
   0%,
   100% {
-    opacity: 0.4;
     transform: translateY(0);
   }
   50% {
-    opacity: 1;
     transform: translateY(-10px);
   }
 }
@@ -412,11 +436,9 @@ abbr[title] {
 @keyframes fadeFloatLeft {
   0%,
   100% {
-    opacity: 0.4;
     transform: translateX(0);
   }
   50% {
-    opacity: 1;
     transform: translateX(-10px);
   }
 }
@@ -424,11 +446,9 @@ abbr[title] {
 @keyframes fadeFloatRight {
   0%,
   100% {
-    opacity: 0.4;
     transform: translateX(0);
   }
   50% {
-    opacity: 1;
     transform: translateX(10px);
   }
 }
@@ -447,15 +467,15 @@ abbr[title] {
 
 /* Animation classes */
 .fade-in-up {
-  animation: fadeFloatUp 5s ease-in-out infinite;
+  animation: fadeFloatUp 5s ease-in-out forwards;
 }
 
 .slide-in-left {
-  animation: fadeFloatLeft 5s ease-in-out infinite;
+  animation: fadeFloatLeft 5s ease-in-out forwards;
 }
 
 .slide-in-right {
-  animation: fadeFloatRight 5s ease-in-out infinite;
+  animation: fadeFloatRight 5s ease-in-out forwards;
 }
 
 .zoom-in {
@@ -610,22 +630,22 @@ abbr[title] {
   padding-left: 1.5rem;
 }
 
-[data-editor-content='true'] ol {
+[data-editor-content="true"] ol {
   list-style-type: decimal;
   padding-left: 1.5rem;
 }
 
-[data-editor-content='true'] ul {
+[data-editor-content="true"] ul {
   list-style-type: disc;
   padding-left: 1.5rem;
 }
 
-[data-editor-content='true'] li {
+[data-editor-content="true"] li {
   display: list-item;
   margin-bottom: 0.25rem;
 }
 
-[data-editor-content='true'] li p {
+[data-editor-content="true"] li p {
   display: inline;
   margin: 0;
 }

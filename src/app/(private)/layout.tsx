@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import SidebarWrapper from '../../components/Layouts/AuthLayout/SidebarWrapper';
-import Header from '@/components/Layouts/AuthLayout/Header';
-import GlobalProvider from '@/context/appContext';
-import { ToastProvider } from '@/context/ToastContext';
+import { cn } from "@/lib/utils";
+import SidebarWrapper from "../../components/Layouts/AuthLayout/SidebarWrapper";
+import Header from "@/components/Layouts/AuthLayout/Header";
+import GlobalProvider from "@/context/appContext";
+import { ToastProvider } from "@/context/ToastContext";
 
 export default function RootLayout({
   children,
@@ -22,8 +22,8 @@ export default function RootLayout({
           <Header />
           <main
             className={cn(
-              'flex-1 pb-6 max-w-[1377px] relative w-full pt-24',
-              'px-6 pt-5 ' // Removed -z-10
+              "flex-1 pb-6 max-w-[1377px] relative w-full pt-24",
+              "px-7 pt-5 " // Removed -z-10
             )}
           >
             <ToastProvider>{children}</ToastProvider>

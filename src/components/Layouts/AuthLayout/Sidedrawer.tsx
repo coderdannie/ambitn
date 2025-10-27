@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { sidebarData } from '../../common/constants';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { X, Menu } from 'lucide-react';
+import { motion, AnimatePresence } from "framer-motion";
+import { sidebarData } from "../../common/constants";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+import { X, Menu } from "lucide-react";
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -30,24 +30,24 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (isOpen && target.classList.contains('sidebar-backdrop')) {
+      if (isOpen && target.classList.contains("sidebar-backdrop")) {
         onClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onClose]);
 
   // Lock scroll when sidebar is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     }
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     };
   }, [isOpen]);
 
@@ -56,17 +56,17 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
 
     // Simulate async operation with delay
     setTimeout(() => {
-      sessionStorage.removeItem('user');
-      router.push('/login');
+      sessionStorage.removeItem("user");
+      router.push("/login");
     }, 1000);
   };
 
   // Sidebar animation variants
   const sidebarVariants = {
     hidden: {
-      x: '-100%',
+      x: "-100%",
       transition: {
-        type: 'spring',
+        type: "spring",
         stiffness: 400,
         damping: 40,
       },
@@ -74,7 +74,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
     visible: {
       x: 0,
       transition: {
-        type: 'spring',
+        type: "spring",
         stiffness: 400,
         damping: 40,
       },
@@ -93,13 +93,13 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
   return (
     <>
       {/* Hamburger button */}
-      <button
+      {/* <button
         onClick={onClose}
         className="lg:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-md shadow-md"
         aria-label="Toggle mobile menu"
       >
         <Menu size={24} />
-      </button>
+      </button> */}
 
       <AnimatePresence>
         {isOpen && (
@@ -157,15 +157,15 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
                     {sidebarData.map((item) => {
                       const isActive =
                         pathname === item.path ||
-                        (item.path !== '/' && pathname?.startsWith(item.path));
+                        (item.path !== "/" && pathname?.startsWith(item.path));
 
                       return (
                         <motion.li
                           key={item.path}
                           whileHover={{ scale: 1.02 }}
                           className={cn(
-                            'overflow-hidden rounded-md relative',
-                            isActive ? 'bg-[#F7FAFC]' : ''
+                            "overflow-hidden rounded-md relative",
+                            isActive ? "bg-[#F7FAFC]" : ""
                           )}
                         >
                           {isActive && (
@@ -174,7 +174,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
                               initial={{ scaleY: 0 }}
                               animate={{ scaleY: 1 }}
                               transition={{
-                                type: 'spring',
+                                type: "spring",
                                 stiffness: 500,
                                 damping: 30,
                               }}
@@ -195,8 +195,8 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
                             <span
                               className={`whitespace-nowrap ${
                                 isActive
-                                  ? 'font-bold text-primary'
-                                  : 'font-medium text-[#344054]'
+                                  ? "font-bold text-primary"
+                                  : "font-medium text-[#344054]"
                               }`}
                             >
                               {item.title}
@@ -209,7 +209,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
                     {/* Logout Button */}
                     <motion.li
                       whileHover={{ scale: 1.02 }}
-                      className={cn('overflow-hidden rounded-md relative mt-8')}
+                      className={cn("overflow-hidden rounded-md relative mt-8")}
                     >
                       <button
                         onClick={handleLogout}
@@ -223,7 +223,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
                               transition={{
                                 repeat: Infinity,
                                 duration: 1,
-                                ease: 'linear',
+                                ease: "linear",
                               }}
                               className="inline-block"
                             >
@@ -263,10 +263,10 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
 
                         <span
                           className={`whitespace-nowrap font-medium text-[#344054] ${
-                            isLoggingOut ? 'opacity-70' : ''
+                            isLoggingOut ? "opacity-70" : ""
                           }`}
                         >
-                          {isLoggingOut ? 'Logging out...' : 'Logout'}
+                          {isLoggingOut ? "Logging out..." : "Logout"}
                         </span>
                       </button>
                     </motion.li>

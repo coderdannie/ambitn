@@ -1,6 +1,6 @@
 import React from 'react';
 import { Heart, Eye } from 'lucide-react';
-import { PortfolioItem } from '@/types/explore';
+import { PortfolioItem } from '@/types/discover';
 import Image from 'next/image';
 
 interface PortfolioCardProps {

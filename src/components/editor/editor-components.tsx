@@ -1,22 +1,22 @@
 // editor-components.tsx
-import { Editor } from '@tiptap/core';
+import { Editor } from "@tiptap/core";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Toggle } from '@/components/ui/toggle';
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Toggle } from "@/components/ui/toggle";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { Type } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { HexColorPicker } from 'react-colorful';
+} from "@/components/ui/popover";
+import { Type } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { HexColorPicker } from "react-colorful";
 
 export const Divider = () => <div className="w-px h-6 bg-gray-300 mx-1" />;
 
@@ -47,7 +47,7 @@ export const ToolbarButton = ({
 
 export const ToolbarSection = ({
   children,
-  className = '',
+  className = "",
 }: {
   children: React.ReactNode;
   className?: string;
@@ -57,7 +57,7 @@ export const SelectDropdown = ({
   options,
   value,
   onSelect,
-  width = 'w-full',
+  width = "w-full",
   showFontPreview = false,
 }: {
   options: Array<{ value: string; label: string; [key: string]: any }>;
@@ -67,7 +67,7 @@ export const SelectDropdown = ({
   showFontPreview?: boolean;
 }) => (
   <Select value={value} onValueChange={onSelect}>
-    <SelectTrigger className={width}>
+    <SelectTrigger className={`${width} border-0`}>
       <SelectValue placeholder="Select option" />
     </SelectTrigger>
     <SelectContent>
@@ -85,14 +85,14 @@ export const SelectDropdown = ({
 );
 
 export const ColorPicker = ({ editor }: { editor: Editor }) => {
-  const currentColor = editor.getAttributes('textStyle').color || '#000000';
+  const currentColor = editor.getAttributes("textStyle").color || "#000000";
   const [color, setColor] = useState(currentColor);
   const [isOpen, setIsOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setColor(editor.getAttributes('textStyle').color || '#000000');
-  }, [editor.getAttributes('textStyle').color]);
+    setColor(editor.getAttributes("textStyle").color || "#000000");
+  }, [editor.getAttributes("textStyle").color]);
 
   // Handle clicks outside the entire popover
   useEffect(() => {
@@ -109,12 +109,12 @@ export const ColorPicker = ({ editor }: { editor: Editor }) => {
 
     // Add event listener with a slight delay to avoid immediate closing
     const timeoutId = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }, 100);
 
     return () => {
       clearTimeout(timeoutId);
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
@@ -151,14 +151,14 @@ export const ColorPicker = ({ editor }: { editor: Editor }) => {
             setColor(newColor);
             editor.chain().focus().setColor(newColor).run();
           }}
-          style={{ width: '100%' }}
+          style={{ width: "100%" }}
         />
         <div className="flex justify-between mt-3">
           <span className="text-xs text-gray-500">{color}</span>
           <button
             onClick={() => {
               editor.chain().focus().unsetColor().run();
-              setColor('#000000');
+              setColor("#000000");
               setIsOpen(false);
             }}
             className="text-xs text-blue-500 hover:text-blue-700"

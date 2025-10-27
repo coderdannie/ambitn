@@ -1,5 +1,5 @@
-import { useEditor, EditorContent } from '@tiptap/react';
-import { useState, useRef } from 'react';
+import { useEditor, EditorContent } from "@tiptap/react";
+import { useState, useRef } from "react";
 import {
   Link2,
   Image as ImageIcon,
@@ -7,28 +7,28 @@ import {
   Redo,
   List,
   ListOrdered as ListOrderedIcon,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
-import { extensions, editorProps } from './editor-config';
+import { extensions, editorProps } from "./editor-config";
 import {
   ToolbarButton,
   ToolbarSection,
   SelectDropdown,
   ColorPicker,
   Divider,
-} from './editor-components';
-import { MobileToolbar } from './mobile-toolbar';
+} from "./editor-components";
+import { MobileToolbar } from "./mobile-toolbar";
 import {
   PARAGRAPH_STYLES,
   FONT_FAMILIES,
   FONT_SIZES,
   FORMATTING_BUTTONS,
   ALIGNMENT_OPTIONS,
-} from './editor-config';
-import { FormattingButton, StyleOption } from '@/types/editor';
+} from "./editor-config";
+import { FormattingButton, StyleOption } from "@/types/editor";
 
 interface RichTextEditorProps {
   value?: string;
@@ -41,24 +41,24 @@ interface RichTextEditorProps {
 }
 
 export default function RichTextEditor({
-  value = '',
+  value = "",
   onChange,
-  placeholder = 'Start typing...',
+  placeholder = "Start typing...",
   autoFocus = false,
-  className = '',
+  className = "",
 }: RichTextEditorProps) {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
 
   const editor = useEditor({
     extensions,
-    content: value || '<p></p>',
+    content: value || "<p></p>",
     editorProps: {
       ...editorProps,
       attributes: {
         ...editorProps.attributes,
-        class: 'min-h-[100px]',
-        'data-placeholder': placeholder,
+        class: "min-h-[100px]",
+        "data-placeholder": placeholder,
       },
     },
 
@@ -73,38 +73,38 @@ export default function RichTextEditor({
 
   const getCurrentStyle = () => {
     const activeStyle = PARAGRAPH_STYLES.find((style: StyleOption) => {
-      if ('level' in style && style.level) {
-        return editor.isActive('heading', { level: style.level });
+      if ("level" in style && style.level) {
+        return editor.isActive("heading", { level: style.level });
       }
-      return style.value === 'paragraph' && !editor.isActive('heading');
+      return style.value === "paragraph" && !editor.isActive("heading");
     });
-    return activeStyle?.value || 'paragraph';
+    return activeStyle?.value || "paragraph";
   };
 
   const getCurrentFontFamily = () =>
-    editor.getAttributes('textStyle').fontFamily || 'Arial, sans-serif';
+    editor.getAttributes("textStyle").fontFamily || "Arial, sans-serif";
 
   const getCurrentFontSize = () =>
-    editor.getAttributes('textStyle').fontSize || '14px';
+    editor.getAttributes("textStyle").fontSize || "14px";
 
   const addImage = () => {
-    const url = window.prompt('Enter image URL:');
+    const url = window.prompt("Enter image URL:");
     if (url) editor.chain().focus().setImage({ src: url }).run();
   };
 
   const setLink = () => {
-    const url = window.prompt('Enter URL:');
+    const url = window.prompt("Enter URL:");
     if (url) editor.chain().focus().toggleLink({ href: url }).run();
   };
 
   return (
     <div
-      className={`w-full max-w-5xl mx-auto bg-white  border-gray-300 overflow-hidden rounded-lg shadow-lg flex flex-col ${className}`}
+      className={`w-full max-w-5xl mx-auto bg-white  border-gray-300 overflow-hidden rounded-[8px] shadow-lg flex flex-col ${className}`}
       data-editor-container="true"
     >
       {/* Fixed Toolbar */}
       <div
-        className="border-b border-gray-200 !text-gray-300 bg-[#191919] flex-shrink-0"
+        className="border-b border-gray-200 !text-gray-300 bg-gradient-to-b from-[#1A202C] to-[#441C31]  flex-shrink-0"
         data-editor-toolbar="true"
       >
         <div className="flex items-center gap-1 p-2 flex-wrap">
@@ -131,7 +131,7 @@ export default function RichTextEditor({
               width="w-22"
               showFontPreview
             />
-
+            <Divider />
             <SelectDropdown
               options={FONT_SIZES}
               value={getCurrentFontSize()}
@@ -172,7 +172,7 @@ export default function RichTextEditor({
               value={
                 ALIGNMENT_OPTIONS.find((opt) =>
                   editor.isActive({ textAlign: opt.value })
-                )?.value || ''
+                )?.value || ""
               }
               onValueChange={(value) => {
                 if (value) editor.chain().focus().setTextAlign(value).run();
@@ -198,13 +198,13 @@ export default function RichTextEditor({
           <ToolbarSection className="flex">
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBulletList().run()}
-              active={editor.isActive('bulletList')}
+              active={editor.isActive("bulletList")}
               title="Bullet List"
               icon={List} // Replace with your bullet list icon
             />
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              active={editor.isActive('orderedList')}
+              active={editor.isActive("orderedList")}
               title="Numbered List"
               icon={ListOrderedIcon} // Replace with your numbered list icon
             />

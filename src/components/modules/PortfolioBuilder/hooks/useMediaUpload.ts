@@ -1,7 +1,7 @@
-import { useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { ProjectContent, MediaType } from '@/types/portfolio';
-import { AxiosError } from 'axios';
+import { useCallback } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { ProjectContent, MediaType } from "@/types/portfolio";
+import { AxiosError } from "axios";
 
 interface UseMediaUploadProps {
   uploadImage: any;
@@ -11,7 +11,7 @@ interface UseMediaUploadProps {
   removeProject: (id: string) => void;
   addToast: (
     message: string,
-    type: 'success' | 'error' | 'warning' | 'info'
+    type: "success" | "error" | "warning" | "info"
   ) => void;
   setProjects: React.Dispatch<React.SetStateAction<any[]>>;
   setUploadingProjects: React.Dispatch<React.SetStateAction<Set<string>>>;
@@ -39,49 +39,56 @@ export const useMediaUpload = ({
         const MAX_VIDEO_SIZE = 20 * 1024 * 1024; // 20MB
         const MAX_AUDIO_SIZE = 10 * 1024 * 1024; // 10MB
 
-        if (mediaType === 'video' && file.size > MAX_VIDEO_SIZE) {
+        if (mediaType === "image" && file.type === "image/webp") {
+          const errorMessage =
+            "WebP format is not supported. Please upload JPG, PNG, or GIF images.";
+          addToast(errorMessage, "error");
+          return reject(new Error(errorMessage));
+        }
+
+        if (mediaType === "video" && file.size > MAX_VIDEO_SIZE) {
           const errorMessage = `Video file is too large. Maximum size allowed is 20MB. Your file is ${(
             file.size /
             (1024 * 1024)
           ).toFixed(1)}MB.`;
-          addToast(errorMessage, 'error');
+          addToast(errorMessage, "error");
           return reject(new Error(errorMessage));
         }
 
-        if (mediaType === 'audio' && file.size > MAX_AUDIO_SIZE) {
+        if (mediaType === "audio" && file.size > MAX_AUDIO_SIZE) {
           const errorMessage = `Audio file is too large. Maximum size allowed is 10MB. Your file is ${(
             file.size /
             (1024 * 1024)
           ).toFixed(1)}MB.`;
-          addToast(errorMessage, 'error');
+          addToast(errorMessage, "error");
           return reject(new Error(errorMessage));
         }
 
         const reader = new FileReader();
         const uploadMutation =
-          mediaType === 'image'
+          mediaType === "image"
             ? uploadImage
-            : mediaType === 'video'
+            : mediaType === "video"
             ? uploadVideo
             : uploadAudio;
 
         const successMessage =
-          mediaType === 'image'
-            ? 'Image uploaded successfully'
-            : mediaType === 'video'
-            ? 'Video uploaded successfully'
-            : 'Audio uploaded successfully';
+          mediaType === "image"
+            ? "Image uploaded successfully"
+            : mediaType === "video"
+            ? "Video uploaded successfully"
+            : "Audio uploaded successfully";
 
         reader.onload = () => {
           const previewUrl =
-            mediaType === 'image'
+            mediaType === "image"
               ? (reader.result as string)
               : URL.createObjectURL(file);
 
           const tempContent: ProjectContent = {
             type: mediaType,
             data: previewUrl,
-            title: file.name.replace(/\.[^/.]+$/, ''),
+            title: file.name.replace(/\.[^/.]+$/, ""),
             isUploading: true,
           };
 
@@ -115,7 +122,7 @@ export const useMediaUpload = ({
                 const finalContent: ProjectContent = {
                   type: mediaType,
                   data: res?.data?.url,
-                  title: file.name.replace(/\.[^/.]+$/, ''),
+                  title: file.name.replace(/\.[^/.]+$/, ""),
                   publicUrl: res?.data?.publicId,
                   isUploading: false,
                 };
@@ -127,14 +134,14 @@ export const useMediaUpload = ({
                   return newSet;
                 });
 
-                if (mediaType === 'video' || mediaType === 'audio') {
+                if (mediaType === "video" || mediaType === "audio") {
                   URL.revokeObjectURL(previewUrl);
                 }
 
                 resolve(currentProjectId!); // Resolve with the project ID
               },
               onError: (error: any) => {
-                if (mediaType === 'video' || mediaType === 'audio') {
+                if (mediaType === "video" || mediaType === "audio") {
                   URL.revokeObjectURL(previewUrl);
                 }
                 removeProject(currentProjectId!);
@@ -143,10 +150,10 @@ export const useMediaUpload = ({
                   error instanceof AxiosError
                     ? error?.response?.data?.message ||
                       error?.message ||
-                      'Upload failed'
-                    : 'Upload failed';
+                      "Upload failed"
+                    : "Upload failed";
 
-                addToast(errorMessage, 'error');
+                addToast(errorMessage, "error");
                 reject(new Error(errorMessage));
               },
             }
@@ -170,21 +177,21 @@ export const useMediaUpload = ({
 
   const handleImageUpload = useCallback(
     (file: File, projectId?: string, position?: number) => {
-      return handleMediaUpload(file, 'image', projectId, position);
+      return handleMediaUpload(file, "image", projectId, position);
     },
     [handleMediaUpload]
   );
 
   const handleVideoUpload = useCallback(
     (file: File, projectId?: string, position?: number) => {
-      return handleMediaUpload(file, 'video', projectId, position);
+      return handleMediaUpload(file, "video", projectId, position);
     },
     [handleMediaUpload]
   );
 
   const handleAudioUpload = useCallback(
     (file: File, projectId?: string, position?: number) => {
-      return handleMediaUpload(file, 'audio', projectId, position);
+      return handleMediaUpload(file, "audio", projectId, position);
     },
     [handleMediaUpload]
   );

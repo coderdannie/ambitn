@@ -1,11 +1,12 @@
-import * as API from '../url';
-import axiosInstance, { uploadInstance } from '../axiosInstance';
+import * as API from "../url";
+import axiosInstance, { uploadInstance } from "../axiosInstance";
 import {
+  aiCreatePayload,
   CreateProjectPayload,
   getUserAllProjectResponse,
   UploadBody,
-} from '@/types/portfolio';
-import { EditProject, ProjectResponse } from '@/types/project';
+} from "@/types/portfolio";
+import { EditProject, ProjectResponse } from "@/types/project";
 
 export const uploadImage = async (
   body: UploadBody,
@@ -14,18 +15,18 @@ export const uploadImage = async (
   // Convert base64 to File if needed
   let fileToUpload: File;
 
-  if (typeof body.file === 'string') {
+  if (typeof body.file === "string") {
     // Handle base64 string
     const response = await fetch(body.file);
     const blob = await response.blob();
-    fileToUpload = new File([blob], 'image.jpg', { type: blob.type });
+    fileToUpload = new File([blob], "image.jpg", { type: blob.type });
   } else {
     fileToUpload = body.file;
   }
 
   // Create FormData for file upload
   const formData = new FormData();
-  formData.append('file', fileToUpload);
+  formData.append("file", fileToUpload);
 
   // Use your existing uploadInstance with progress tracking
   const res = await uploadInstance.post(API.UPLOAD_IMAGE, formData, {
@@ -48,18 +49,18 @@ export const uploadVideo = async (
 ): Promise<any> => {
   let fileToUpload: File;
 
-  if (typeof body.file === 'string') {
+  if (typeof body.file === "string") {
     // Handle base64 string
     const response = await fetch(body.file);
     const blob = await response.blob();
-    fileToUpload = new File([blob], 'video.mp4', { type: blob.type });
+    fileToUpload = new File([blob], "video.mp4", { type: blob.type });
   } else {
     fileToUpload = body.file;
   }
 
   // Create FormData for file upload
   const formData = new FormData();
-  formData.append('file', fileToUpload);
+  formData.append("file", fileToUpload);
 
   // Upload with progress tracking
   const res = await uploadInstance.post(API.UPLOAD_VIDEO, formData, {
@@ -82,12 +83,12 @@ export const uploadAudio = async (
 ): Promise<any> => {
   let fileToUpload: File;
 
-  if (typeof body.file === 'string') {
+  if (typeof body.file === "string") {
     // Handle base64 string
     const response = await fetch(body.file);
     const blob = await response.blob();
-    fileToUpload = new File([blob], 'audio.mp3', {
-      type: blob.type || 'audio/mpeg',
+    fileToUpload = new File([blob], "audio.mp3", {
+      type: blob.type || "audio/mpeg",
     });
   } else {
     fileToUpload = body.file;
@@ -95,7 +96,7 @@ export const uploadAudio = async (
 
   // Create FormData for file upload
   const formData = new FormData();
-  formData.append('file', fileToUpload);
+  formData.append("file", fileToUpload);
 
   // Upload with progress tracking
   const res = await uploadInstance.post(API.UPLOAD_AUDIO, formData, {
@@ -148,9 +149,9 @@ export const getUserAllProjects = async ({
 
   const params = new URLSearchParams();
 
-  if (page) params.append('page', page);
-  if (limit) params.append('limit', limit);
-  if (searchTerm) params.append('searchTerm', searchTerm);
+  if (page) params.append("page", page);
+  if (limit) params.append("limit", limit);
+  if (searchTerm) params.append("searchTerm", searchTerm);
 
   const res = await axiosInstance.get<getUserAllProjectResponse>(
     `${`${API.GET_USER_ALL_PROJECTS}/all`}?${params.toString()}`
@@ -166,12 +167,19 @@ export const getUserProject = async (id: string): Promise<ProjectResponse> => {
 };
 
 export const deleteProject = async (id: string) => {
-  if (!id) throw new Error('ID is required');
+  if (!id) throw new Error("ID is required");
   const res = await axiosInstance.delete(API.DELETE_PROJECT(id));
   return res.data;
 };
 
 export const editProject = async (id: string, data: EditProject) => {
   const res = await axiosInstance.put(API.EDIT_PROJECT(id), data);
+  return res.data;
+};
+
+export const aiCreateCaseStudy = async (
+  payload: aiCreatePayload | FormData // Accept both types
+): Promise<any> => {
+  const res = await uploadInstance.post(API.AI_CREATE_CASE_STUDY, payload);
   return res.data;
 };

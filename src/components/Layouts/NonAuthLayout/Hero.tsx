@@ -18,7 +18,7 @@ const Hero = () => {
             <h1 className="btn-text-gradient font-text mx-auto leading-none font-bold text-[4rem] text-center">
               Top Creators from Around the Globe Showcase on Forlio
             </h1>
-            <p className="mx-auto text-center w-[40ch] my-[1rem]">
+            <p className="mx-auto text-center my-[1rem]">
               Discover groundbreaking projects and connect with talented
               creatives from every corner of the world. Join the vibrant
               community where innovation and inspiration come to life.

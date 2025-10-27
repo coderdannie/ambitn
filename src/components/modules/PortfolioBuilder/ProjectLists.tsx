@@ -1,17 +1,15 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
-import React from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Plus } from 'lucide-react';
-import ProjectItems from '@/components/modules/PortfolioBuilder/ProjectItem';
-
-import TextEditor from './TextEditor';
-import { ProjectItem } from '@/types/portfolio';
+import dynamic from "next/dynamic";
+import React from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import ProjectItems from "@/components/modules/PortfolioBuilder/ProjectItem";
+import TextEditor from "./TextEditor";
+import { ProjectItem } from "@/types/portfolio";
 
 const HoverInsert = dynamic(
-  () => import('@/components/modules/PortfolioBuilder/HoverInsert'),
+  () => import("@/components/modules/PortfolioBuilder/HoverInsert"),
   { ssr: false }
 );
 
@@ -74,7 +72,7 @@ const ProjectsList = ({
 }: ProjectsListProps) => {
   const handleInsertAtPosition = (position: number) => {
     setInsertPosition(position);
-    setTextContent('');
+    setTextContent("");
   };
 
   const renderTextEditorAtPosition = (position: number) => {
@@ -92,7 +90,7 @@ const ProjectsList = ({
             onSave={onAddText}
             onCancel={() => {
               setAddingText(false);
-              setTextContent('');
+              setTextContent("");
               setInsertPosition(null);
             }}
           />
@@ -138,15 +136,15 @@ const ProjectsList = ({
                       isDeleting={deletingProjects.has(project.id)}
                       isUploadingImg={
                         uploadingProjects.has(project.id) &&
-                        project.content.type === 'image'
+                        project.content.type === "image"
                       }
                       isUploadingVideo={
                         uploadingProjects.has(project.id) &&
-                        project.content.type === 'video'
+                        project.content.type === "video"
                       }
                       isUploadingAudio={
                         uploadingProjects.has(project.id) &&
-                        project.content.type === 'audio'
+                        project.content.type === "audio"
                       }
                       uploadImgProgress={imageUploadProgress}
                       uploadVideoProgress={videoUploadProgress}
@@ -154,14 +152,14 @@ const ProjectsList = ({
                       className="relative p-4 bg-white rounded-lg transition-all"
                       isEditing={editingTextId === project.id}
                       onTextDoubleClick={() => {
-                        if (project.content.type === 'text') {
-                          setTextContent(project.content.data || '');
+                        if (project.content.type === "text") {
+                          setTextContent(project.content.data || "");
                           setEditingTextId(project.id);
                         }
                       }}
                       onEditClick={() => {
-                        if (project.content.type === 'text') {
-                          setTextContent(project.content.data || '');
+                        if (project.content.type === "text") {
+                          setTextContent(project.content.data || "");
                           setEditingTextId(project.id);
                         }
                       }}
@@ -169,11 +167,11 @@ const ProjectsList = ({
                         setEditingTextId(null);
                       }}
                       onSaveEditing={() => {
-                        if (textContent.trim() && textContent !== '<p></p>') {
+                        if (textContent.trim() && textContent !== "<p></p>") {
                           updateProject(project.id, {
-                            type: 'text',
+                            type: "text",
                             data: textContent,
-                            title: 'Text Block',
+                            title: "Text Block",
                           });
                         }
                         setEditingTextId(null);
@@ -195,21 +193,6 @@ const ProjectsList = ({
               </React.Fragment>
             ))}
 
-            {projects.length === 0 && (
-              <div className="relative h-16 group flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg">
-                <button
-                  onClick={() => handleInsertAtPosition(0)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-3 shadow-lg transition-all duration-200 hover:scale-110"
-                  title="Add your first content"
-                >
-                  <Plus className="w-5 h-5" />
-                </button>
-                <span className="ml-3 text-gray-500">
-                  Add your first content
-                </span>
-              </div>
-            )}
-
             {addingText && insertPosition === null && !editingTextId && (
               <div id="text-editor-end" className="text-editor-container">
                 <TextEditor
@@ -219,7 +202,7 @@ const ProjectsList = ({
                   onSave={onAddText}
                   onCancel={() => {
                     setAddingText(false);
-                    setTextContent('');
+                    setTextContent("");
                     setInsertPosition(null);
                   }}
                 />
