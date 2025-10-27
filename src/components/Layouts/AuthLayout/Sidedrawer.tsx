@@ -66,7 +66,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
     hidden: {
       x: "-100%",
       transition: {
-        type: "spring",
+        type: "spring" as const, // Add 'as const' here
         stiffness: 400,
         damping: 40,
       },
@@ -74,7 +74,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
     visible: {
       x: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const, // Add 'as const' here
         stiffness: 400,
         damping: 40,
       },
