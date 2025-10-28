@@ -1,0 +1,6 @@
+# 1. ENFORCE HTTPS (Redirects HTTP to HTTPS for all hosts)
+http://* https://:host/:splat 301!
+
+# 3. FALLBACK RULE for React/Vite SPA (Fixes /login 404 error)
+# If no file is found, serve the main app (index.html) and return 200 OK.
+/* /index.html 200
