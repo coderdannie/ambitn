@@ -78,23 +78,13 @@ export const sidebarData = [
 export const navLinks = [
   {
     id: 1,
-    name: "Explore",
+    name: "Browse",
     link: "/explore",
   },
   {
     id: 2,
-    name: "Find jobs",
+    name: "Publish your work",
     link: "/find",
-  },
-  {
-    id: 3,
-    name: "Hire a designer",
-    link: "/hire",
-  },
-  {
-    id: 4,
-    name: "Blog",
-    link: "/blog",
   },
 ];
 

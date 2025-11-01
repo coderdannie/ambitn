@@ -23,7 +23,7 @@ const MobiDropDown = ({ isOpen, setIsOpen }) => {
 
   return (
     <>
-      <div className="">
+      <div className="hidden">
         <div
           className={`mobi-drop-down md:hidden transition-transform duration-500 ease-in-out  btn-gradient left-0 wrapper top-[70px] absolute inset-0 z-[100]
             ${isOpen ? "translate-x-0" : "translate-x-[100%]"}`}

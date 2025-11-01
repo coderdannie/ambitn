@@ -18,7 +18,7 @@ const Frame = ({
   };
   return (
     <>
-      <div className="wrapper mt-[6rem] relative">
+      <div className="align-element mt-[6rem] relative">
         <div className="md:flex gap-[10px] items-center justify-between mb-[3rem]">
           <div className="relative flex-1">
             <div className="absolute top-[12px] left-[10px]">

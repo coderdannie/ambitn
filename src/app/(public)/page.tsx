@@ -6,6 +6,7 @@ import Nav from "@/components/Layouts/NonAuthLayout/Nav";
 import Frame from "@/components/Layouts/NonAuthLayout/Frame";
 import { useState } from "react";
 import LoginModal from "@/components/Layouts/NonAuthLayout/LoginModal";
+
 const HomePage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);

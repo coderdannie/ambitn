@@ -237,6 +237,13 @@ button {
     display: none;
   }
 }
+
+.font-heading {
+  font-size: clamp(1.4rem, 3vw + 1rem, 2.8rem);
+  @apply font-semibold max-w-[700px] w-full mx-auto;
+  color: #383838;
+  line-height: 1.2;
+}
 @media (max-width: 899px) {
   .auth-bg {
     background-color: #ffffffdd !important;
